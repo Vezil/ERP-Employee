@@ -20,3 +20,8 @@ export default {
   }),
 };
 </script>
+<style>
+:root{
+  background-color: black;
+}
+</style>
