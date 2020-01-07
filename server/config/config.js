@@ -9,7 +9,7 @@ module.exports = {
             dialect: process.env.DIALECT || 'mysql',
             // dialectModule: process.env.DIALECTMODULE || 'mysql2',
             host: process.env.HOST || 'localhost',
-            port: process.env.DB_PORT || 4306
+            port: process.env.DB_PORT || 4312
         }
         
     }

@@ -8,4 +8,4 @@ services:
       MYSQL_ROOT_PASSWORD: apptest123
       MYSQL_DATABASE: ERP
     ports:
-      - "4306:3306"
+      - "4312:3306"
