@@ -3,6 +3,7 @@ import VueRouter from 'vue-router'
 import Home from '../views/Home.vue'
 import NewEmployee from '../components/pages/NewEmployee.vue'
 import NewContract from '../components/pages/NewContract.vue'
+import Login from '../components/pages/Login.vue'
 
 Vue.use(VueRouter)
 
@@ -19,6 +20,14 @@ const routes = [
   {
     path: '/NewContract',
     component: NewContract
+  },
+  {
+    path: '/NewContract',
+    component: NewContract
+  },
+  {
+    path: '/Login',
+    component: Login
   },
 
   {

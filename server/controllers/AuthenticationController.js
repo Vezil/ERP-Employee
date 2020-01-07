@@ -11,5 +11,37 @@ module.exports = {
         error: 'This credenctials are incorrect'
         })
      }
-   }
+   },
+   async login(req,res){
+    try{
+    const {name,surname} = req.body
+    const user = await employee.findOne({
+      where:{
+        name:name
+      }
+    })
+    if(!user) {
+     return res.status(403).send({
+        error:'The login information was incorrect'
+      })
+    }
+    // const PasswordValid = password === employee.password
+    // if(!PasswordValid){
+    //   return res.status(403).send({
+    //     error:'The login information was incorrect'
+    //   })
+    // }
+    const userJson = employee.toJSON()
+    res.send({
+      user: userJson
+    })
+
+    } catch (err) {
+    res.status(500).send({
+    error: 'This credenctials are incorrect. Try Again!'
+    })
+ }
+//login naprawic 32 / password potem
+
+},
 }
