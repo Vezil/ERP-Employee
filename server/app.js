@@ -17,9 +17,9 @@ app.use(morgan('combine'))
 app.use(bodyParser.json())
 app.use(cors())
 
-app.get('/status',(req,res)=>{
+app.post('/create',(req,res)=>{
   res.send({
-    message:'test finished!'
+    message:`created. hello ! ${req.body.email}`
   })
 })
 
