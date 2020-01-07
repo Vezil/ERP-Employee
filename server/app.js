@@ -19,7 +19,7 @@ app.use(cors())
 
 app.post('/create',(req,res)=>{
   res.send({
-    message:`created. hello ! ${req.body.email}`
+    message:`created. hello ! ${req.body.surname}`
   })
 })
 
