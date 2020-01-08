@@ -1,22 +1,18 @@
 <template>
   <v-app class="grey">
     <div class="local_container">
-      <h1>Welcome to ERP <div v-if="$store.state.isLoggedIn"><b>{{$store.state.user.name +' '+ $store.state.user.surname}}!</b></div></h1>
-
-        <div v-if="$store.state.isLoggedIn"><admin-home/></div>
-
+      GET ALL USERS       
     </div>
   </v-app>
 </template>
 
 <script>
 
- import AdminHome from './AdminHome.vue'
 
 export default {
   name: 'home',
   components: {
-     AdminHome
+    // HelloWorld
   }
 }
 </script>

@@ -15,19 +15,18 @@ const routes = [
   },
   {
     path: '/NewEmployee',
-    component: NewEmployee
+    component: NewEmployee,
+    name: 'newEmployee'
   },
   {
     path: '/NewContract',
-    component: NewContract
-  },
-  {
-    path: '/NewContract',
-    component: NewContract
+    component: NewContract,
+    name: 'newContract'
   },
   {
     path: '/Login',
-    component: Login
+    component: Login,
+    name: 'login'
   },
 
   {

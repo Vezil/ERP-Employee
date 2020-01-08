@@ -38,6 +38,9 @@ export default {
           
           this.$store.dispatch('setToken', response.data.token)
           this.$store.dispatch('setUser', response.data.employee)
+          this.$router.push({
+           name: 'home'
+          })
 
        } catch (error){
         this.error = error.response.data.error

@@ -12,7 +12,7 @@
         <br>
         <div class="error" v-html="error"></div>
         <br>
-        <v-btn class="cyan" @click="create">Add</v-btn>
+        <v-btn class="cyan" >Add</v-btn>
       </div>
     </v-flex>
    </v-layout>
