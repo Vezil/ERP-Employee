@@ -4,15 +4,13 @@
      <v-flex xs6>
       <div class="container white elevation-3 form">
       <br>
-        <h2>Add New Employee</h2><br><br>
-        <v-text-field type="text" name="name" v-model="name" placeholder="Name" outlined solo-inverted></v-text-field><br>
-        <v-text-field type="text" name="surname" v-model="surname" placeholder="Surname" outlined solo-inverted></v-text-field><br/>
+        <h2>Login</h2><br><br>
         <v-text-field type="email" name="email" v-model="email" placeholder="Email" outlined solo-inverted></v-text-field><br>
-        <v-text-field type="date" name="birthdate" v-model="birthdate" placeholder="Date of birth" value="2018-07-22" outlined solo-inverted></v-text-field><br>
+        <v-text-field type="password" name="password" v-model="password" placeholder="Password" outlined solo-inverted></v-text-field><br>
         <br>
         <div class="error" v-html="error"></div>
         <br>
-        <v-btn class="cyan" @click="create">Add</v-btn>
+        <v-btn class="cyan" @click="login">Login</v-btn>
       </div>
     </v-flex>
    </v-layout>
@@ -25,28 +23,22 @@ export default {
   name: 'NewEmployee',
   data() {
     return{
-      name:'',
-      surname:'',
-      birthdate:'',
       email:'',
       password:'12345qwert',
       error: ''
     }
   },
   methods:{
-    async create() {
+    async login() {
       try {
-        const response = await AuthenticationService.create({
-            name:this.name,        
-            surname:this.surname,        
-            email:this.email,        
-            birthdate:this.birthdate,
-            password:'12345qwert'       
+        const response = await AuthenticationService.login({
+            email:this.email,     
+            password:'12345qwert'      
           })
           
           this.$store.dispatch('setToken', response.data.token)
           this.$store.dispatch('setUser', response.data.employee)
-          
+
        } catch (error){
         this.error = error.response.data.error
         console.log(error)

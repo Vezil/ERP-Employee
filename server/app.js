@@ -3,11 +3,30 @@ var express = require('express');
 var path = require('path');
 var cookieParser = require('cookie-parser');
 var logger = require('morgan');
+const cors = require('cors')
+const bodyParser = require('body-parser')
+const morgan = require('morgan')
+const {sequelize} = require('./models')
+const config = require('./config/config')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
+
 var app = express();
+app.use(morgan('combine'))
+app.use(bodyParser.json())
+app.use(cors())
+
+
+require('./routes')(app)
+
+sequelize.sync()
+  .then(()=>{
+    app.listen(config.port)
+    console.log(`Server started on port ${config.port}`)
+})
+
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -37,5 +56,11 @@ app.use(function(err, req, res, next) {
   res.status(err.status || 500);
   res.render('error');
 });
+
+
+// app.listen(process.env.PORT || 9001);
+
+
+
 
 module.exports = app;
