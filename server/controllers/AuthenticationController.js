@@ -1,8 +1,6 @@
 const {employee} = require('../models')
 const jwt = require('jsonwebtoken')
 const config = require("../config/config")
-const Promise = require('bluebird')
-const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'))
 
 function jwtSignEmployee(employee) {
   const ONE_DAY = 60 * 60 * 24
@@ -39,14 +37,7 @@ module.exports = {
       })
     }
   
-    //const PasswordValid = await user.comparePassword(password)
-
-    // console.log(user.password, password);
-
-     const passwordHash = user.password
-     const PasswordValid = await bcrypt.compareAsync(password, passwordHash)
-
-     console.log(PasswordValid);
+    const PasswordValid = await user.comparePassword(password)
 
     if(!PasswordValid){
       return res.status(403).send({
