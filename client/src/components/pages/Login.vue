@@ -7,7 +7,7 @@
         <h2>Login</h2><br><br>
         <v-text-field type="text" name="name" v-model="name" placeholder="Name" outlined solo-inverted></v-text-field><br>
         <v-text-field type="text" name="surname" v-model="surname" placeholder="Surname" outlined solo-inverted></v-text-field><br/>
-        <!-- <v-text-field type="password" name="password" v-model="password" placeholder="Password" outlined solo-inverted></v-text-field><br> -->
+        <v-text-field type="password" name="password" v-model="password" placeholder="Password" outlined solo-inverted></v-text-field><br>
         <br>
         <div class="error" v-html="error"></div>
         <br>
@@ -26,7 +26,7 @@ export default {
     return{
       name:'',
       surname:'',
-      // password:'',
+      password:'12345qwert',
       error: ''
     }
   },
@@ -36,7 +36,7 @@ export default {
         const response = await AuthenticationService.login({
             name:this.name,        
             surname:this.surname,        
-            // password:this.password       
+            password:'12345qwert'      
           })
        } catch (error){
         this.error = error.response.data.error

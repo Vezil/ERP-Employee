@@ -27,6 +27,7 @@ export default {
       name:'',
       surname:'',
       birthdate:'',
+      password:'12345qwert',
       error: ''
     }
   },
@@ -36,7 +37,8 @@ export default {
         const response = await AuthenticationService.create({
             name:this.name,        
             surname:this.surname,        
-            birthdate:this.birthdate        
+            birthdate:this.birthdate,
+            password:'12345qwert'       
           })
        } catch (error){
         this.error = error.response.data.error

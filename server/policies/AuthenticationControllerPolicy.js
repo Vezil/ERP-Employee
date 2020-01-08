@@ -5,7 +5,10 @@ module.exports = {
         const schema = {
             name: Joi.string(),
             surname: Joi.string(),
-            birthdate: Joi.date()
+            birthdate: Joi.date(),
+            password: Joi.string().regex(
+                new RegExp('^[a-zA-Z0-9]{8,32}$')
+              )
         }
 
         const{error,value} = Joi.validate(req.body,schema)
@@ -25,6 +28,11 @@ module.exports = {
                 case 'birthdate':
                 res.status(400).send({
                   error:'Error with birthdate'
+                })
+                break
+                case 'password':
+                res.status(400).send({
+                  error:'Error with password'
                 })
                 break
                 default:

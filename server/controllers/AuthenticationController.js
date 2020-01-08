@@ -24,7 +24,7 @@ module.exports = {
    async login(req,res){
     try{
       
-    const {name,surname} = req.body
+    const {name,surname,password} = req.body
     const user = await employee.findOne({
       where:{
         name:name,
@@ -37,14 +37,14 @@ module.exports = {
         error:'The login information was incorrect'
       })
     }
-    // const PasswordValid = password === employee.password
-    // if(!PasswordValid){
-    //   return res.status(403).send({
-    //     error:'The login information was incorrect'
-    //   })
-    // }
+  
+    const PasswordValid = password === user.password
 
-      console.log('heh')
+    if(!PasswordValid){
+      return res.status(403).send({
+        error:'The login information was incorrect pass'
+      })
+    }  
        const userJson = user.toJSON()
         
         res.send({

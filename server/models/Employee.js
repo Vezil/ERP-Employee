@@ -1,5 +1,8 @@
-module.exports = (sequelize, DataTypes) =>
-    sequelize.define('employee', {
+const Promise = require('bluebird')
+const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'))
+
+module.exports = (sequelize, DataTypes) =>{
+   const employee = sequelize.define('employee', {
         name:{
             type:DataTypes.STRING
         },
@@ -8,5 +11,9 @@ module.exports = (sequelize, DataTypes) =>
         },
         birthdate:{
             type:DataTypes.DATE
-        }
+        },
+        password: DataTypes.STRING
     })
+
+    return employee
+}
