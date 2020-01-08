@@ -1,6 +1,8 @@
 const {employee} = require('../models')
 const jwt = require('jsonwebtoken')
 const config = require("../config/config")
+const Promise = require('bluebird')
+const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'))
 
 function jwtSignEmployee(employee) {
   const ONE_DAY = 60 * 60 * 24
@@ -17,18 +19,17 @@ module.exports = {
 
         } catch (err) {
         res.status(400).send({
-        error: 'This credenctials are incorrect'
+        error: 'This credenctials are incorrect / email is already in use'
         })
      }
    },
    async login(req,res){
     try{
       
-    const {name,surname,password} = req.body
+    const {email,password} = req.body
     const user = await employee.findOne({
       where:{
-        name:name,
-        surname:surname
+        email:email
       }
     })
     
@@ -38,11 +39,18 @@ module.exports = {
       })
     }
   
-    const PasswordValid = password === user.password
+    //const PasswordValid = await user.comparePassword(password)
+
+    // console.log(user.password, password);
+
+     const passwordHash = user.password
+     const PasswordValid = await bcrypt.compareAsync(password, passwordHash)
+
+     console.log(PasswordValid);
 
     if(!PasswordValid){
       return res.status(403).send({
-        error:'The login information was incorrect pass'
+        error:'The login information was incorrect pass '
       })
     }  
        const userJson = user.toJSON()

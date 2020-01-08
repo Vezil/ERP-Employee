@@ -5,6 +5,7 @@ module.exports = {
         const schema = {
             name: Joi.string(),
             surname: Joi.string(),
+            email: Joi.string().email(),
             birthdate: Joi.date(),
             password: Joi.string().regex(
                 new RegExp('^[a-zA-Z0-9]{8,32}$')
