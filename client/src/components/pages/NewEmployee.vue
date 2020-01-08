@@ -8,7 +8,7 @@
         <v-text-field type="text" name="name" v-model="name" placeholder="Name" outlined solo-inverted></v-text-field><br>
         <v-text-field type="text" name="surname" v-model="surname" placeholder="Surname" outlined solo-inverted></v-text-field><br/>
         <v-text-field type="email" name="email" v-model="email" placeholder="Email" outlined solo-inverted></v-text-field><br>
-        <v-text-field type="date" name="birthdate" v-model="birthdate" placeholder="Date of birth" value="2018-07-22" outlined solo-inverted></v-text-field><br>
+        <v-text-field type="text" onfocus="(this.type='date')" name="birthdate" v-model="birthdate" placeholder="Date of birth" value="2018-07-22" outlined solo-inverted></v-text-field><br>
         <br>
         <div class="error" v-html="error"></div>
         <br>
@@ -63,5 +63,6 @@ margin-top:2%;
 text-align: center;
 padding:20px;
 background-color: aqua;
+max-width: 1100px;
 }
 </style>
