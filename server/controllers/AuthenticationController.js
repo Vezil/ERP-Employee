@@ -1,4 +1,13 @@
 const {employee} = require('../models')
+const jwt = require('jsonwebtoken')
+const config = require("../config/config")
+
+function jwtSignEmployee(employee) {
+  const ONE_DAY = 60 * 60 * 24
+  return jwt.sign(employee, config.authentication.jwtSecret,{
+    expiresIn: ONE_DAY
+  })
+}
 
 module.exports = {
     async create(req,res){
@@ -14,12 +23,15 @@ module.exports = {
    },
    async login(req,res){
     try{
+      
     const {name,surname} = req.body
     const user = await employee.findOne({
       where:{
-        name:name
+        name:name,
+        surname:surname
       }
     })
+    
     if(!user) {
      return res.status(403).send({
         error:'The login information was incorrect'
@@ -31,17 +43,21 @@ module.exports = {
     //     error:'The login information was incorrect'
     //   })
     // }
-    const userJson = employee.toJSON()
-    res.send({
-      user: userJson
-    })
 
+      console.log('heh')
+       const userJson = user.toJSON()
+        
+        res.send({
+          employee: userJson,
+          token: jwtSignEmployee(userJson)
+        })
     } catch (err) {
     res.status(500).send({
     error: 'This credenctials are incorrect. Try Again!'
     })
- }
-//login naprawic 32 / password potem
+  }
 
-},
+
+ },
+
 }
