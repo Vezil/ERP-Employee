@@ -1,7 +1,7 @@
 import Api from '@/services/Api'
 
 export default {
-    getAllEmployees(){
+    getAllEmployees() {
         return Api().get('allEmployees')
     }
 }

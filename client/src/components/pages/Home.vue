@@ -31,5 +31,9 @@ export default {
     margin: auto;
     text-align: center;
     color: rgb(8, 1, 1);
+    padding: 50px;
+}
+.local_container h1 {
+    padding: 80px;
 }
 </style>
