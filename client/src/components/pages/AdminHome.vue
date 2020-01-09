@@ -93,8 +93,12 @@ export default {
                 { text: 'Surname', value: 'surname', sortable: false },
                 { text: 'Date of birth', value: 'birthdate', sortable: false },
                 { text: 'Email', value: 'email', sortable: false },
-                { text: 'Contract', value: 'contract', sortable: false },
-                { text: 'Days Left', value: 'daysoff', sortable: false },
+                {
+                    text: 'Contract (on month)',
+                    value: 'contract',
+                    sortable: false
+                },
+                { text: 'Days Off (left)', value: 'daysoff', sortable: false },
                 { text: 'Actions', value: 'action', sortable: false }
             ],
             editedIndex: -1,

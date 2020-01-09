@@ -4,7 +4,7 @@
             <h1>
                 Welcome to ERP
                 <div v-if="$store.state.isLoggedIn">
-                    <b>{{$store.state.user.name +' '+ $store.state.user.surname}}!</b>
+                    <b>{{$store.state.user.name}}!</b>
                 </div>
             </h1>
 
