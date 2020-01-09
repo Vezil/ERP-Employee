@@ -53,7 +53,7 @@ export default {
                     email: this.email,
                     password: '12345qwert'
                 });
-
+                console.log(process.env.TEST);
                 this.$store.dispatch('setToken', response.data.token);
                 this.$store.dispatch('setUser', response.data.employee);
                 this.$router.push({

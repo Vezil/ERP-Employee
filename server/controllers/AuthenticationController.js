@@ -58,20 +58,5 @@ module.exports = {
 
 
   },
-  //  async getAll(req,res){
-  //   try{
-  //     // const {email,password} = req.body
-  //     const user = await employee.for({
-  //       where:{
-  //         email:email
-  //       }
-  //     })
-
-  //   } catch (err) {
-  //   res.status(400).send({
-  //   error: ''
-  //   })
-  // }
-  // },
 
 }
