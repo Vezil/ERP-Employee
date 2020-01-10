@@ -43,12 +43,12 @@
                                                     label="Email"
                                                 ></v-text-field>
                                             </v-col>
-                                            <!-- <v-col cols="12" sm="6" md="4">
+                                            <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
-                                                    v-model="editedItem.contract"
-                                                    label="Contract"
+                                                    v-model="editedItem.password"
+                                                    label="Password"
                                                 ></v-text-field>
-                                            </v-col>-->
+                                            </v-col>
                                         </v-row>
                                     </v-container>
                                 </v-card-text>
@@ -106,7 +106,8 @@ export default {
                 name: '',
                 surname: '',
                 birthdate: '',
-                email: ''
+                email: '',
+                password: ''
                 // contract: '',
                 // daysoff: ''
             },
@@ -114,7 +115,8 @@ export default {
                 name: '',
                 surname: '',
                 birthdate: '',
-                email: ''
+                email: '',
+                password: ''
                 // contract: '',
                 // daysoff: ''
             }
@@ -125,7 +127,7 @@ export default {
     },
     computed: {
         formTitle() {
-            return this.editedIndex === -1 ? 'New Item' : 'Edit Item';
+            return this.editedIndex === -1 ? 'New Employee' : 'Edit Employee';
         }
     },
 
@@ -165,7 +167,16 @@ export default {
             } else {
                 this.employees.push(this.editedItem);
             }
+            console.log(this.editedItem);
+            this.createEmployee(this.editedItem);
             this.close();
+        },
+        async createEmployee(employee) {
+            try {
+                await AdminServices.addNewEmployee(employee);
+            } catch (err) {
+                console.error(err);
+            }
         }
     }
 };

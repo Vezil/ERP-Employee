@@ -15,4 +15,16 @@ module.exports = {
       })
     }
   },
+  async addEmployee(req, res) {
+
+    try {
+      const newEmployee = await employee.create(req.body)
+      res.send(newEmployee)
+    }
+    catch (err) {
+      res.status(500).send({
+        error: 'Something went wrong'
+      })
+    }
+  }
 }

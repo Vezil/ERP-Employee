@@ -1,10 +1,12 @@
+require('dotenv').config()
 import Api from '@/services/Api'
 
+
 export default {
-    create(credentials){
+    create(credentials) {
         return Api().post('create', credentials)
     },
-    login(credentials){
+    login(credentials) {
         return Api().post('login', credentials)
     },
 }
