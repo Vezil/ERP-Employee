@@ -64,6 +64,8 @@
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
+                                                    type="password"
+                                                    name="password"
                                                     v-model="editedItem.password"
                                                     label="Password"
                                                     required
@@ -188,13 +190,13 @@ export default {
             if (this.editedIndex > -1) {
                 Object.assign(
                     this.employees[this.editedIndex],
-                    this.editedItem
+                    this.editedItem,
+                    this.updateEmployee(this.editedItem)
                 );
             } else {
                 this.employees.push(this.editedItem);
+                this.createEmployee(this.editedItem);
             }
-            // console.log(this.editedItem);
-            this.createEmployee(this.editedItem);
             if (!this.error) {
                 this.close();
             }
@@ -210,6 +212,28 @@ export default {
             }
             try {
                 await AdminServices.addNewEmployee(employee);
+            } catch (err) {
+                console.error(err);
+            }
+        },
+        async updateEmployee(employee) {
+            const areAll = Object.keys(employee).every(key => !!employee[key]);
+            if (!areAll) {
+                this.error = 'All fields are required !';
+                return;
+            }
+            if (areAll) {
+                this.error = null;
+            }
+            try {
+                const employeeClearUpdate = {
+                    id: employee.id,
+                    email: employee.email,
+                    name: employee.name,
+                    surname: employee.surname,
+                    birthdate: employee.birthdate
+                };
+                await AdminServices.updateEmployee(employee);
             } catch (err) {
                 console.error(err);
             }

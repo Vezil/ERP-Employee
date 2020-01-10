@@ -9,7 +9,8 @@ export default {
         return Api().post('addEmployee', employee)
     },
     updateEmployee(employee) {
-        return Api().put(`Employees/${employee.id}`, employee)
+        console.log(employee)
+        return Api().put(`employees/${employee.id}`, employee)
     },
 
 }
