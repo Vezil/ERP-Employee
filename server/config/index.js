@@ -8,6 +8,7 @@ module.exports = {
         user: process.env.DB_USER,
         password: process.env.DB_PASS,
         host: process.env.HOST,
+        // logging: console.log,
         options: {
             dialect: process.env.DIALECT,
             dialectModule: process.env.DIALECTMODULE,

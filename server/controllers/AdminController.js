@@ -2,7 +2,7 @@ const { employee } = require('../models')
 
 
 module.exports = {
-  async allEmployees(req, res) {
+  async Employees(req, res) {
     try {
       const getEmployee = await employee.findAll({
         // limit: 10
@@ -11,7 +11,7 @@ module.exports = {
 
     } catch (err) {
       res.status(500).send({
-        error: 'Something went wrong'
+        error: 'Something went wrong with getting employees'
       })
     }
   },
@@ -23,8 +23,38 @@ module.exports = {
     }
     catch (err) {
       res.status(500).send({
-        error: 'Something went wrong'
+        error: 'Something went wrong with adding this employee'
       })
     }
-  }
+  },
+  async oneEmployee(req, res) {
+
+    console.log(req.params.id)
+
+    try {
+      const one = await employee.findByPk(req.params.id)
+      res.send(one)
+
+    } catch (err) {
+      res.status(500).send({
+        error: 'Something went wrong with id of this employee '
+      })
+    }
+  },
+  async updateEmployee(req, res) {
+    try {
+      const one = await employee.update(req.body, {
+        where: {
+          id: req.params.id
+        }
+      })
+      res.send(req.body)
+
+    } catch (err) {
+      res.status(500).send({
+        error: 'Something went wrong with update this employee'
+      })
+    }
+  },
+
 }
