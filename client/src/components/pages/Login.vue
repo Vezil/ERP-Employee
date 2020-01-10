@@ -26,7 +26,7 @@
                     ></v-text-field>
                     <br />
                     <br />
-                    <div class="error" v-html="error"></div>
+                    <div class="error" v-if="error"></div>
                     <br />
                     <v-btn class="cyan" @click="login">Login</v-btn>
                 </div>
@@ -43,7 +43,7 @@ export default {
         return {
             email: '',
             password: '12345qwert',
-            error: ''
+            error: null
         };
     },
     methods: {

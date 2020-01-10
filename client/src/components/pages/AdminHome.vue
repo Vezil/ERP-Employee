@@ -24,35 +24,54 @@
                                         <v-row>
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
+                                                    type="text"
+                                                    name="name"
                                                     v-model="editedItem.name"
                                                     label="Name"
+                                                    required
+                                                    :rules="[required]"
                                                 ></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
+                                                    type="text"
+                                                    name="surname"
                                                     v-model="editedItem.surname"
                                                     label="Surname"
+                                                    required
+                                                    :rules="[required]"
                                                 ></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
+                                                    type="text"
+                                                    onfocus="(this.type='date')"
                                                     v-model="editedItem.birthdate"
                                                     label="Birthdate"
+                                                    required
+                                                    :rules="[required]"
                                                 ></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
+                                                    type="email"
+                                                    name="email"
                                                     v-model="editedItem.email"
                                                     label="Email"
+                                                    required
+                                                    :rules="[required]"
                                                 ></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
                                                     v-model="editedItem.password"
                                                     label="Password"
+                                                    required
+                                                    :rules="[required]"
                                                 ></v-text-field>
                                             </v-col>
                                         </v-row>
+                                        <div class="error" v-if="error">{{error}}</div>
                                     </v-container>
                                 </v-card-text>
 
@@ -86,6 +105,7 @@ export default {
         return {
             employees: [],
             dialog: false,
+            newPass: false,
             headers: [
                 {
                     text: 'Name',
@@ -109,8 +129,8 @@ export default {
                 name: '',
                 surname: '',
                 birthdate: '',
-                email: '',
-                password: ''
+                email: ''
+                // password: ''
                 // contract: '',
                 // daysoff: ''
             },
@@ -118,11 +138,13 @@ export default {
                 name: '',
                 surname: '',
                 birthdate: '',
-                email: '',
-                password: ''
+                email: ''
+                // password: ''
                 // contract: '',
                 // daysoff: ''
-            }
+            },
+            error: null,
+            required: value => !!value || 'Required.'
         };
     },
     async mounted() {
@@ -154,6 +176,7 @@ export default {
         },
 
         close() {
+            this.error = null;
             this.dialog = false;
             setTimeout(() => {
                 this.editedItem = Object.assign({}, this.defaultItem);
@@ -170,11 +193,21 @@ export default {
             } else {
                 this.employees.push(this.editedItem);
             }
-            console.log(this.editedItem);
+            // console.log(this.editedItem);
             this.createEmployee(this.editedItem);
-            this.close();
+            if (!this.error) {
+                this.close();
+            }
         },
         async createEmployee(employee) {
+            const areAll = Object.keys(employee).every(key => !!employee[key]);
+            if (!areAll) {
+                this.error = 'All fields are required !';
+                return;
+            }
+            if (areAll) {
+                this.error = null;
+            }
             try {
                 await AdminServices.addNewEmployee(employee);
             } catch (err) {
@@ -185,10 +218,8 @@ export default {
 };
 </script>
 <style>
-/* .local_container {
-    margin-left: auto;
-    margin: auto;
-    text-align: center;
-    color: rgb(8, 1, 1);
-} */
+.error {
+    padding: 12px;
+    color: black;
+}
 </style>

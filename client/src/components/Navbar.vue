@@ -26,10 +26,7 @@
                 </v-btn>
             </router-link>
             <router-link v-if="!$store.state.isLoggedIn" to="Login">
-                <v-btn color="blue darken-3" class="mx-2">
-                    Login
-                    <v-icon>forward</v-icon>
-                </v-btn>
+                <v-btn color="blue darken-3" class="mx-2">Login</v-btn>
             </router-link>
             <v-btn
                 v-if="$store.state.isLoggedIn"

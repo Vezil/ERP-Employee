@@ -49,7 +49,7 @@
                     ></v-text-field>
                     <br />
                     <br />
-                    <div class="error" v-html="error"></div>
+                    <div class="error" v-if="error"></div>
                     <br />
                     <v-btn class="cyan">Add</v-btn>
                 </div>
@@ -67,7 +67,7 @@ export default {
             start: '',
             duration: '',
             vacation: '',
-            error: ''
+            error: null
         };
     }
 };
