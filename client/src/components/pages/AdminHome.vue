@@ -151,6 +151,13 @@ export default {
     },
     async mounted() {
         this.employees = (await AdminServices.getAllEmployees()).data;
+
+        this.employees.forEach(employee => {
+            let newBirthdate = employee.birthdate;
+            newBirthdate = newBirthdate.slice(0, 10);
+
+            employee.birthdate = newBirthdate;
+        });
     },
     computed: {
         formTitle() {
@@ -174,7 +181,8 @@ export default {
         deleteItem(item) {
             const index = this.employees.indexOf(item);
             confirm('Are you sure you want to delete this employee?') &&
-                this.employees.splice(index, 1) && this.deleteEmployee(item);
+                this.employees.splice(index, 1) &&
+                this.deleteEmployee(item);
         },
 
         close() {

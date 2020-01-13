@@ -7,6 +7,8 @@ import dotenv from 'dotenv'
 
 dotenv.config()
 
+Vue.use(require('vue-moment'));
+
 Vue.config.productionTip = false
 
 new Vue({
