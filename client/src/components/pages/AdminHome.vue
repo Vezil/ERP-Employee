@@ -174,7 +174,7 @@ export default {
         deleteItem(item) {
             const index = this.employees.indexOf(item);
             confirm('Are you sure you want to delete this employee?') &&
-                this.employees.splice(index, 1);
+                this.employees.splice(index, 1) && this.deleteEmployee(item);
         },
 
         close() {
@@ -234,6 +234,13 @@ export default {
                     birthdate: employee.birthdate
                 };
                 await AdminServices.updateEmployee(employee);
+            } catch (err) {
+                console.error(err);
+            }
+        },
+        async deleteEmployee(employee) {
+            try {
+                await AdminServices.deleteEmployee(employee);
             } catch (err) {
                 console.error(err);
             }
