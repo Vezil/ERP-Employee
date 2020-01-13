@@ -1,6 +1,6 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
+import Home from '../components/pages/Home.vue'
 import NewEmployee from '../components/pages/NewEmployee.vue'
 import NewContract from '../components/pages/NewContract.vue'
 import Login from '../components/pages/Login.vue'
@@ -15,19 +15,18 @@ const routes = [
   },
   {
     path: '/NewEmployee',
-    component: NewEmployee
+    component: NewEmployee,
+    name: 'newEmployee'
   },
   {
     path: '/NewContract',
-    component: NewContract
-  },
-  {
-    path: '/NewContract',
-    component: NewContract
+    component: NewContract,
+    name: 'newContract'
   },
   {
     path: '/Login',
-    component: Login
+    component: Login,
+    name: 'login'
   },
 
   {

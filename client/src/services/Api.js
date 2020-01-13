@@ -1,7 +1,9 @@
+require('dotenv').config()
 import axios from 'axios'
+
 
 export default () => {
     return axios.create({
-        baseURL: `http://localhost:9001/`
+        baseURL: process.env.VUE_APP_SERVER_URL
     })
 }

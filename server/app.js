@@ -6,12 +6,11 @@ var logger = require('morgan');
 const cors = require('cors')
 const bodyParser = require('body-parser')
 const morgan = require('morgan')
-const {sequelize} = require('./models')
-const config = require('./config/config')
+const { sequelize } = require('./models')
+const config = require('./config')
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
-
 
 var app = express();
 app.use(morgan('combine'))
@@ -22,10 +21,10 @@ app.use(cors())
 require('./routes')(app)
 
 sequelize.sync()
-  .then(()=>{
+  .then(() => {
     app.listen(config.port)
     console.log(`Server started on port ${config.port}`)
-})
+  })
 
 
 // view engine setup
@@ -42,12 +41,14 @@ app.use('/', indexRouter);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
   next(createError(404));
 });
 
 // error handler
-app.use(function(err, req, res, next) {
+
+app.use(function (err, req, res, next) {
+  console.log(err);
   // set locals, only providing error in development
   res.locals.message = err.message;
   res.locals.error = req.app.get('env') === 'development' ? err : {};
