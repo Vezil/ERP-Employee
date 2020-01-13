@@ -4,9 +4,9 @@ module.exports = {
   up: function (queryInterface, Sequelize) {
     return queryInterface.bulkInsert('contracts', [
       {
-        length: 1,
+        contract: 12,
         start_date: '2019-11-11',
-        finish_date: '2019-12-11',
+        finish_date: '2020-11-11',
         createdAt: new Date(),
         updatedAt: new Date(),
         employeeId: 6,

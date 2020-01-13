@@ -8,6 +8,12 @@ module.exports = {
         primaryKey: true,
         type: Sequelize.INTEGER
       },
+      start_date: {
+        type: Sequelize.DATE
+      },
+      finish_date: {
+        type: Sequelize.DATE
+      },
       days_left: {
         type: Sequelize.STRING
       },
