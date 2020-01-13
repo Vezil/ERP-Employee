@@ -13,12 +13,6 @@
                     <v-icon>home</v-icon>
                 </v-btn>
             </router-link>
-            <router-link v-if="$store.state.isLoggedIn" to="NewEmployee">
-                <v-btn color="blue darken-3" class="mx-2">
-                    Add Employee
-                    <v-icon>add</v-icon>
-                </v-btn>
-            </router-link>
             <router-link v-if="$store.state.isLoggedIn" to="NewContract">
                 <v-btn color="blue darken-3" class="mx-2">
                     Add Contract

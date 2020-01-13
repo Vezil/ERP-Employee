@@ -106,6 +106,7 @@ export default {
     data() {
         return {
             employees: [],
+            holidays: [],
             dialog: false,
             newPass: false,
             headers: [
@@ -118,7 +119,6 @@ export default {
                 { text: 'Surname', value: 'surname', sortable: false },
                 { text: 'Date of birth', value: 'birthdate', sortable: false },
                 { text: 'Email', value: 'email', sortable: false },
-
                 { text: 'Days Off (left)', value: 'daysoff', sortable: false },
                 { text: 'Actions', value: 'action', sortable: false }
             ],
@@ -127,19 +127,15 @@ export default {
                 name: '',
                 surname: '',
                 birthdate: '',
-                email: ''
-                // password: ''
-                // contract: '',
-                // daysoff: ''
+                email: '',
+                daysoff: ''
             },
             defaultItem: {
                 name: '',
                 surname: '',
                 birthdate: '',
-                email: ''
-                // password: ''
-                // contract: '',
-                // daysoff: ''
+                email: '',
+                daysoff: ''
             },
             error: null,
             required: value => !!value || 'Required.'
@@ -147,6 +143,16 @@ export default {
     },
     async mounted() {
         this.employees = (await AdminServices.getAllEmployees()).data;
+        this.holidays = (await AdminServices.getHolidays()).data;
+
+        this.holidays.forEach(freeday => {
+            this.employees.forEach(employee => {
+                if (freeday.employeeId === employee.id) {
+                    // console.log(freeday.employeeId);
+                    employee.daysoff = freeday.days_left;
+                }
+            });
+        });
 
         this.employees.forEach(employee => {
             let newBirthdate = employee.birthdate;

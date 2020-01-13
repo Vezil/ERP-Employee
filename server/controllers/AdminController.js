@@ -1,4 +1,4 @@
-const { employee } = require('../models')
+const { employee, holidays, contracts } = require('../models')
 
 
 module.exports = {
@@ -30,7 +30,9 @@ module.exports = {
   async oneEmployee(req, res) {
 
     try {
-      const one = await employee.findByPk(req.params.id)
+      const one = await employee.findOne({
+        where: { email: req.params.email }
+      })
       res.send(one)
 
     } catch (err) {
@@ -86,6 +88,43 @@ module.exports = {
 
       res.status(500).send({
         error: 'Something went wrong with deleting this employee'
+      })
+    }
+  },
+
+  async getHolidays(req, res, next) {
+    try {
+      const allHolidays = await holidays.findAll();
+      res.send(allHolidays)
+    } catch (err) {
+      res.status(500).send({
+
+        error: 'Something went wrong with getting holidays ' + err
+
+      })
+    }
+  },
+  async addContract(req, res) {
+
+    try {
+      const newContract = await contracts.create(req.body)
+      res.send(newContract)
+    }
+    catch (err) {
+      res.status(500).send({
+        error: 'Something went wrong with adding this contract'
+      })
+    }
+  },
+  async addHolidays(req, res) {
+
+    try {
+      const newHolidays = await holidays.create(req.body)
+      res.send(newHolidays)
+    }
+    catch (err) {
+      res.status(500).send({
+        error: 'Something went wrong with adding this contract'
       })
     }
   },

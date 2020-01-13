@@ -20,8 +20,18 @@
                         type="text"
                         onfocus="(this.type='date')"
                         name="start"
-                        v-model="start"
+                        v-model="newContract.start_date"
                         placeholder="Date of start contract"
+                        outlined
+                        solo-inverted
+                    ></v-text-field>
+                    <br />
+                    <v-text-field
+                        type="text"
+                        onfocus="(this.type='date')"
+                        name="finish"
+                        v-model="newContract.finish_date"
+                        placeholder="Date of finish contract"
                         outlined
                         solo-inverted
                     ></v-text-field>
@@ -29,7 +39,7 @@
                     <v-text-field
                         type="number"
                         name="duration"
-                        v-model="duration"
+                        v-model="newContract.contract"
                         placeholder="Duration of the contract (in month)"
                         outlined
                         solo-inverted
@@ -40,7 +50,7 @@
                     <v-text-field
                         type="number"
                         name="vacation"
-                        v-model="vacation"
+                        v-model="newHolidays.days_left"
                         placeholder="Vacation days"
                         outlined
                         solo-inverted
@@ -51,7 +61,7 @@
                     <br />
                     <div class="error" v-if="error"></div>
                     <br />
-                    <v-btn class="cyan">Add</v-btn>
+                    <v-btn class="cyan" @click="getThisEmployee(email)">Add</v-btn>
                 </div>
             </v-flex>
         </v-layout>
@@ -59,16 +69,59 @@
 </template>
 
 <script>
+import { METHODS } from 'http';
+import AdminServices from '../../services/AdminService';
 export default {
     name: 'NewContract',
     data() {
         return {
             email: '',
-            start: '',
-            duration: '',
-            vacation: '',
+            newContract: {
+                contract: '',
+                start_date: '',
+                finish_date: '',
+                employeeId: ''
+            },
+            newHolidays: {
+                days_left: '',
+                start_date: null,
+                finish_date: null,
+                employeeId: ''
+            },
+
             error: null
         };
+    },
+    methods: {
+        async getThisEmployee(email) {
+            try {
+                const emailFromResponse = await AdminServices.getOneEmployee(
+                    email
+                );
+                const id = emailFromResponse.data.id;
+                this.newContract.employeeId = id;
+                this.newHolidays.employeeId = id;
+
+                this.createContract(this.newContract);
+                this.createHolidays(this.newHolidays);
+            } catch (err) {
+                console.error(err);
+            }
+        },
+        async createContract(contract) {
+            try {
+                await AdminServices.addContract(contract);
+            } catch (err) {
+                console.error(err);
+            }
+        },
+        async createHolidays(holidays) {
+            try {
+                await AdminServices.addHolidays(holidays);
+            } catch (err) {
+                console.error(err);
+            }
+        }
     }
 };
 </script>
