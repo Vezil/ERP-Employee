@@ -37,6 +37,11 @@ module.exports = (sequelize, DataTypes) => {
         }
     })
 
+    employee.associate = function (models) {
+        employee.hasMany(models.contracts);
+
+    };
+
     employee.prototype.comparePassword = function (password) {
 
         console.log(password, this.password)
