@@ -144,12 +144,16 @@ export default {
     async mounted() {
         this.employees = (await AdminServices.getAllEmployees()).data;
         this.holidays = (await AdminServices.getHolidays()).data;
-
+        // daysoff init
+        this.employees.forEach(employee => {
+            employee.daysoff = 0;
+        });
+        //daysoff sum
         this.holidays.forEach(freeday => {
             this.employees.forEach(employee => {
                 if (freeday.employeeId === employee.id) {
-                    // console.log(freeday.employeeId);
-                    employee.daysoff = freeday.days_left;
+                    employee.daysoff += freeday.days_left;
+                    // console.log(freeday.days_left);
                 }
             });
         });

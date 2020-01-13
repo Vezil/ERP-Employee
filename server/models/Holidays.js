@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
 
   const Holidays = sequelize.define('holidays', {
     days_left: {
-      type: DataTypes.STRING,
+      type: DataTypes.INTEGER,
     },
     start_date: {
       type: DataTypes.DATE,
