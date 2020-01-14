@@ -35,5 +35,12 @@ export default {
     getAllContracts() {
         return Api().get('contracts')
     },
+    updateContract(contract) {
+        return Api().put(`contracts/${contract.id}`, contract)
+    },
+
+    deleteContract(contract) {
+        return Api().delete(`contracts/${contract.id}`, contract)
+    },
 
 }

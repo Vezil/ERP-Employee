@@ -196,7 +196,7 @@ module.exports = {
         })
       }
 
-      // await one.destroy()
+      await one.destroy()
 
       res.send(one)
 

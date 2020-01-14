@@ -19,6 +19,12 @@
                     <v-icon>add</v-icon>
                 </v-btn>
             </router-link>
+            <router-link v-if="$store.state.isLoggedIn" to="Holidays">
+                <v-btn color="blue darken-3" class="mx-2">
+                    Holidays
+                    <v-icon>add</v-icon>
+                </v-btn>
+            </router-link>
             <router-link v-if="!$store.state.isLoggedIn" to="Login">
                 <v-btn color="blue darken-3" class="mx-2">Login</v-btn>
             </router-link>

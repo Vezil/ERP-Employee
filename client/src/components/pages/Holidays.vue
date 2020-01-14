@@ -1,16 +1,16 @@
 <template>
     <v-app class="grey">
         <div class="container">
-            <v-data-table :headers="headers" :items="contracts" class="elevation-1" dark>
+            <v-data-table :headers="headers" :items="holidays" class="elevation-1" dark>
                 <template v-slot:top>
                     <v-toolbar flat dark>
-                        <v-toolbar-title>Contracts</v-toolbar-title>
+                        <v-toolbar-title>Holidays</v-toolbar-title>
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-spacer></v-spacer>
                         <v-dialog v-model="dialog" max-width="500px">
                             <template v-slot:activator="{ on }">
                                 <v-btn color="primary" dark class="mb-2" v-on="on">
-                                    New Contract
+                                    New Holidays
                                     <v-icon>add</v-icon>
                                 </v-btn>
                             </template>
@@ -94,10 +94,10 @@
 import { METHODS } from 'http';
 import AdminServices from '../../services/AdminService';
 export default {
-    name: 'Contracts',
+    name: 'Holidays',
     data() {
         return {
-            contracts: [],
+            holidays: [],
             employees: [],
             employee: [],
             dialog: false,
@@ -119,8 +119,8 @@ export default {
                     sortable: false
                 },
                 {
-                    text: 'Contract for (months)',
-                    value: 'contract',
+                    text: 'Days taken',
+                    value: 'days_taken',
                     sortable: false
                 },
                 {
@@ -138,7 +138,7 @@ export default {
             editedIndex: -1,
             editedItem: {
                 email: '',
-                contract: '',
+                days_taken: '',
                 start_date: '',
                 finish_date: '',
                 employeeId: ''
@@ -146,37 +146,37 @@ export default {
 
             newContract: {
                 email: '',
-                contract: '',
+                days_taken: '',
                 start_date: '',
                 finish_date: '',
                 employeeId: ''
             },
-            holidays: {
-                days_left: '',
-                id: ''
-            },
-            holidays_before: '',
 
             required: value => !!value || 'Required.',
             error: null
         };
     },
     async mounted() {
-        this.contracts = (await AdminServices.getAllContracts()).data;
+        this.holidays = (await AdminServices.getHolidays()).data;
         this.employees = (await AdminServices.getAllEmployees()).data;
-
-        this.contracts.forEach(contract => {
-            this.getThisEmployee(contract, contract.employeeId);
+        console.log(this.holidays);
+        this.holidays.forEach(holidaysEL => {
+            this.getThisEmployee(holidaysEL, holidaysEL.employeeId);
         });
 
-        this.contracts.forEach(contract => {
-            let newStartDate = contract.start_date;
+        this.holidays.forEach(holidaysEL => {
+            let newStartDate = holidaysEL.start_date;
             newStartDate = newStartDate.slice(0, 10);
-            contract.start_date = newStartDate;
+            holidaysEL.start_date = newStartDate;
 
-            let newFinishDate = contract.finish_date;
+            let newFinishDate = holidaysEL.finish_date;
             newFinishDate = newFinishDate.slice(0, 10);
-            contract.finish_date = newFinishDate;
+            holidaysEL.finish_date = newFinishDate;
+            let sum = Date.parse(newFinishDate) - Date.parse(newStartDate);
+            sum /= 100000;
+            sum /= 864;
+            console.log(sum);
+            // console.log(sum);
         });
 
         let i = 0;
@@ -199,12 +199,14 @@ export default {
         }
     },
     methods: {
-        async getThisEmployee(contract, id) {
+        async getThisEmployee(holidaysEL, id) {
             try {
                 const person = await AdminServices.getOneEmployee(id);
-                (contract.name = person.data.name),
-                    (contract.surname = person.data.surname),
-                    (contract.email = person.data.email);
+                (holidaysEL.name = person.data.name),
+                    (holidaysEL.surname = person.data.surname),
+                    (holidaysEL.email = person.data.email);
+
+                console.log(holidaysEL);
             } catch (err) {
                 console.error(err);
             }
