@@ -47,11 +47,11 @@ module.exports = {
         }
       })
 
-      // if (!one) {
-      //   return res.status(403).send({
-      //     error: `This employee doesn't exist`
-      //   })
-      // }
+      if (!one) {
+        return res.status(403).send({
+          error: `This employee doesn't exist`
+        })
+      }
 
       res.send(req.body)
 
@@ -159,6 +159,51 @@ module.exports = {
     } catch (err) {
       res.status(500).send({
         error: 'Something went wrong with getting employees'
+      })
+    }
+  },
+
+  async updateContract(req, res, next) {
+    try {
+      await contracts.update(req.body, {
+        where: {
+          id: req.params.id
+        }
+      })
+
+      res.send(req.body)
+
+    } catch (err) {
+      console.log(req.body)
+      res.status(500).send({
+        error: 'Something went wrong with updating this contract'
+      })
+    }
+  },
+
+  async deleteContract(req, res, next) {
+
+    try {
+      const one = await contracts.findOne({
+        where: {
+          id: req.params.id
+        }
+      })
+
+      if (!one) {
+        return res.status(403).send({
+          error: `This employee doesn't exist`
+        })
+      }
+
+      // await one.destroy()
+
+      res.send(one)
+
+    } catch (err) {
+
+      res.status(500).send({
+        error: 'Something went wrong with deleting this employee'
       })
     }
   },
