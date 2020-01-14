@@ -21,7 +21,12 @@
 
                                 <v-card-text>
                                     <v-container>
-                                        <v-select v-bind:items="employee"></v-select>
+                                        <v-select
+                                            v-bind:items="employee"
+                                            v-model="editedItem.email"
+                                            required
+                                            :rules="[required]"
+                                        ></v-select>
                                         <v-row>
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
@@ -123,18 +128,15 @@ export default {
             ],
             editedIndex: -1,
             editedItem: {
-                // name: '',
-                // surname: '',
-                // email: '',
+                email: '',
                 contract: '',
                 start_date: '',
-                finish_date: ''
+                finish_date: '',
+                employeeId: ''
             },
 
             newContract: {
-                // name: '',
-                // surname: '',
-                // email: '',
+                email: '',
                 contract: '',
                 start_date: '',
                 finish_date: '',
@@ -156,11 +158,10 @@ export default {
         let i = 0;
         this.employees.forEach(one => {
             this.employee[i] =
-                '' + one.name + ' ' + one.surname + '  |  ' + one.email + '';
+                // '' + one.name + ' ' + one.surname + '  |  ' +
+                one.email;
             i++;
         });
-
-        console.log(this.employee);
     },
     computed: {
         formTitle() {
@@ -215,8 +216,16 @@ export default {
                     // this.updateContract(this.editedItem)
                 );
             } else {
+                this.employees.forEach(employee => {
+                    if (this.editedItem.email == employee.email) {
+                        this.editedItem.employeeId = employee.id;
+                    }
+                });
+
                 this.contracts.push(this.editedItem);
+                delete this.editedItem.email;
                 this.createContract(this.editedItem);
+                console.log(this.editedItem);
             }
             if (!this.error) {
                 this.close();

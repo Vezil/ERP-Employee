@@ -102,7 +102,7 @@ module.exports = {
       })
     }
   },
-  async addContract(req, res) {
+  async addContract(req, res, next) {
 
     try {
       const newContract = await contracts.create(req.body)
@@ -114,7 +114,7 @@ module.exports = {
       })
     }
   },
-  async addHolidays(req, res) {
+  async addHolidays(req, res, next) {
 
     try {
       const newHolidays = await holidays.create(req.body)
@@ -126,7 +126,7 @@ module.exports = {
       })
     }
   },
-  async getContracts(req, res) {
+  async getContracts(req, res, next) {
 
     try {
       const Contracts = await contracts.findAll({
@@ -141,4 +141,26 @@ module.exports = {
     }
 
   },
+  async oneEmployeeThroughEmail(req, res, next) {
+    try {
+
+      const one = await employee.findOne({
+        where: {
+          email: req.params.email
+        }
+      })
+      res.send(one)
+
+      if (!user) {
+        return res.status(403).send({
+          error: 'The email was incorrect'
+        })
+      }
+    } catch (err) {
+      res.status(500).send({
+        error: 'Something went wrong with getting employees'
+      })
+    }
+  },
+
 }
