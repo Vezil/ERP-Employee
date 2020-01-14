@@ -58,6 +58,15 @@
                                                     :rules="[required]"
                                                 ></v-text-field>
                                             </v-col>
+                                            <v-col cols="12" sm="6" md="4" v-if="editedIndex == -1">
+                                                <v-text-field
+                                                    type="number"
+                                                    v-model="holidays.days_left"
+                                                    label="Holidays"
+                                                    required
+                                                    :rules="[required]"
+                                                ></v-text-field>
+                                            </v-col>
                                         </v-row>
                                         <div class="error" v-if="error">{{error}}</div>
                                     </v-container>
@@ -142,6 +151,11 @@ export default {
                 finish_date: '',
                 employeeId: ''
             },
+            holidays: {
+                days_left: '',
+                id: ''
+            },
+            holidays_before: '',
 
             required: value => !!value || 'Required.',
             error: null
@@ -153,6 +167,16 @@ export default {
 
         this.contracts.forEach(contract => {
             this.getThisEmployee(contract, contract.employeeId);
+        });
+
+        this.contracts.forEach(contract => {
+            let newStartDate = contract.start_date;
+            newStartDate = newStartDate.slice(0, 10);
+            contract.start_date = newStartDate;
+
+            let newFinishDate = contract.finish_date;
+            newFinishDate = newFinishDate.slice(0, 10);
+            contract.finish_date = newFinishDate;
         });
 
         let i = 0;
@@ -223,17 +247,42 @@ export default {
                 });
 
                 this.contracts.push(this.editedItem);
+
                 delete this.editedItem.email;
                 this.createContract(this.editedItem);
-                console.log(this.editedItem);
+                this.holidays.id = this.editedItem.employeeId;
+
+                this.getDaysLeftBefore(this.holidays.id);
+                this.createHolidays(this.holidays);
             }
             if (!this.error) {
                 this.close();
             }
         },
+        async getDaysLeftBefore(id) {
+            try {
+                const thisPerson = await AdminServices.getOneEmployee(id);
+                this.holidays_before = thisPerson.data.days_left;
+                this.holidays.days_left = parseInt(this.holidays.days_left);
+                this.holidays_before = parseInt(this.holidays_before);
+                this.holidays.days_left += this.holidays_before;
+            } catch (err) {
+                console.error(err);
+            }
+        },
         async createContract(contract) {
             try {
                 await AdminServices.addContract(contract);
+            } catch (err) {
+                console.error(err);
+            }
+        },
+        async createHolidays(holidays) {
+            try {
+                console.log(holidays.days_left);
+                await AdminServices.updateEmployee(holidays);
+                console.log(holidays.days_left);
+                await AdminServices.updateEmployee(holidays);
             } catch (err) {
                 console.error(err);
             }
