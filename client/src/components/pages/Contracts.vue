@@ -1,16 +1,16 @@
 <template>
     <v-app class="grey">
         <div class="container">
-            <v-data-table :headers="headers" :items="employees" class="elevation-1" dark>
+            <v-data-table :headers="headers" :items="contracts" class="elevation-1" dark>
                 <template v-slot:top>
                     <v-toolbar flat dark>
-                        <v-toolbar-title>Your Employees</v-toolbar-title>
+                        <v-toolbar-title>Contracts</v-toolbar-title>
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-spacer></v-spacer>
                         <v-dialog v-model="dialog" max-width="500px">
                             <template v-slot:activator="{ on }">
                                 <v-btn color="primary" dark class="mb-2" v-on="on">
-                                    New Employee
+                                    New Contract
                                     <v-icon>add</v-icon>
                                 </v-btn>
                             </template>
@@ -25,9 +25,9 @@
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
                                                     type="text"
-                                                    name="name"
+                                                    name="contract"
                                                     v-model="editedItem.name"
-                                                    label="Name"
+                                                    label="Contract"
                                                     required
                                                     :rules="[required]"
                                                 ></v-text-field>
@@ -35,9 +35,29 @@
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
                                                     type="text"
-                                                    name="surname"
+                                                    name="contract"
                                                     v-model="editedItem.surname"
-                                                    label="Surname"
+                                                    label="Contract"
+                                                    required
+                                                    :rules="[required]"
+                                                ></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="4">
+                                                <v-text-field
+                                                    type="text"
+                                                    name="contract"
+                                                    v-model="editedItem.email"
+                                                    label="Contract"
+                                                    required
+                                                    :rules="[required]"
+                                                ></v-text-field>
+                                            </v-col>
+                                            <v-col cols="12" sm="6" md="4">
+                                                <v-text-field
+                                                    type="text"
+                                                    name="contract"
+                                                    v-model="editedItem.contract"
+                                                    label="Contract"
                                                     required
                                                     :rules="[required]"
                                                 ></v-text-field>
@@ -46,28 +66,18 @@
                                                 <v-text-field
                                                     type="text"
                                                     onfocus="(this.type='date')"
-                                                    v-model="editedItem.birthdate"
-                                                    label="Birthdate"
+                                                    v-model="editedItem.start_date"
+                                                    label="Start Day"
                                                     required
                                                     :rules="[required]"
                                                 ></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
-                                                    type="email"
-                                                    name="email"
-                                                    v-model="editedItem.email"
-                                                    label="Email"
-                                                    required
-                                                    :rules="[required]"
-                                                ></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" sm="6" md="4">
-                                                <v-text-field
-                                                    type="password"
-                                                    name="password"
-                                                    v-model="editedItem.password"
-                                                    label="Password"
+                                                    type="text"
+                                                    onfocus="(this.type='date')"
+                                                    v-model="editedItem.finish_date"
+                                                    label="Finish Day"
                                                     required
                                                     :rules="[required]"
                                                 ></v-text-field>
@@ -96,32 +106,44 @@
 </template>
 
 <script>
+import { METHODS } from 'http';
 import AdminServices from '../../services/AdminService';
-
 export default {
-    name: 'adminhome',
-    components: {
-        // HelloWorld
-    },
+    name: 'Contracts',
     data() {
         return {
-            employees: [],
-            holidays: [],
+            contracts: [],
             dialog: false,
             newPass: false,
             headers: [
                 {
                     text: 'Name',
-                    align: 'left',
-                    sortable: false,
-                    value: 'name'
+                    value: 'name',
+                    sortable: false
                 },
-                { text: 'Surname', value: 'surname', sortable: false },
-                { text: 'Date of birth', value: 'birthdate', sortable: false },
-                { text: 'Email', value: 'email', sortable: false },
                 {
-                    text: 'Days Off (left)',
-                    value: 'days_left',
+                    text: 'Surname',
+                    value: 'surname',
+                    sortable: false
+                },
+                {
+                    text: 'Email',
+                    value: 'email',
+                    sortable: false
+                },
+                {
+                    text: 'Contract for (months)',
+                    value: 'contract',
+                    sortable: false
+                },
+                {
+                    text: 'Start date of contrant',
+                    value: 'start_date',
+                    sortable: false
+                },
+                {
+                    text: 'Finish date of contrant',
+                    value: 'finish_date',
                     sortable: false
                 },
                 { text: 'Actions', value: 'action', sortable: false }
@@ -130,31 +152,40 @@ export default {
             editedItem: {
                 name: '',
                 surname: '',
-                birthdate: '',
-                email: ''
-                // days_left: ''
+                email: '',
+                contract: '',
+                start_date: '',
+                finish_date: ''
             },
-            defaultItem: {
+
+            newContract: {
                 name: '',
                 surname: '',
-                birthdate: '',
-                email: ''
-                // days_left: ''
+                email: '',
+                contract: '',
+                start_date: '',
+                finish_date: '',
+                employeeId: ''
             },
-            error: null,
-            required: value => !!value || 'Required.'
+            // newHolidays: {
+            //     days_left: '',
+            //     start_date: null,
+            //     finish_date: null,
+            //     employeeId: ''
+            // },
+
+            required: value => !!value || 'Required.',
+            error: null
         };
     },
     async mounted() {
-        this.employees = (await AdminServices.getAllEmployees()).data;
-        this.holidays = (await AdminServices.getHolidays()).data;
+        this.contracts = (await AdminServices.getAllContracts()).data;
 
-        this.employees.forEach(employee => {
-            let newBirthdate = employee.birthdate;
-            newBirthdate = newBirthdate.slice(0, 10);
-
-            employee.birthdate = newBirthdate;
+        this.contracts.forEach(contract => {
+            this.getThisEmployee(contract, contract.employeeId);
         });
+
+        console.log(this.contracts);
     },
     computed: {
         formTitle() {
@@ -167,95 +198,33 @@ export default {
             val || this.close();
         }
     },
-
     methods: {
-        editItem(item) {
-            this.editedIndex = this.employees.indexOf(item);
-            this.editedItem = Object.assign({}, item);
-            this.dialog = true;
-        },
-
-        deleteItem(item) {
-            const index = this.employees.indexOf(item);
-            confirm('Are you sure you want to delete this employee?') &&
-                this.employees.splice(index, 1) &&
-                this.deleteEmployee(item);
-        },
-
-        close() {
-            this.error = null;
-            this.dialog = false;
-            setTimeout(() => {
-                this.editedItem = Object.assign({}, this.defaultItem);
-                this.editedIndex = -1;
-            }, 300);
-        },
-
-        save() {
-            if (this.editedIndex > -1) {
-                Object.assign(
-                    this.employees[this.editedIndex],
-                    this.editedItem,
-                    this.updateEmployee(this.editedItem)
-                );
-            } else {
-                this.employees.push(this.editedItem);
-                this.createEmployee(this.editedItem);
-            }
-            if (!this.error) {
-                this.close();
-            }
-        },
-        async createEmployee(employee) {
-            const areAll = Object.keys(employee).every(key => !!employee[key]);
-            if (!areAll) {
-                this.error = 'All fields are required !';
-                return;
-            }
-            if (areAll) {
-                this.error = null;
-            }
+        async getThisEmployee(contract, id) {
             try {
-                await AdminServices.addNewEmployee(employee);
+                const person = await AdminServices.getOneEmployee(id);
+                (contract.name = person.data.name),
+                    (contract.surname = person.data.surname),
+                    (contract.email = person.data.email);
             } catch (err) {
                 console.error(err);
             }
         },
-        async updateEmployee(employee) {
-            const areAll = Object.keys(employee).every(key => !!employee[key]);
-            if (!areAll) {
-                this.error = 'All fields are required !';
-                return;
-            }
-            if (areAll) {
-                this.error = null;
-            }
+        async createContract(contract) {
             try {
-                const employeeClearUpdate = {
-                    id: employee.id,
-                    email: employee.email,
-                    name: employee.name,
-                    surname: employee.surname,
-                    birthdate: employee.birthdate
-                };
-                await AdminServices.updateEmployee(employee);
-            } catch (err) {
-                console.error(err);
-            }
-        },
-        async deleteEmployee(employee) {
-            try {
-                await AdminServices.deleteEmployee(employee);
+                await AdminServices.addContract(contract);
             } catch (err) {
                 console.error(err);
             }
         }
+        // async createHolidays(holidays) {
+        //     try {
+        //         await AdminServices.addHolidays(holidays);
+        //     } catch (err) {
+        //         console.error(err);
+        //     }
+        // }
     }
 };
 </script>
-<style>
-.error {
-    padding: 12px;
-    color: black;
-}
+<style scoped>
 </style>

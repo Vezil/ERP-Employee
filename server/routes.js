@@ -8,11 +8,12 @@ module.exports = (app) => {
     app.post('/login', AuthenticationController.login)
     app.post('/addEmployee', AdminController.addEmployee)
     app.get('/employees', AdminController.Employees)
-    app.get('/employees/:email', AdminController.oneEmployee)
+    app.get('/employees/:id', AdminController.oneEmployee)
     app.put('/employees/:id', AdminController.updateEmployee)
     app.delete('/employees/:id', AdminController.deleteEmployee)
 
     app.get('/holidays', AdminController.getHolidays)
+    app.get('/contracts', AdminController.getContracts)
     app.post('/contracts', AdminController.addContract)
     app.post('/holidays', AdminController.addHolidays)
 

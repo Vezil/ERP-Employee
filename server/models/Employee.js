@@ -33,6 +33,9 @@ module.exports = (sequelize, DataTypes) => {
         password: {
             type: DataTypes.STRING
         },
+        days_left: {
+            type: DataTypes.INTEGER
+        }
     }, {
         hooks: {
             beforeSave: hashPassword

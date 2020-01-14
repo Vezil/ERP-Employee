@@ -30,9 +30,7 @@ module.exports = {
   async oneEmployee(req, res) {
 
     try {
-      const one = await employee.findOne({
-        where: { email: req.params.email }
-      })
+      const one = await employee.findByPk(req.params.id)
       res.send(one)
 
     } catch (err) {
@@ -128,5 +126,19 @@ module.exports = {
       })
     }
   },
+  async getContracts(req, res) {
 
+    try {
+      const Contracts = await contracts.findAll({
+        // limit: 10
+      })
+      res.send(Contracts)
+
+    } catch (err) {
+      res.status(500).send({
+        error: 'Something went wrong with getting employees'
+      })
+    }
+
+  },
 }

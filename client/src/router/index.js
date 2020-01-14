@@ -1,7 +1,7 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
 import Home from '../components/pages/Home.vue'
-import NewContract from '../components/pages/NewContract.vue'
+import Contracts from '../components/pages/Contracts.vue'
 import Login from '../components/pages/Login.vue'
 
 Vue.use(VueRouter)
@@ -13,9 +13,9 @@ const routes = [
     component: Home
   },
   {
-    path: '/NewContract',
-    component: NewContract,
-    name: 'newContract'
+    path: '/Contracts',
+    component: Contracts,
+    name: 'contracts'
   },
   {
     path: '/Login',

@@ -18,8 +18,8 @@ export default {
         return Api().delete(`employees/${employee.id}`, employee)
     },
 
-    getOneEmployee(email) {
-        return Api().get(`employees/${email}`)
+    getOneEmployee(id) {
+        return Api().get(`employees/${id}`)
     },
 
     getHolidays() {
@@ -31,6 +31,9 @@ export default {
     },
     addHolidays(holidays) {
         return Api().post('holidays', holidays)
+    },
+    getAllContracts() {
+        return Api().get('contracts')
     },
 
 }
