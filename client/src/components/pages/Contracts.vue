@@ -21,37 +21,8 @@
 
                                 <v-card-text>
                                     <v-container>
+                                        <v-select v-bind:items="employee"></v-select>
                                         <v-row>
-                                            <v-col cols="12" sm="6" md="4">
-                                                <v-text-field
-                                                    type="text"
-                                                    name="contract"
-                                                    v-model="editedItem.name"
-                                                    label="Contract"
-                                                    required
-                                                    :rules="[required]"
-                                                ></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" sm="6" md="4">
-                                                <v-text-field
-                                                    type="text"
-                                                    name="contract"
-                                                    v-model="editedItem.surname"
-                                                    label="Contract"
-                                                    required
-                                                    :rules="[required]"
-                                                ></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" sm="6" md="4">
-                                                <v-text-field
-                                                    type="text"
-                                                    name="contract"
-                                                    v-model="editedItem.email"
-                                                    label="Contract"
-                                                    required
-                                                    :rules="[required]"
-                                                ></v-text-field>
-                                            </v-col>
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
                                                     type="text"
@@ -113,6 +84,8 @@ export default {
     data() {
         return {
             contracts: [],
+            employees: [],
+            employee: [],
             dialog: false,
             newPass: false,
             headers: [
@@ -150,29 +123,23 @@ export default {
             ],
             editedIndex: -1,
             editedItem: {
-                name: '',
-                surname: '',
-                email: '',
+                // name: '',
+                // surname: '',
+                // email: '',
                 contract: '',
                 start_date: '',
                 finish_date: ''
             },
 
             newContract: {
-                name: '',
-                surname: '',
-                email: '',
+                // name: '',
+                // surname: '',
+                // email: '',
                 contract: '',
                 start_date: '',
                 finish_date: '',
                 employeeId: ''
             },
-            // newHolidays: {
-            //     days_left: '',
-            //     start_date: null,
-            //     finish_date: null,
-            //     employeeId: ''
-            // },
 
             required: value => !!value || 'Required.',
             error: null
@@ -180,16 +147,24 @@ export default {
     },
     async mounted() {
         this.contracts = (await AdminServices.getAllContracts()).data;
+        this.employees = (await AdminServices.getAllEmployees()).data;
 
         this.contracts.forEach(contract => {
             this.getThisEmployee(contract, contract.employeeId);
         });
 
-        console.log(this.contracts);
+        let i = 0;
+        this.employees.forEach(one => {
+            this.employee[i] =
+                '' + one.name + ' ' + one.surname + '  |  ' + one.email + '';
+            i++;
+        });
+
+        console.log(this.employee);
     },
     computed: {
         formTitle() {
-            return this.editedIndex === -1 ? 'New Employee' : 'Edit Employee';
+            return this.editedIndex === -1 ? 'New Contract' : 'Edit Contract';
         }
     },
 
@@ -209,6 +184,44 @@ export default {
                 console.error(err);
             }
         },
+
+        editItem(item) {
+            this.editedIndex = this.contracts.indexOf(item);
+            this.editedItem = Object.assign({}, item);
+            this.dialog = true;
+        },
+
+        deleteItem(item) {
+            const index = this.contracts.indexOf(item);
+            confirm('Are you sure you want to delete this contract?') &&
+                this.contracts.splice(index, 1) &&
+                this.deleteContract(item);
+        },
+
+        close() {
+            this.error = null;
+            this.dialog = false;
+            setTimeout(() => {
+                this.editedItem = Object.assign({}, this.defaultItem);
+                this.editedIndex = -1;
+            }, 300);
+        },
+
+        save() {
+            if (this.editedIndex > -1) {
+                Object.assign(
+                    this.contracts[this.editedIndex],
+                    this.editedItem
+                    // this.updateContract(this.editedItem)
+                );
+            } else {
+                this.contracts.push(this.editedItem);
+                this.createContract(this.editedItem);
+            }
+            if (!this.error) {
+                this.close();
+            }
+        },
         async createContract(contract) {
             try {
                 await AdminServices.addContract(contract);
@@ -216,13 +229,6 @@ export default {
                 console.error(err);
             }
         }
-        // async createHolidays(holidays) {
-        //     try {
-        //         await AdminServices.addHolidays(holidays);
-        //     } catch (err) {
-        //         console.error(err);
-        //     }
-        // }
     }
 };
 </script>

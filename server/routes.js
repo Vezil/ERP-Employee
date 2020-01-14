@@ -12,9 +12,11 @@ module.exports = (app) => {
     app.put('/employees/:id', AdminController.updateEmployee)
     app.delete('/employees/:id', AdminController.deleteEmployee)
 
-    app.get('/holidays', AdminController.getHolidays)
+
     app.get('/contracts', AdminController.getContracts)
     app.post('/contracts', AdminController.addContract)
+
+    app.get('/holidays', AdminController.getHolidays)
     app.post('/holidays', AdminController.addHolidays)
 
 
