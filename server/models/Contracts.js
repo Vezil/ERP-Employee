@@ -8,7 +8,7 @@ module.exports = (sequelize, DataTypes) => {
   }, {});
   Contracts.associate = function (models) {
 
-    Contracts.belongsTo(models.employee, { foreignKey: 'employeeId' });
+    Contracts.belongsTo(models.employee, { as: 'employee', foreignKey: 'employeeId' });
 
 
   };

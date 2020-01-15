@@ -126,7 +126,7 @@ module.exports = {
 
     try {
       const Contracts = await contracts.findAll({
-        // limit: 10
+        include: [{ model: employee, as: 'employee' }]
       })
       res.send(Contracts)
 

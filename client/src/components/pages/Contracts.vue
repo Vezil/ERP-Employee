@@ -165,18 +165,16 @@ export default {
         this.contracts = (await AdminServices.getAllContracts()).data;
         this.employees = (await AdminServices.getAllEmployees()).data;
 
-        this.contracts.forEach(contract => {
-            this.getThisEmployee(contract, contract.employeeId);
-        });
+        for (const contract of this.contracts) {
+            contract.name = contract.employee.name;
+            contract.surname = contract.employee.surname;
+            contract.email = contract.employee.email;
+        }
 
-        this.contracts.forEach(contract => {
-            let newStartDate = contract.start_date;
-            newStartDate = newStartDate.slice(0, 10);
-            contract.start_date = newStartDate;
-
-            let newFinishDate = contract.finish_date;
-            newFinishDate = newFinishDate.slice(0, 10);
-            contract.finish_date = newFinishDate;
+        this.contracts = this.contracts.map(item => {
+            item.start_date = item.start_date.slice(0, 10);
+            item.finish_date = item.finish_date.slice(0, 10);
+            return item;
         });
 
         let i = 0;
