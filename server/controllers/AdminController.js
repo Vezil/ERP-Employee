@@ -204,4 +204,23 @@ module.exports = {
     }
   },
 
+  async updateHolidays(req, res, next) {
+    try {
+      await holidays.update(req.body, {
+        where: {
+          id: req.params.id
+        }
+      })
+
+      res.send(req.body)
+
+    } catch (err) {
+      console.log(req.body)
+      res.status(500).send({
+        error: 'Something went wrong with updating holidays ' + err
+      })
+    }
+  },
+
+
 }

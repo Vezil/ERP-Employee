@@ -227,8 +227,6 @@ export default {
                     console.log(this.editedItem);
 
                     this.createHolidays(this.editedItem);
-                    this.editedItem.name = 'sss';
-                    this.editedItem.surname = 'sss';
                     this.holidays.push(this.editedItem);
                 }
             }
