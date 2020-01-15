@@ -92,7 +92,9 @@ module.exports = {
 
   async getHolidays(req, res, next) {
     try {
-      const allHolidays = await holidays.findAll();
+      const allHolidays = await holidays.findAll({
+        include: [{ model: employee, as: 'employee' }]
+      });
       res.send(allHolidays)
     } catch (err) {
       res.status(500).send({

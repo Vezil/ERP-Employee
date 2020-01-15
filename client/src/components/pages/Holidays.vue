@@ -83,6 +83,8 @@ export default {
             employee: [],
             dialog: false,
             newPass: false,
+            days_left: null,
+            error_validation: null,
             headers: [
                 {
                     text: 'Name',
@@ -143,19 +145,20 @@ export default {
         this.holidays = (await AdminServices.getHolidays()).data;
         this.employees = (await AdminServices.getAllEmployees()).data;
 
-        this.holidays.forEach(holidaysEL => {
-            this.getThisEmployee(holidaysEL, holidaysEL.employeeId);
+        for (const holiday of this.holidays) {
+            this.getThisEmployee(holiday, holiday.employeeId);
+        }
+
+        // this.holidays.forEach(holidaysEL => {});
+
+        this.holidays = this.holidays.map(item => {
+            item.start_date = item.start_date.slice(0, 10);
+            item.finish_date = item.finish_date.slice(0, 10);
+
+            return item;
         });
 
-        this.holidays.forEach(holidaysEL => {
-            let newStartDate = holidaysEL.start_date;
-            newStartDate = newStartDate.slice(0, 10);
-            holidaysEL.start_date = newStartDate;
-
-            let newFinishDate = holidaysEL.finish_date;
-            newFinishDate = newFinishDate.slice(0, 10);
-            holidaysEL.finish_date = newFinishDate;
-        });
+        console.log(this.holidays.slice()[0].name);
 
         let i = 0;
         this.employees.forEach(one => {
@@ -224,27 +227,59 @@ export default {
                     }
                 });
 
-                this.holidays.push(this.editedItem);
-
                 this.SumDaysTaken(
                     this.editedItem.start_date,
                     this.editedItem.finish_date
                 );
+                this.updateDaysLeft(
+                    this.editedItem.days_taken,
+                    this.editedItem.employeeId
+                );
 
-                console.log(this.holidays);
-                this.newHolidays(this.editedItem);
-                console.log(this.holidays);
+                if (this.error_validation !== null) {
+                    this.holidays.push(this.editedItem);
+                    this.newHolidays(this.editedItem);
+                }
             }
             if (!this.error) {
                 this.close();
             }
         },
         SumDaysTaken(start_date, finish_date) {
-            //dodawanie-fun//
             let sum = Date.parse(finish_date) - Date.parse(start_date);
             sum /= 100000;
             sum /= 864;
             this.editedItem.days_taken = sum;
+        },
+        async updateDaysLeft(days_taken, id) {
+            try {
+                const thisPerson = await AdminServices.getOneEmployee(id);
+                this.days_left = thisPerson.data.days_left;
+                const new_days =
+                    thisPerson.data.days_left - parseInt(days_taken);
+
+                if (new_days > 0) {
+                    this.days_left = new_days;
+                    const update = {
+                        id: id,
+                        days_left: new_days
+                    };
+                    try {
+                        await AdminServices.updateEmployee(update);
+                    } catch (err) {
+                        console.error(err);
+                    }
+                } else {
+                    this.error_validation =
+                        "THIS EMPLOYEE DON'T HAVE " +
+                        days_taken +
+                        ' FREE DAYS, ONLY ' +
+                        this.days_left;
+                    console.error(this.error_validation);
+                }
+            } catch (err) {
+                console.error(err);
+            }
         },
 
         async newHolidays(holidays) {
