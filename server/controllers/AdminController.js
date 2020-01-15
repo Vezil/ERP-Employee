@@ -222,5 +222,32 @@ module.exports = {
     }
   },
 
+  async deleteHolidays(req, res, next) {
+
+    try {
+      const one = await holidays.findOne({
+        where: {
+          id: req.params.id
+        }
+      })
+
+      if (!one) {
+        return res.status(403).send({
+          error: `This employee doesn't exist`
+        })
+      }
+
+      await one.destroy()
+
+      res.send(one)
+
+    } catch (err) {
+
+      res.status(500).send({
+        error: 'Something went wrong with deleting this employee'
+      })
+    }
+  },
+
 
 }

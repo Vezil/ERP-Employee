@@ -107,12 +107,12 @@ export default {
                     sortable: false
                 },
                 {
-                    text: 'Start date of contract',
+                    text: 'Start date of the Holidays',
                     value: 'start_date',
                     sortable: false
                 },
                 {
-                    text: 'Finish date of contract',
+                    text: 'Finish date of the Holidays',
                     value: 'finish_date',
                     sortable: false
                 },
@@ -124,6 +124,7 @@ export default {
                 name: '',
                 surname: '',
                 days_taken: '',
+                days_taken_old: '',
                 start_date: '',
                 finish_date: '',
                 confirmed: 1,
@@ -179,16 +180,18 @@ export default {
     },
     methods: {
         editItem(item) {
-            this.editedIndex = this.contracts.indexOf(item);
+            this.editedIndex = this.holidays.indexOf(item);
             this.editedItem = Object.assign({}, item);
             this.dialog = true;
         },
 
         deleteItem(item) {
-            const index = this.contracts.indexOf(item);
+            const index = this.holidays.indexOf(item);
+            this.editedIndex = this.holidays.indexOf(item);
+            this.editedItem = Object.assign({}, item);
             confirm('Are you sure you want to delete this contract?') &&
-                this.contracts.splice(index, 1) &&
-                this.deleteContract(item);
+                this.holidays.splice(index, 1) &&
+                this.deleteHolidays(item);
         },
 
         close() {
@@ -202,10 +205,20 @@ export default {
 
         save() {
             if (this.editedIndex > -1) {
+                this.SumDaysTaken(
+                    this.editedItem.start_date,
+                    this.editedItem.finish_date
+                );
+                this.updateDaysLeft(
+                    this.editedItem.days_taken,
+                    this.editedItem.employeeId,
+                    'editing'
+                );
                 Object.assign(
-                    this.contracts[this.editedIndex],
+                    this.holidays[this.editedIndex],
                     this.editedItem,
-                    this.updateContract(this.editedItem)
+
+                    this.updateHolidays(this.editedItem)
                 );
             } else {
                 this.employees.forEach(employee => {
@@ -220,7 +233,8 @@ export default {
                 );
                 this.updateDaysLeft(
                     this.editedItem.days_taken,
-                    this.editedItem.employeeId
+                    this.editedItem.employeeId,
+                    'adding'
                 );
 
                 if (this.error_validation == null) {
@@ -238,16 +252,29 @@ export default {
             let sum = Date.parse(finish_date) - Date.parse(start_date);
             sum /= 100000;
             sum /= 864;
+            this.editedItem.days_taken_old = this.editedItem.days_taken;
             this.editedItem.days_taken = sum;
         },
-        async updateDaysLeft(days_taken, id) {
+        async updateDaysLeft(days_taken, id, option) {
             try {
                 const thisPerson = await AdminServices.getOneEmployee(id);
                 this.days_left = thisPerson.data.days_left;
-                const new_days =
-                    thisPerson.data.days_left - parseInt(days_taken);
+                var new_days;
+                if (option === 'deleting') {
+                    new_days = thisPerson.data.days_left + parseInt(days_taken);
+                } else if (option === 'adding') {
+                    new_days = thisPerson.data.days_left - parseInt(days_taken);
+                } else if (option === 'editing') {
+                    let cashe_days =
+                        thisPerson.data.days_left +
+                        parseInt(this.editedItem.days_taken_old);
+                    new_days = cashe_days - parseInt(days_taken);
+                } else {
+                    console.log('error');
+                }
+                console.log(new_days);
 
-                if (new_days > 0) {
+                if (new_days >= 0) {
                     this.days_left = new_days;
                     const update = {
                         id: id,
@@ -279,8 +306,8 @@ export default {
             }
         },
 
-        async updateContract(contract) {
-            const areAll = Object.keys(contract).every(key => !!contract[key]);
+        async updateHolidays(holidays) {
+            const areAll = Object.keys(holidays).every(key => !!holidays[key]);
             if (!areAll) {
                 this.error = 'All fields are required !';
                 return;
@@ -289,14 +316,23 @@ export default {
                 this.error = null;
             }
             try {
-                await AdminServices.updateContract(contract);
+                await AdminServices.updateHolidays(holidays);
             } catch (err) {
                 console.error(err);
             }
         },
-        async deleteContract(contract) {
+        async deleteHolidays(holidays) {
             try {
-                await AdminServices.deleteContract(contract);
+                this.SumDaysTaken(
+                    this.editedItem.start_date,
+                    this.editedItem.finish_date
+                );
+                this.updateDaysLeft(
+                    this.editedItem.days_taken,
+                    this.editedItem.employeeId,
+                    'deleting'
+                );
+                await AdminServices.deleteHolidays(holidays);
             } catch (err) {
                 console.error(err);
             }

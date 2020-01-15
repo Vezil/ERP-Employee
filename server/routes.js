@@ -24,6 +24,7 @@ module.exports = (app) => {
     app.get('/holidays', AdminController.getHolidays)
     app.post('/holidays', AdminController.addHolidays)
     app.put('/holidays/:id', AdminController.updateHolidays)
+    app.delete('/holidays/:id', AdminController.deleteHolidays)
 
 
 

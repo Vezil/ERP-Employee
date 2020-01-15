@@ -45,5 +45,11 @@ export default {
     newHolidays(holidays) {
         return Api().post(`holidays/${holidays.id}`, holidays)
     },
+    updateHolidays(holidays) {
+        return Api().put(`holidays/${holidays.id}`, holidays)
+    },
+    deleteHolidays(holidays) {
+        return Api().delete(`holidays/${holidays.id}`, holidays)
+    }
 
 }

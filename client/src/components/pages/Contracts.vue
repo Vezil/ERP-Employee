@@ -124,12 +124,12 @@ export default {
                     sortable: false
                 },
                 {
-                    text: 'Start date of contract',
+                    text: 'Start date of the contract',
                     value: 'start_date',
                     sortable: false
                 },
                 {
-                    text: 'Finish date of contract',
+                    text: 'Finish date of the contract',
                     value: 'finish_date',
                     sortable: false
                 },
