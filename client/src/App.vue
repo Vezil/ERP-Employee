@@ -1,27 +1,29 @@
 <template>
-  <v-app>
-      <Navbar/>
-      <router-view/>
-  </v-app>
+    <v-app>
+        <Navbar />
+        <v-content>
+            <router-view />
+        </v-content>
+    </v-app>
 </template>
 
 <script>
 import Navbar from './components/Navbar';
 
 export default {
-  name: 'App',
+    name: 'App',
 
-  components: {
-    Navbar,
-  },
+    components: {
+        Navbar
+    },
 
-  data: () => ({
-    //
-  }),
+    data: () => ({
+        //
+    })
 };
 </script>
 <style>
-:root{
-  background-color: black;
+:root {
+    background-color: black;
 }
 </style>
