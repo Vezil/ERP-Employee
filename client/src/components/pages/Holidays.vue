@@ -121,6 +121,8 @@ export default {
             editedIndex: -1,
             editedItem: {
                 email: '',
+                name: '',
+                surname: '',
                 days_taken: '',
                 start_date: '',
                 finish_date: '',
@@ -129,7 +131,6 @@ export default {
             },
 
             newContract: {
-                email: '',
                 days_taken: '',
                 start_date: '',
                 finish_date: '',
@@ -146,19 +147,16 @@ export default {
         this.employees = (await AdminServices.getAllEmployees()).data;
 
         for (const holiday of this.holidays) {
-            this.getThisEmployee(holiday, holiday.employeeId);
+            holiday.name = holiday.employee.name;
+            holiday.surname = holiday.employee.surname;
+            holiday.email = holiday.employee.email;
         }
-
-        // this.holidays.forEach(holidaysEL => {});
 
         this.holidays = this.holidays.map(item => {
             item.start_date = item.start_date.slice(0, 10);
             item.finish_date = item.finish_date.slice(0, 10);
-
             return item;
         });
-
-        console.log(this.holidays.slice()[0].name);
 
         let i = 0;
         this.employees.forEach(one => {
@@ -180,17 +178,6 @@ export default {
         }
     },
     methods: {
-        async getThisEmployee(holidaysEL, id) {
-            try {
-                const person = await AdminServices.getOneEmployee(id);
-                (holidaysEL.name = person.data.name),
-                    (holidaysEL.surname = person.data.surname),
-                    (holidaysEL.email = person.data.email);
-            } catch (err) {
-                console.error(err);
-            }
-        },
-
         editItem(item) {
             this.editedIndex = this.contracts.indexOf(item);
             this.editedItem = Object.assign({}, item);
@@ -236,9 +223,13 @@ export default {
                     this.editedItem.employeeId
                 );
 
-                if (this.error_validation !== null) {
+                if (this.error_validation == null) {
+                    console.log(this.editedItem);
+
+                    this.createHolidays(this.editedItem);
+                    this.editedItem.name = 'sss';
+                    this.editedItem.surname = 'sss';
                     this.holidays.push(this.editedItem);
-                    this.newHolidays(this.editedItem);
                 }
             }
             if (!this.error) {
@@ -282,23 +273,14 @@ export default {
             }
         },
 
-        async newHolidays(holidays) {
+        async createHolidays(holidays) {
             try {
                 await AdminServices.addHolidays(holidays);
             } catch (err) {
                 console.error(err);
             }
         },
-        async createHolidays(holidays) {
-            try {
-                console.log(holidays.days_left);
-                await AdminServices.updateEmployee(holidays);
-                console.log(holidays.days_left);
-                await AdminServices.updateEmployee(holidays);
-            } catch (err) {
-                console.error(err);
-            }
-        },
+
         async updateContract(contract) {
             const areAll = Object.keys(contract).every(key => !!contract[key]);
             if (!areAll) {

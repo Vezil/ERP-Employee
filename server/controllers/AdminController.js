@@ -47,18 +47,12 @@ module.exports = {
         }
       })
 
-      if (!one) {
-        return res.status(403).send({
-          error: `This employee doesn't exist`
-        })
-      }
-
       res.send(req.body)
 
     } catch (err) {
       console.log(req.body)
       res.status(500).send({
-        error: 'Something went wrong with updating this employee'
+        error: 'Something went wrong with updating this employee ' + err
       })
     }
   },
