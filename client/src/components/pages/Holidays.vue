@@ -31,16 +31,6 @@
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
                                                     type="text"
-                                                    name="contract"
-                                                    v-model="editedItem.contract"
-                                                    label="Contract"
-                                                    required
-                                                    :rules="[required]"
-                                                ></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" sm="6" md="4">
-                                                <v-text-field
-                                                    type="text"
                                                     onfocus="(this.type='date')"
                                                     v-model="editedItem.start_date"
                                                     label="Start Day"
@@ -54,15 +44,6 @@
                                                     onfocus="(this.type='date')"
                                                     v-model="editedItem.finish_date"
                                                     label="Finish Day"
-                                                    required
-                                                    :rules="[required]"
-                                                ></v-text-field>
-                                            </v-col>
-                                            <v-col cols="12" sm="6" md="4" v-if="editedIndex == -1">
-                                                <v-text-field
-                                                    type="number"
-                                                    v-model="holidays.days_left"
-                                                    label="Holidays"
                                                     required
                                                     :rules="[required]"
                                                 ></v-text-field>
@@ -141,6 +122,7 @@ export default {
                 days_taken: '',
                 start_date: '',
                 finish_date: '',
+                confirmed: 1,
                 employeeId: ''
             },
 
@@ -149,6 +131,7 @@ export default {
                 days_taken: '',
                 start_date: '',
                 finish_date: '',
+                confirmed: 1,
                 employeeId: ''
             },
 
@@ -159,7 +142,7 @@ export default {
     async mounted() {
         this.holidays = (await AdminServices.getHolidays()).data;
         this.employees = (await AdminServices.getAllEmployees()).data;
-        console.log(this.holidays);
+
         this.holidays.forEach(holidaysEL => {
             this.getThisEmployee(holidaysEL, holidaysEL.employeeId);
         });
@@ -172,11 +155,6 @@ export default {
             let newFinishDate = holidaysEL.finish_date;
             newFinishDate = newFinishDate.slice(0, 10);
             holidaysEL.finish_date = newFinishDate;
-            let sum = Date.parse(newFinishDate) - Date.parse(newStartDate);
-            sum /= 100000;
-            sum /= 864;
-            console.log(sum);
-            // console.log(sum);
         });
 
         let i = 0;
@@ -189,7 +167,7 @@ export default {
     },
     computed: {
         formTitle() {
-            return this.editedIndex === -1 ? 'New Contract' : 'Edit Contract';
+            return this.editedIndex === -1 ? 'New Holidays' : 'Edit Holidays';
         }
     },
 
@@ -205,8 +183,6 @@ export default {
                 (holidaysEL.name = person.data.name),
                     (holidaysEL.surname = person.data.surname),
                     (holidaysEL.email = person.data.email);
-
-                console.log(holidaysEL);
             } catch (err) {
                 console.error(err);
             }
@@ -248,33 +224,32 @@ export default {
                     }
                 });
 
-                this.contracts.push(this.editedItem);
+                this.holidays.push(this.editedItem);
 
-                delete this.editedItem.email;
-                this.createContract(this.editedItem);
-                this.holidays.id = this.editedItem.employeeId;
+                this.SumDaysTaken(
+                    this.editedItem.start_date,
+                    this.editedItem.finish_date
+                );
 
-                this.getDaysLeftBefore(this.holidays.id);
-                this.createHolidays(this.holidays);
+                console.log(this.holidays);
+                this.newHolidays(this.editedItem);
+                console.log(this.holidays);
             }
             if (!this.error) {
                 this.close();
             }
         },
-        async getDaysLeftBefore(id) {
-            try {
-                const thisPerson = await AdminServices.getOneEmployee(id);
-                this.holidays_before = thisPerson.data.days_left;
-                this.holidays.days_left = parseInt(this.holidays.days_left);
-                this.holidays_before = parseInt(this.holidays_before);
-                this.holidays.days_left += this.holidays_before;
-            } catch (err) {
-                console.error(err);
-            }
+        SumDaysTaken(start_date, finish_date) {
+            //dodawanie-fun//
+            let sum = Date.parse(finish_date) - Date.parse(start_date);
+            sum /= 100000;
+            sum /= 864;
+            this.editedItem.days_taken = sum;
         },
-        async createContract(contract) {
+
+        async newHolidays(holidays) {
             try {
-                await AdminServices.addContract(contract);
+                await AdminServices.addHolidays(holidays);
             } catch (err) {
                 console.error(err);
             }

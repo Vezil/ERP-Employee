@@ -42,5 +42,8 @@ export default {
     deleteContract(contract) {
         return Api().delete(`contracts/${contract.id}`, contract)
     },
+    newHolidays(holidays) {
+        return Api().post(`holidays/${holidays.id}`, holidays)
+    },
 
 }

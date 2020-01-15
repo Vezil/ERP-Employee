@@ -252,14 +252,14 @@ export default {
                 this.createContract(this.editedItem);
                 this.holidays.id = this.editedItem.employeeId;
 
-                this.getDaysLeftBefore(this.holidays.id);
+                this.getDaysLeftBeforeAndSum(this.holidays.id);
                 this.createHolidays(this.holidays);
             }
             if (!this.error) {
                 this.close();
             }
         },
-        async getDaysLeftBefore(id) {
+        async getDaysLeftBeforeAndSum(id) {
             try {
                 const thisPerson = await AdminServices.getOneEmployee(id);
                 this.holidays_before = thisPerson.data.days_left;
