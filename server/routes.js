@@ -1,6 +1,7 @@
 const AuthenticationController = require('./controllers/AuthenticationController')
 const AuthenticationControllerPolicy = require('./policies/AuthenticationControllerPolicy')
 const AdminController = require('./controllers/AdminController')
+const EmployeeController = require('./controllers/EmployeeController')
 
 module.exports = (app) => {
 
@@ -25,6 +26,8 @@ module.exports = (app) => {
     app.post('/holidays', AdminController.addHolidays)
     app.put('/holidays/:id', AdminController.updateHolidays)
     app.delete('/holidays/:id', AdminController.deleteHolidays)
+
+    app.get('/employees/:id/holidays', EmployeeController.getHolidaysByEmployeeId)
 
 
 

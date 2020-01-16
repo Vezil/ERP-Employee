@@ -84,6 +84,8 @@ module.exports = {
     }
   },
 
+
+
   async getHolidays(req, res, next) {
     try {
       const allHolidays = await holidays.findAll({
@@ -98,6 +100,9 @@ module.exports = {
       })
     }
   },
+
+
+
   async addContract(req, res, next) {
 
     try {
