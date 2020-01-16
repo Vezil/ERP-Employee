@@ -12,18 +12,10 @@
                         </v-list-item-content>
                     </v-list-item>
                 </router-link>
-                <!-- <router-link v-if="!$store.state.isLoggedIn" to="Login"> -->
-                <!-- <v-list-item class="menu_el">
-                        <v-list-item-action>
-                            <v-icon>account_box</v-icon>
-                        </v-list-item-action>
-
-                        <v-list-item-content>
-                            <v-list-item-title class="tile">Login</v-list-item-title>
-                        </v-list-item-content>
-                </v-list-item>-->
-                <!-- </router-link> -->
-                <router-link v-if="!$store.state.isLoggedIn" to="Login">
+                <router-link
+                    v-if="!$store.state.isLoggedIn && !$store.state.isLoggedInAsAdmin"
+                    to="Login"
+                >
                     <v-list-item class="menu_el">
                         <v-list-item-action>
                             <v-icon>account_box</v-icon>
@@ -34,7 +26,7 @@
                         </v-list-item-content>
                     </v-list-item>
                 </router-link>
-                <router-link v-if="$store.state.isLoggedIn" to="Contracts">
+                <router-link v-if="$store.state.isLoggedInAsAdmin" to="Contracts">
                     <v-list-item class="menu_el">
                         <v-list-item-action>
                             <i class="material-icons">contacts</i>
@@ -45,7 +37,7 @@
                         </v-list-item-content>
                     </v-list-item>
                 </router-link>
-                <router-link v-if="$store.state.isLoggedIn" to="Holidays">
+                <router-link v-if="$store.state.isLoggedInAsAdmin" to="Holidays">
                     <v-list-item class="menu_el">
                         <v-list-item-action>
                             <i class="material-icons">work_off</i>
@@ -81,7 +73,7 @@
 
                 <v-list-item
                     class="menu_el"
-                    v-if="$store.state.isLoggedIn"
+                    v-if="$store.state.isLoggedIn || $store.state.isLoggedInAsAdmin"
                     color="blue darken-3"
                     @click="logout"
                 >

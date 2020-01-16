@@ -8,9 +8,9 @@
                 </div>
             </h1>
 
-            <div v-if="$store.state.isLoggedIn">
-                <!-- <admin-dashboard /> -->
-                <employee-dashboard />
+            <div>
+                <admin-dashboard v-if="$store.state.isLoggedInAsAdmin" />
+                <employee-dashboard v-if="$store.state.isLoggedIn" />
             </div>
         </div>
     </v-app>

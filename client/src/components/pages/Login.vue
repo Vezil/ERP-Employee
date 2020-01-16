@@ -42,7 +42,7 @@ export default {
     data() {
         return {
             email: '',
-            password: '12345qwert',
+            password: '',
             error: null
         };
     },
@@ -51,10 +51,11 @@ export default {
             try {
                 const response = await AuthenticationService.login({
                     email: this.email,
-                    password: '12345qwert'
+                    password: this.password
                 });
-                this.$store.dispatch('setToken', response.data.token);
                 this.$store.dispatch('setUser', response.data.employee);
+                this.$store.dispatch('setToken', response.data.token);
+
                 this.$router.push({
                     name: 'dashboard'
                 });
