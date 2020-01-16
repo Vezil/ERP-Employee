@@ -99,6 +99,7 @@ export default {
             ],
             editedIndex: -1,
             editedItem: {
+                id: '',
                 days_taken: '',
                 days_taken_old: '',
                 start_date: '',
@@ -121,6 +122,8 @@ export default {
 
             return item;
         });
+
+        console.log(this.holidays_user);
     },
     computed: {
         formTitle() {
@@ -135,18 +138,18 @@ export default {
     },
     methods: {
         editItem(item) {
-            this.editedIndex = this.holidays.indexOf(item);
+            this.editedIndex = this.holidays_user.indexOf(item);
             this.editedItem = Object.assign({}, item);
             this.dialog = true;
         },
 
         deleteItem(item) {
-            const index = this.holidays.indexOf(item);
-            this.editedIndex = this.holidays.indexOf(item);
+            const index = this.holidays_user.indexOf(item);
+            this.editedIndex = this.holidays_user.indexOf(item);
             this.editedItem = Object.assign({}, item);
             confirm('Are you sure you want to delete this contract?') &&
-                this.holidays.splice(index, 1) &&
-                this.deleteHolidays(item);
+                this.holidays_user.splice(index, 1) &&
+                this.deleteHolidaysRequest(item);
         },
 
         close() {
@@ -169,11 +172,12 @@ export default {
                     this.editedItem.employeeId,
                     'editing'
                 );
-                Object.assign(
-                    this.holidays[this.editedIndex],
-                    this.editedItem,
 
-                    this.updateHolidays(this.editedItem)
+                console.log(this.editedItem);
+                Object.assign(
+                    this.holidays_user[this.editedIndex],
+                    this.editedItem,
+                    this.updateHolidaysRequest(this.editedItem)
                 );
             } else {
                 this.SumDaysTaken(
@@ -217,11 +221,11 @@ export default {
                     let cashe_days =
                         thisPerson.data.days_left +
                         parseInt(this.editedItem.days_taken_old);
+                    console.log(this.editedItem.days_taken_old);
                     new_days = cashe_days - parseInt(days_taken);
                 } else {
                     console.log('error');
                 }
-                console.log(new_days);
 
                 if (new_days >= 0) {
                     this.days_left = new_days;
@@ -250,28 +254,30 @@ export default {
         async addHolidaysRequest(holidays) {
             try {
                 delete holidays.days_taken_old;
-                await EmployeeServices.addHolidaysForEmployee(holidays);
+                await EmployeeServices.addHolidaysEmployee(holidays);
             } catch (err) {
                 console.error(err);
             }
         },
 
-        async updateHolidays(holidays) {
-            const areAll = Object.keys(holidays).every(key => !!holidays[key]);
-            if (!areAll) {
-                this.error = 'All fields are required !';
-                return;
-            }
-            if (areAll) {
-                this.error = null;
-            }
+        async updateHolidaysRequest(holidays) {
+            // const areAll = Object.keys(holidays).every(key => !!holidays[key]);
+            // if (!areAll) {
+            //     this.error = 'All fields are required !';
+            //     return;
+            // }
+            // if (areAll) {
+            //     this.error = null;
+            // }
             try {
-                await AdminServices.updateHolidays(holidays);
+                console.log(holidays);
+
+                await EmployeeServices.editHolidaysEmployee(holidays);
             } catch (err) {
                 console.error(err);
             }
         },
-        async deleteHolidays(holidays) {
+        async deleteHolidaysRequest(holidays) {
             try {
                 this.SumDaysTaken(
                     this.editedItem.start_date,
@@ -282,7 +288,11 @@ export default {
                     this.editedItem.employeeId,
                     'deleting'
                 );
-                await AdminServices.deleteHolidays(holidays);
+                delete holidays.days_taken_old;
+
+                console.log(holidays);
+
+                await EmployeeServices.deleteHolidaysEmployee(holidays);
             } catch (err) {
                 console.error(err);
             }

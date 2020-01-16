@@ -24,12 +24,11 @@ module.exports = {
     },
     async getEmployeeRequests(req, res, next) {
 
-        const { id } = req.params;
 
         try {
             const Holidays = await holidays.findAll({
                 where: {
-                    employeeId: id,
+                    employeeId: req.params.id,
                     confirmed: 0
                 }
             });
