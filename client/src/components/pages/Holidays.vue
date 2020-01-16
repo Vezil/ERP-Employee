@@ -47,6 +47,13 @@
                                                     required
                                                     :rules="[required]"
                                                 ></v-text-field>
+                                                <v-text-field
+                                                    type="confirmed"
+                                                    v-model="editedItem.confirmed"
+                                                    label="confirmed"
+                                                    required
+                                                    :rules="[required]"
+                                                ></v-text-field>
                                             </v-col>
                                         </v-row>
                                         <div class="error" v-if="error">{{error}}</div>
@@ -114,6 +121,11 @@ export default {
                 {
                     text: 'Finish date of the Holidays',
                     value: 'finish_date',
+                    sortable: false
+                },
+                {
+                    text: 'Confirmed',
+                    value: 'confirmed',
                     sortable: false
                 },
                 { text: 'Actions', value: 'action', sortable: false }
