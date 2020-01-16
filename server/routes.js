@@ -22,14 +22,18 @@ module.exports = (app) => {
     app.put('/contracts/:id', AdminController.updateContract)
     app.delete('/contracts/:id', AdminController.deleteContract)
 
+
     app.get('/holidays', AdminController.getHolidays)
     app.post('/holidays', AdminController.addHolidays)
     app.put('/holidays/:id', AdminController.updateHolidays)
     app.delete('/holidays/:id', AdminController.deleteHolidays)
 
+
     app.get('/employees/:id/holidays', EmployeeController.getHolidaysByEmployeeId)
     app.get('/employeesR/:id/holidays', EmployeeController.getEmployeeRequests)
-    app.post('/employees/:id/holidays', EmployeeController.addHolidaysForEmployee)
+    app.post('/employees/:id/holidays', EmployeeController.addHolidaysEmployee)
+    app.put('/employees/:id/holidays/:id_holidays', EmployeeController.editHolidaysEmployee)
+    app.delete('/employees/:id/holidays/:id_holidays', EmployeeController.deleteHolidaysEmployee)
 
 
 
