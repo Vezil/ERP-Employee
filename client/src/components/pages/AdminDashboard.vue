@@ -99,7 +99,7 @@
 import AdminServices from '../../services/AdminService';
 
 export default {
-    name: 'adminhome',
+    name: 'admindashboard',
     components: {
         // HelloWorld
     },

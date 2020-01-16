@@ -12,6 +12,17 @@
                         </v-list-item-content>
                     </v-list-item>
                 </router-link>
+                <!-- <router-link v-if="!$store.state.isLoggedIn" to="Login"> -->
+                <!-- <v-list-item class="menu_el">
+                        <v-list-item-action>
+                            <v-icon>account_box</v-icon>
+                        </v-list-item-action>
+
+                        <v-list-item-content>
+                            <v-list-item-title class="tile">Login</v-list-item-title>
+                        </v-list-item-content>
+                </v-list-item>-->
+                <!-- </router-link> -->
                 <router-link v-if="!$store.state.isLoggedIn" to="Login">
                     <v-list-item class="menu_el">
                         <v-list-item-action>
@@ -42,6 +53,28 @@
 
                         <v-list-item-content>
                             <v-list-item-title class="tile">Holidays</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                </router-link>
+                <router-link v-if="$store.state.isLoggedIn" to="HolidaysRequests">
+                    <v-list-item class="menu_el">
+                        <v-list-item-action>
+                            <i class="material-icons">help</i>
+                        </v-list-item-action>
+
+                        <v-list-item-content>
+                            <v-list-item-title class="tile">HolidaysRequests</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                </router-link>
+                <router-link v-if="$store.state.isLoggedIn" to="HolidaysConfirmed">
+                    <v-list-item class="menu_el">
+                        <v-list-item-action>
+                            <i class="material-icons">done_outline</i>
+                        </v-list-item-action>
+
+                        <v-list-item-content>
+                            <v-list-item-title class="tile">HolidaysConfirmed</v-list-item-title>
                         </v-list-item-content>
                     </v-list-item>
                 </router-link>
@@ -82,7 +115,7 @@ export default {
             this.$store.dispatch('setUser', null);
 
             this.$router.push({
-                name: 'home'
+                name: 'dashboard'
             });
         }
     }
