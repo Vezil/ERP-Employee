@@ -99,13 +99,14 @@
 import AdminServices from '../../services/AdminService';
 
 export default {
-    name: 'adminhome',
+    name: 'admindashboard',
     components: {
         // HelloWorld
     },
     data() {
         return {
             employees: [],
+            holidays: [],
             dialog: false,
             newPass: false,
             headers: [
@@ -119,11 +120,10 @@ export default {
                 { text: 'Date of birth', value: 'birthdate', sortable: false },
                 { text: 'Email', value: 'email', sortable: false },
                 {
-                    text: 'Contract (on month)',
-                    value: 'contract',
+                    text: 'Days Off (left)',
+                    value: 'days_left',
                     sortable: false
                 },
-                { text: 'Days Off (left)', value: 'daysoff', sortable: false },
                 { text: 'Actions', value: 'action', sortable: false }
             ],
             editedIndex: -1,
@@ -132,18 +132,14 @@ export default {
                 surname: '',
                 birthdate: '',
                 email: ''
-                // password: ''
-                // contract: '',
-                // daysoff: ''
+                // days_left: ''
             },
             defaultItem: {
                 name: '',
                 surname: '',
                 birthdate: '',
                 email: ''
-                // password: ''
-                // contract: '',
-                // daysoff: ''
+                // days_left: ''
             },
             error: null,
             required: value => !!value || 'Required.'
@@ -151,6 +147,7 @@ export default {
     },
     async mounted() {
         this.employees = (await AdminServices.getAllEmployees()).data;
+        this.holidays = (await AdminServices.getHolidays()).data;
 
         this.employees.forEach(employee => {
             let newBirthdate = employee.birthdate;

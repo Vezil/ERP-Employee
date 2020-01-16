@@ -30,16 +30,28 @@ module.exports = (sequelize, DataTypes) => {
         birthdate: {
             type: DataTypes.DATE
         },
-        password: DataTypes.STRING
+        password: {
+            type: DataTypes.STRING
+        },
+        days_left: {
+            type: DataTypes.INTEGER
+        }
     }, {
         hooks: {
             beforeSave: hashPassword
         }
     })
 
+    employee.associate = function (models) {
+
+
+        employee.hasMany(models.holidays);
+        employee.hasMany(models.contracts);
+
+    };
+
     employee.prototype.comparePassword = function (password) {
 
-        console.log(password, this.password)
         return bcrypt.compareAsync(password, this.password)
     }
 

@@ -9,19 +9,22 @@
             </h1>
 
             <div v-if="$store.state.isLoggedIn">
-                <admin-home />
+                <!-- <admin-dashboard /> -->
+                <employee-dashboard />
             </div>
         </div>
     </v-app>
 </template>
 
 <script>
-import AdminHome from './AdminHome.vue';
+import AdminDashboard from './AdminDashboard.vue';
+import EmployeeDashboard from './EmployeeDashboard.vue';
 
 export default {
-    name: 'home',
+    name: 'dashboard',
     components: {
-        AdminHome
+        AdminDashboard,
+        EmployeeDashboard
     }
 };
 </script>

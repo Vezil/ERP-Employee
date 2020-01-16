@@ -1,32 +1,44 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../components/pages/Home.vue'
-import NewEmployee from '../components/pages/NewEmployee.vue'
-import NewContract from '../components/pages/NewContract.vue'
+import Dashboard from '../components/pages/Dashboard.vue'
+import Contracts from '../components/pages/Contracts.vue'
 import Login from '../components/pages/Login.vue'
+import Holidays from '../components/pages/Holidays.vue'
+import HolidaysRequests from '../components/pages/HolidaysRequests.vue'
+import HolidaysConfirmed from '../components/pages/HolidaysConfirmed.vue'
 
 Vue.use(VueRouter)
 
 const routes = [
   {
     path: '/',
-    name: 'home',
-    component: Home
+    name: 'dashboard',
+    component: Dashboard
   },
   {
-    path: '/NewEmployee',
-    component: NewEmployee,
-    name: 'newEmployee'
-  },
-  {
-    path: '/NewContract',
-    component: NewContract,
-    name: 'newContract'
+    path: '/Contracts',
+    component: Contracts,
+    name: 'contracts'
   },
   {
     path: '/Login',
     component: Login,
     name: 'login'
+  },
+  {
+    path: '/Holidays',
+    component: Holidays,
+    name: 'holidays'
+  },
+  {
+    path: '/HolidaysRequests',
+    component: HolidaysRequests,
+    name: 'holidaysrequests'
+  },
+  {
+    path: '/HolidaysConfirmed',
+    component: HolidaysConfirmed,
+    name: 'holidaysconfirmed'
   },
 
   {
