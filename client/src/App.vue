@@ -1,8 +1,10 @@
 <template>
-    <v-app>
+    <v-app class="grey">
         <Navbar />
         <v-content>
-            <router-view />
+            <transition name="router-anim" enter-active-class="animated pulse">
+                <router-view />
+            </transition>
         </v-content>
     </v-app>
 </template>
@@ -23,7 +25,10 @@ export default {
 };
 </script>
 <style>
-:root {
-    background-color: black;
+@import 'https://cdn.jsdelivr.net/npm/animate.css@3.5.1';
+
+.page {
+    width: inherit;
+    background-image: url('img/background.jpg') !important;
 }
 </style>

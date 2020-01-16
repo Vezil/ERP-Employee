@@ -70,20 +70,19 @@
                         </v-list-item-content>
                     </v-list-item>
                 </router-link>
-
-                <v-list-item
-                    class="menu_el"
+                <router-link
                     v-if="$store.state.isLoggedIn || $store.state.isLoggedInAsAdmin"
-                    color="blue darken-3"
-                    @click="logout"
+                    to="Logout"
                 >
-                    <v-list-item-action>
-                        <v-icon>exit_to_app</v-icon>
-                    </v-list-item-action>
-                    <v-list-item-content>
-                        <v-list-item-title class="tile">Logout</v-list-item-title>
-                    </v-list-item-content>
-                </v-list-item>
+                    <v-list-item class="menu_el">
+                        <v-list-item-action>
+                            <v-icon>exit_to_app</v-icon>
+                        </v-list-item-action>
+                        <v-list-item-content>
+                            <v-list-item-title class="tile">Logout</v-list-item-title>
+                        </v-list-item-content>
+                    </v-list-item>
+                </router-link>
             </v-list>
         </v-navigation-drawer>
         <!-- https://material.io/resources/icons/?icon=contacts&style=baseline -->
@@ -100,17 +99,17 @@ export default {
         return {
             drawer: null
         };
-    },
-    methods: {
-        logout() {
-            this.$store.dispatch('setToken', null);
-            this.$store.dispatch('setUser', null);
-
-            this.$router.push({
-                name: 'dashboard'
-            });
-        }
     }
+    // methods: {
+    //     logout() {
+    //         this.$store.dispatch('setToken', null);
+    //         this.$store.dispatch('setUser', null);
+
+    //         this.$router.push({
+    //             name: 'dashboard'
+    //         });
+    //     }
+    // }
 };
 </script>
 <style>

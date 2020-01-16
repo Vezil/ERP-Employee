@@ -1,13 +1,14 @@
 <template>
-    <v-app class="grey">
+    <v-app class="grey page">
         <v-layout column>
             <v-flex xs6>
-                <div class="container white elevation-3 form">
+                <div class="container elevation-3 form">
                     <br />
                     <h2>Login</h2>
                     <br />
                     <br />
                     <v-text-field
+                        class="login"
                         type="email"
                         name="email"
                         v-model="email"
@@ -17,6 +18,7 @@
                     ></v-text-field>
                     <br />
                     <v-text-field
+                        class="login"
                         type="password"
                         name="password"
                         v-model="password"
@@ -70,9 +72,11 @@ export default {
 
 <style>
 .form {
-    margin-top: 2%;
+    max-width: 900px;
+    margin-top: 4%;
     text-align: center;
     padding: 20px;
-    background-color: aqua;
+    background-color: rgb(168, 203, 209);
+    color: rgb(0, 0, 0);
 }
 </style>
