@@ -43,18 +43,13 @@ module.exports = (sequelize, DataTypes) => {
     })
 
     employee.associate = function (models) {
-
-
         employee.hasMany(models.holidays);
         employee.hasMany(models.contracts);
-
     };
 
     employee.prototype.comparePassword = function (password) {
-
         return bcrypt.compareAsync(password, this.password)
     }
-
 
     return employee
 }

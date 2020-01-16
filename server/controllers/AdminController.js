@@ -50,15 +50,15 @@ module.exports = {
       res.send(req.body)
 
     } catch (err) {
-      console.log(req.body)
-      res.status(500).send({
+      console.error(err);
+
+      return res.status(500).send({
         error: 'Something went wrong with updating this employee ' + err
       })
     }
   },
 
   async deleteEmployee(req, res, next) {
-
     try {
       const one = await employee.findOne({
         where: {
@@ -74,66 +74,64 @@ module.exports = {
 
       await one.destroy()
 
-      res.send(one)
-
+      return res.send(one)
     } catch (err) {
+      console.error(err)
 
-      res.status(500).send({
+      return res.status(500).send({
         error: 'Something went wrong with deleting this employee'
       })
     }
   },
-
-
 
   async getHolidays(req, res, next) {
     try {
       const allHolidays = await holidays.findAll({
         include: [{ model: employee, as: 'employee' }]
       });
-      res.send(allHolidays)
+
+      return res.send(allHolidays)
     } catch (err) {
-      res.status(500).send({
+      console.error(err);
 
-        error: 'Something went wrong with getting holidays ' + err
-
+      return res.status(500).send({
+        error: 'Something went wrong with getting holidays '
       })
     }
   },
-
-
 
   async addContract(req, res, next) {
-
     try {
       const newContract = await contracts.create(req.body)
-      res.send(newContract)
+
+      return res.send(newContract)
     }
     catch (err) {
-      res.status(500).send({
+      return res.status(500).send({
         error: 'Something went wrong with adding this contract'
       })
     }
   },
-  async addHolidays(req, res, next) {
 
+  async addHolidays(req, res, next) {
     try {
       const newHolidays = await holidays.create(req.body)
-      res.send(newHolidays)
-    }
-    catch (err) {
-      res.status(500).send({
+
+      return res.send(newHolidays)
+    } catch (err) {
+      return res.status(500).send({
         error: 'Something went wrong with adding this contract'
       })
     }
   },
-  async getContracts(req, res, next) {
 
+  async getContracts(req, res, next) {
     try {
       const Contracts = await contracts.findAll({
         include: [{ model: employee, as: 'employee' }]
       })
-      res.send(Contracts)
+
+      return res.send(Contracts)
 
     } catch (err) {
       res.status(500).send({
@@ -142,6 +140,7 @@ module.exports = {
     }
 
   },
+
   async oneEmployeeThroughEmail(req, res, next) {
     try {
 
@@ -150,7 +149,8 @@ module.exports = {
           email: req.params.email
         }
       })
-      res.send(one)
+
+      return res.send(one)
 
       if (!user) {
         return res.status(403).send({
@@ -158,7 +158,7 @@ module.exports = {
         })
       }
     } catch (err) {
-      res.status(500).send({
+      return res.status(500).send({
         error: 'Something went wrong with getting employees'
       })
     }
@@ -173,9 +173,9 @@ module.exports = {
       })
 
       res.send(req.body)
-
     } catch (err) {
-      console.log(req.body)
+      console.error(err)
+
       res.status(500).send({
         error: 'Something went wrong with updating this contract'
       })
@@ -202,6 +202,7 @@ module.exports = {
       res.send(one)
 
     } catch (err) {
+      console.err(err);
 
       res.status(500).send({
         error: 'Something went wrong with deleting this employee'
@@ -218,9 +219,9 @@ module.exports = {
       })
 
       res.send(req.body)
-
     } catch (err) {
       console.log(req.body)
+
       res.status(500).send({
         error: 'Something went wrong with updating holidays ' + err
       })
@@ -228,13 +229,12 @@ module.exports = {
   },
 
   async deleteHolidays(req, res, next) {
-
     try {
       const one = await holidays.findOne({
         where: {
           id: req.params.id
         }
-      })
+      });
 
       if (!one) {
         return res.status(403).send({
@@ -244,15 +244,11 @@ module.exports = {
 
       await one.destroy()
 
-      res.send(one)
-
+      return res.send(one)
     } catch (err) {
-
       res.status(500).send({
         error: 'Something went wrong with deleting this employee'
       })
     }
   },
-
-
 }
