@@ -1,26 +1,19 @@
 <template>
-    <!-- <v-app class="grey page">
-        <div class="container">This is your holidays :</div>
-        <br />
-        <ul v-for="holiday_user in holidays_user" :key="holiday_user.id">
-            <li>{{holiday_user.days_taken}} days ({{holiday_user.start_date}} - {{holiday_user.finish_date }})</li>
-        </ul>
-    </v-app>-->
     <v-app class="grey page">
         <div class="container">
-            <v-data-table :headers="headers" :items="holidays_user" class="elevation-1 table" dark>
+            <v-data-table
+                :headers="headers"
+                :items="holidays_user"
+                class="elevation-1 table"
+                dark
+            >
                 <template v-slot:top>
                     <v-toolbar flat dark>
-                        <v-toolbar-title class="table_title">Your Holidays</v-toolbar-title>
+                        <v-toolbar-title class="table_title"
+                            >Your Holidays</v-toolbar-title
+                        >
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-spacer></v-spacer>
-                        <v-dialog v-model="dialog" max-width="500px">
-                            <v-card>
-                                <v-card-title>
-                                    <span class="headline">{{ formTitle }}</span>
-                                </v-card-title>
-                            </v-card>
-                        </v-dialog>
                     </v-toolbar>
                 </template>
             </v-data-table>
@@ -30,8 +23,8 @@
 
 <script>
 import { METHODS } from 'http';
-import EmployeeServices from '../../services/EmployeeService';
-
+import HolidaysForUserServices from '../../services/HolidaysForUserService';
+import { store } from '../../store';
 export default {
     name: 'HolidaysConfirmed',
     data() {
@@ -57,8 +50,8 @@ export default {
         };
     },
     async mounted() {
-        this.holidays_user = await EmployeeServices.getHolidaysByEmployeeId(
-            '6'
+        this.holidays_user = await HolidaysForUserServices.getHolidaysByEmployeeId(
+            this.$store.state.user.id
         );
         this.holidays_user = this.holidays_user.data;
 
@@ -67,10 +60,7 @@ export default {
             item.finish_date = item.finish_date.slice(0, 10);
             return item;
         });
-
-        console.log(this.holidays_user);
     }
 };
 </script>
-<style scoped>
-</style>
+<style scoped></style>

@@ -1,9 +1,9 @@
 const AuthenticationController = require('./controllers/AuthenticationController');
 const AuthenticationControllerPolicy = require('./policies/AuthenticationControllerPolicy');
 const HolidaysController = require('./controllers/Holidays/HolidaysController');
-const EmployeeController = require('./controllers/EmployeeController');
 const EmployeesController = require('./controllers/Employees/EmployeesController');
 const ContractsController = require('./controllers/Contracts/ContractsController');
+const HolidaysUserController = require('./controllers/Holidays/HolidaysUserController');
 
 module.exports = app => {
     app.post(
@@ -29,18 +29,18 @@ module.exports = app => {
     app.put('/holidays/:id', HolidaysController.Update);
     app.delete('/holidays/:id', HolidaysController.Delete);
 
+    app.get('/employees/:id/holidays', HolidaysUserController.showHolidays);
     app.get(
-        '/employees/:id/holidays',
-        EmployeeController.getHolidaysByEmployeeId
+        '/employees/:id/holidaysRequests',
+        HolidaysUserController.showRequests
     );
-    app.get('/employeesR/:id/holidays', EmployeeController.getEmployeeRequests);
-    app.post('/employees/:id/holidays', EmployeeController.addHolidaysEmployee);
+    app.post('/employees/:id/holidays', HolidaysUserController.Create);
     app.put(
-        '/employees/:id/holidays/:id_holidays',
-        EmployeeController.editHolidaysEmployee
+        '/employees/:id/holidays/:holidaysId',
+        HolidaysUserController.Update
     );
     app.delete(
-        '/employees/:id/holidays/:id_holidays',
-        EmployeeController.deleteHolidaysEmployee
-    ); //employeeId
+        '/employees/:id/holidays/:holidaysId',
+        HolidaysUserController.Delete
+    );
 };

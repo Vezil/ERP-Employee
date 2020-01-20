@@ -1,7 +1,7 @@
-const { employee, holidays, contracts } = require('../models');
+const { holidays } = require('../../models');
 
 module.exports = {
-    async getHolidaysByEmployeeId(req, res, next) {
+    async showHolidays(req, res, next) {
         const { id } = req.params;
 
         try {
@@ -19,7 +19,7 @@ module.exports = {
             });
         }
     },
-    async getEmployeeRequests(req, res, next) {
+    async showRequests(req, res, next) {
         try {
             const Holidays = await holidays.findAll({
                 where: {
@@ -35,7 +35,7 @@ module.exports = {
             });
         }
     },
-    async addHolidaysEmployee(req, res, next) {
+    async Create(req, res, next) {
         try {
             const newHolidays = await holidays.create(req.body);
             res.send(newHolidays);
@@ -45,12 +45,12 @@ module.exports = {
             });
         }
     },
-    async editHolidaysEmployee(req, res, next) {
+    async Update(req, res, next) {
         try {
             await holidays.update(req.body, {
                 where: {
                     employeeId: req.params.id,
-                    id: req.params.id_holidays
+                    id: req.params.holidaysId
                 }
             });
 
@@ -63,12 +63,12 @@ module.exports = {
             });
         }
     },
-    async deleteHolidaysEmployee(req, res, next) {
+    async Delete(req, res, next) {
         try {
             const one = await holidays.findOne({
                 where: {
                     employeeId: req.params.id,
-                    id: req.params.id_holidays
+                    id: req.params.holidaysId
                 }
             });
 

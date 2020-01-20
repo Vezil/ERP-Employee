@@ -6,7 +6,7 @@ export default {
         return Api().get(`employees/${id}/holidays`);
     },
     getEmployeeRequests(id) {
-        return Api().get(`employeesR/${id}/holidays`);
+        return Api().get(`employees/${id}/holidaysRequests`);
     },
     addHolidaysEmployee(holidays) {
         return Api().post(

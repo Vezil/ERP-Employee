@@ -10,7 +10,8 @@
                 <template v-slot:top>
                     <v-toolbar flat dark>
                         <v-toolbar-title class="table_title"
-                            >Your requests for holidays</v-toolbar-title
+                            >Your requests for holidays
+                            {{ $store.state.user.id }}</v-toolbar-title
                         >
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-spacer></v-spacer>
@@ -99,8 +100,9 @@
 
 <script>
 import { METHODS } from 'http';
-import EmployeeServices from '../../services/EmployeeService';
-import HolidaysServices from '../../services/HolidaysService';
+import EmployeesServices from '../../services/EmployeesService';
+import HolidaysForUserServices from '../../services/HolidaysForUserService';
+import { store } from '../../store';
 export default {
     name: 'holidaysrequests',
     data() {
@@ -137,7 +139,7 @@ export default {
                 start_date: '',
                 finish_date: '',
                 confirmed: 0,
-                employeeId: 6
+                employeeId: this.$store.state.user.id
             },
 
             required: value => !!value || 'Required.',
@@ -145,7 +147,10 @@ export default {
         };
     },
     async mounted() {
-        this.holidays_user = await EmployeeServices.getEmployeeRequests(6);
+        this.holidays_user = await HolidaysForUserServices.getEmployeeRequests(
+            this.$store.state.user.id
+        );
+
         this.holidays_user = this.holidays_user.data;
 
         this.holidays_user = this.holidays_user.map(item => {
@@ -154,8 +159,6 @@ export default {
 
             return item;
         });
-
-        console.log(this.holidays_user);
     },
     computed: {
         formTitle() {
@@ -205,7 +208,6 @@ export default {
                     'editing'
                 );
 
-                console.log(this.editedItem);
                 Object.assign(
                     this.holidays_user[this.editedIndex],
                     this.editedItem,
@@ -223,8 +225,6 @@ export default {
                 );
 
                 if (this.error_validation == null) {
-                    console.log(this.editedItem);
-
                     this.addHolidaysRequest(this.editedItem);
                     this.holidays_user.push(this.editedItem);
                 }
@@ -242,7 +242,7 @@ export default {
         },
         async updateDaysLeft(days_taken, id, option) {
             try {
-                const thisPerson = await AdminServices.getOneEmployee(id);
+                const thisPerson = await EmployeesServices.getOneEmployee(id);
                 this.days_left = thisPerson.data.days_left;
                 var new_days;
                 if (option === 'deleting') {
@@ -253,10 +253,10 @@ export default {
                     let cashe_days =
                         thisPerson.data.days_left +
                         parseInt(this.editedItem.days_taken_old);
-                    console.log(this.editedItem.days_taken_old);
+
                     new_days = cashe_days - parseInt(days_taken);
                 } else {
-                    console.log('error');
+                    console.err('error');
                 }
 
                 if (new_days >= 0) {
@@ -266,7 +266,7 @@ export default {
                         days_left: new_days
                     };
                     try {
-                        await AdminServices.updateEmployee(update);
+                        await EmployeesServices.updateEmployee(update);
                     } catch (err) {
                         console.error(err);
                     }
@@ -286,7 +286,7 @@ export default {
         async addHolidaysRequest(holidays) {
             try {
                 delete holidays.days_taken_old;
-                await EmployeeServices.addHolidaysEmployee(holidays);
+                await HolidaysForUserServices.addHolidaysEmployee(holidays);
             } catch (err) {
                 console.error(err);
             }
@@ -302,9 +302,7 @@ export default {
             //     this.error = null;
             // }
             try {
-                console.log(holidays);
-
-                await EmployeeServices.editHolidaysEmployee(holidays);
+                await HolidaysForUserServices.editHolidaysEmployee(holidays);
             } catch (err) {
                 console.error(err);
             }
@@ -322,9 +320,7 @@ export default {
                 );
                 delete holidays.days_taken_old;
 
-                console.log(holidays);
-
-                await EmployeeServices.deleteHolidaysEmployee(holidays);
+                await HolidaysForUserServices.deleteHolidaysEmployee(holidays);
             } catch (err) {
                 console.error(err);
             }
