@@ -39,6 +39,8 @@
 
 <script>
 import AuthenticationService from '../../services/AuthenticationService';
+import Axios from 'axios';
+import { store } from '../../store';
 export default {
     name: 'NewEmployee',
     data() {
@@ -54,9 +56,10 @@ export default {
                 const response = await AuthenticationService.login({
                     email: this.email,
                     password: this.password
+                }).then(response => {
+                    this.$store.dispatch('setUser', response.data.employee);
+                    this.$store.dispatch('setToken', response.data.token);
                 });
-                this.$store.dispatch('setUser', response.data.employee);
-                this.$store.dispatch('setToken', response.data.token);
 
                 this.$router.push({
                     name: 'dashboard'

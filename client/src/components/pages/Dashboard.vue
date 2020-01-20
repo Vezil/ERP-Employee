@@ -4,7 +4,7 @@
             <h1>
                 Welcome to ERP
                 <div v-if="$store.state.isLoggedIn">
-                    <b>{{$store.state.user.name}}!</b>
+                    <b>{{ $store.state.username }}!</b>
                 </div>
             </h1>
             <div>
@@ -21,14 +21,21 @@
 <script>
 import AdminDashboard from './AdminDashboard.vue';
 import EmployeeDashboard from './EmployeeDashboard.vue';
-
+import { store } from '../../store';
 export default {
     name: 'dashboard',
     components: {
         AdminDashboard,
         EmployeeDashboard
+    },
+    data() {
+        return {
+            // loggedIn: null
+        };
     }
 };
+
+// console.log($store.state.token);
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css?family=Arvo|Pacifico&display=swap');
