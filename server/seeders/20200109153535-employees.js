@@ -89,7 +89,7 @@ module.exports = {
                     email: 'admin@wp.pl',
                     birthdate: '1999-11-11',
                     password: HashPassword('adminadmin123'),
-                    days_left: null,
+                    days_left: 0,
                     isAdmin: true,
                     createdAt: new Date(),
                     updatedAt: new Date()

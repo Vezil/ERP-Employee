@@ -1,22 +1,36 @@
 <template>
     <v-app class="grey page">
         <div class="container">
-            <v-data-table :headers="headers" :items="contracts" class="elevation-1 table" dark>
+            <v-data-table
+                :headers="headers"
+                :items="contracts"
+                class="elevation-1 table"
+                dark
+            >
                 <template v-slot:top>
                     <v-toolbar flat dark>
-                        <v-toolbar-title class="table_title">Contracts</v-toolbar-title>
+                        <v-toolbar-title class="table_title"
+                            >Contracts</v-toolbar-title
+                        >
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-spacer></v-spacer>
                         <v-dialog v-model="dialog" max-width="500px">
                             <template v-slot:activator="{ on }">
-                                <v-btn color="primary" dark class="mb-2" v-on="on">
+                                <v-btn
+                                    color="primary"
+                                    dark
+                                    class="mb-2"
+                                    v-on="on"
+                                >
                                     New Contract
                                     <v-icon>add</v-icon>
                                 </v-btn>
                             </template>
                             <v-card>
                                 <v-card-title>
-                                    <span class="headline">{{ formTitle }}</span>
+                                    <span class="headline">{{
+                                        formTitle
+                                    }}</span>
                                 </v-card-title>
 
                                 <v-card-text>
@@ -32,7 +46,9 @@
                                                 <v-text-field
                                                     type="text"
                                                     name="contract"
-                                                    v-model="editedItem.contract"
+                                                    v-model="
+                                                        editedItem.contract
+                                                    "
                                                     label="Contract"
                                                     required
                                                     :rules="[required]"
@@ -42,7 +58,9 @@
                                                 <v-text-field
                                                     type="text"
                                                     onfocus="(this.type='date')"
-                                                    v-model="editedItem.start_date"
+                                                    v-model="
+                                                        editedItem.start_date
+                                                    "
                                                     label="Start Day"
                                                     required
                                                     :rules="[required]"
@@ -52,13 +70,20 @@
                                                 <v-text-field
                                                     type="text"
                                                     onfocus="(this.type='date')"
-                                                    v-model="editedItem.finish_date"
+                                                    v-model="
+                                                        editedItem.finish_date
+                                                    "
                                                     label="Finish Day"
                                                     required
                                                     :rules="[required]"
                                                 ></v-text-field>
                                             </v-col>
-                                            <v-col cols="12" sm="6" md="4" v-if="editedIndex == -1">
+                                            <v-col
+                                                cols="12"
+                                                sm="6"
+                                                md="4"
+                                                v-if="editedIndex == -1"
+                                            >
                                                 <v-text-field
                                                     type="number"
                                                     v-model="holidays.days_left"
@@ -68,21 +93,35 @@
                                                 ></v-text-field>
                                             </v-col>
                                         </v-row>
-                                        <div class="error" v-if="error">{{error}}</div>
+                                        <div class="error" v-if="error">{{
+                                            error
+                                        }}</div>
                                     </v-container>
                                 </v-card-text>
 
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
-                                    <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-                                    <v-btn color="blue darken-1" text @click="save">Save</v-btn>
+                                    <v-btn
+                                        color="blue darken-1"
+                                        text
+                                        @click="close"
+                                        >Cancel</v-btn
+                                    >
+                                    <v-btn
+                                        color="blue darken-1"
+                                        text
+                                        @click="save"
+                                        >Save</v-btn
+                                    >
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
                     </v-toolbar>
                 </template>
                 <template v-slot:item.action="{ item }">
-                    <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
+                    <v-icon small class="mr-2" @click="editItem(item)"
+                        >edit</v-icon
+                    >
                     <v-icon small @click="deleteItem(item)">delete</v-icon>
                 </template>
             </v-data-table>
@@ -92,7 +131,9 @@
 
 <script>
 import { METHODS } from 'http';
-import AdminServices from '../../services/AdminService';
+import EmployeesServices from '../../services/EmployeesService';
+import ContractsServices from '../../services/ContractsService';
+
 export default {
     name: 'Contracts',
     data() {
@@ -162,8 +203,8 @@ export default {
         };
     },
     async mounted() {
-        this.contracts = (await AdminServices.getAllContracts()).data;
-        this.employees = (await AdminServices.getAllEmployees()).data;
+        this.contracts = (await ContractsServices.getAllContracts()).data;
+        this.employees = (await EmployeesServices.getAllEmployees()).data;
 
         for (const contract of this.contracts) {
             contract.name = contract.employee.name;
@@ -199,7 +240,7 @@ export default {
     methods: {
         async getThisEmployee(contract, id) {
             try {
-                const person = await AdminServices.getOneEmployee(id);
+                const person = await EmployeeServices.getOneEmployee(id);
                 (contract.name = person.data.name),
                     (contract.surname = person.data.surname),
                     (contract.email = person.data.email);
@@ -259,7 +300,7 @@ export default {
         },
         async getDaysLeftBeforeAndSum(id) {
             try {
-                const thisPerson = await AdminServices.getOneEmployee(id);
+                const thisPerson = await EmployeesServices.getOneEmployee(id);
                 this.holidays_before = thisPerson.data.days_left;
                 this.holidays.days_left = parseInt(this.holidays.days_left);
                 this.holidays_before = parseInt(this.holidays_before);
@@ -270,7 +311,7 @@ export default {
         },
         async createContract(contract) {
             try {
-                await AdminServices.addContract(contract);
+                await ContractsServices.addContract(contract);
             } catch (err) {
                 console.error(err);
             }
@@ -278,9 +319,9 @@ export default {
         async createHolidays(holidays) {
             try {
                 console.log(holidays.days_left);
-                await AdminServices.updateEmployee(holidays);
+                await EmployeesServices.updateEmployee(holidays);
                 console.log(holidays.days_left);
-                await AdminServices.updateEmployee(holidays);
+                await EmployeesServices.updateEmployee(holidays);
             } catch (err) {
                 console.error(err);
             }
@@ -295,14 +336,14 @@ export default {
                 this.error = null;
             }
             try {
-                await AdminServices.updateContract(contract);
+                await ContractsServices.updateContract(contract);
             } catch (err) {
                 console.error(err);
             }
         },
         async deleteContract(contract) {
             try {
-                await AdminServices.deleteContract(contract);
+                await ContractsServices.deleteContract(contract);
             } catch (err) {
                 console.error(err);
             }
@@ -310,4 +351,3 @@ export default {
     }
 };
 </script>
-

@@ -128,7 +128,8 @@
 </template>
 
 <script>
-import AdminServices from '../../services/AdminService';
+import EmployeesServices from '../../services/EmployeesService';
+import HolidaysServices from '../../services/HolidaysService';
 
 export default {
     name: 'admindashboard',
@@ -163,23 +164,25 @@ export default {
                 name: '',
                 surname: '',
                 birthdate: '',
-                email: ''
-                // days_left: ''
+                email: '',
+                days_left: 0,
+                isAdmin: false
             },
             defaultItem: {
                 name: '',
                 surname: '',
                 birthdate: '',
-                email: ''
-                // days_left: ''
+                email: '',
+                days_left: 0,
+                isAdmin: false
             },
             error: null,
             required: value => !!value || 'Required.'
         };
     },
     async mounted() {
-        this.employees = (await AdminServices.getAllEmployees()).data;
-        this.holidays = (await AdminServices.getHolidays()).data;
+        this.employees = (await EmployeesServices.getAllEmployees()).data;
+        this.holidays = (await HolidaysServices.getHolidays()).data;
 
         this.employees.forEach(employee => {
             let newBirthdate = employee.birthdate;
@@ -239,45 +242,41 @@ export default {
             }
         },
         async createEmployee(employee) {
-            const areAll = Object.keys(employee).every(key => !!employee[key]);
-            if (!areAll) {
-                this.error = 'All fields are required !';
-                return;
-            }
-            if (areAll) {
-                this.error = null;
-            }
+            // const areAll = Object.keys(employee).every(key => !!employee[key]);
+            // console.log(employee);
+
+            // if (!areAll) {
+            //     this.error = 'All fields are required !';
+            //     return;
+            // }
+            // if (areAll) {
+            //     this.error = null;
+            // }
             try {
-                await AdminServices.addNewEmployee(employee);
+                await EmployeesServices.addNewEmployee(employee);
             } catch (err) {
                 console.error(err);
             }
         },
         async updateEmployee(employee) {
-            const areAll = Object.keys(employee).every(key => !!employee[key]);
-            if (!areAll) {
-                this.error = 'All fields are required !';
-                return;
-            }
-            if (areAll) {
-                this.error = null;
-            }
+            // const areAll = Object.keys(employee).every(key => !!employee[key]);
+
+            // if (!areAll) {
+            //     this.error = 'All fields are required !';
+            //     return;
+            // }
+            // if (areAll) {
+            //     this.error = null;
+            // }
             try {
-                const employeeClearUpdate = {
-                    id: employee.id,
-                    email: employee.email,
-                    name: employee.name,
-                    surname: employee.surname,
-                    birthdate: employee.birthdate
-                };
-                await AdminServices.updateEmployee(employee);
+                await EmployeesServices.updateEmployee(employee);
             } catch (err) {
                 console.error(err);
             }
         },
         async deleteEmployee(employee) {
             try {
-                await AdminServices.deleteEmployee(employee);
+                await EmployeesServices.deleteEmployee(employee);
             } catch (err) {
                 console.error(err);
             }
