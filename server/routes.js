@@ -25,7 +25,7 @@ module.exports = (app) => {
     app.delete('/holidays/:id', AdminController.deleteHolidays)// => HolidaysController.delete
 
     app.get('/employees/:id/holidays', EmployeeController.getHolidaysByEmployeeId)
-    app.get('/employees/:id/holidays', EmployeeController.getEmployeeRequests)
+    app.get('/employeesR/:id/holidays', EmployeeController.getEmployeeRequests)
     app.post('/employees/:id/holidays', EmployeeController.addHolidaysEmployee)
     app.put('/employees/:id/holidays/:id_holidays', EmployeeController.editHolidaysEmployee)
     app.delete('/employees/:id/holidays/:id_holidays', EmployeeController.deleteHolidaysEmployee) //employeeId

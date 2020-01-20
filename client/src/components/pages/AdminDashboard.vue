@@ -1,22 +1,36 @@
 <template>
     <v-app class="grey page">
         <div class="container">
-            <v-data-table :headers="headers" :items="employees" class="elevation-1 table" dark>
+            <v-data-table
+                :headers="headers"
+                :items="employees"
+                class="elevation-1 table"
+                dark
+            >
                 <template v-slot:top>
                     <v-toolbar flat dark>
-                        <v-toolbar-title class="table_title">Your Employees</v-toolbar-title>
+                        <v-toolbar-title class="table_title"
+                            >Your Employees</v-toolbar-title
+                        >
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-spacer></v-spacer>
                         <v-dialog v-model="dialog" max-width="500px">
                             <template v-slot:activator="{ on }">
-                                <v-btn color="primary" dark class="mb-2" v-on="on">
+                                <v-btn
+                                    color="primary"
+                                    dark
+                                    class="mb-2"
+                                    v-on="on"
+                                >
                                     New Employee
                                     <v-icon>add</v-icon>
                                 </v-btn>
                             </template>
                             <v-card>
                                 <v-card-title>
-                                    <span class="headline">{{ formTitle }}</span>
+                                    <span class="headline">{{
+                                        formTitle
+                                    }}</span>
                                 </v-card-title>
 
                                 <v-card-text>
@@ -46,7 +60,9 @@
                                                 <v-text-field
                                                     type="text"
                                                     onfocus="(this.type='date')"
-                                                    v-model="editedItem.birthdate"
+                                                    v-model="
+                                                        editedItem.birthdate
+                                                    "
                                                     label="Birthdate"
                                                     required
                                                     :rules="[required]"
@@ -66,28 +82,44 @@
                                                 <v-text-field
                                                     type="password"
                                                     name="password"
-                                                    v-model="editedItem.password"
+                                                    v-model="
+                                                        editedItem.password
+                                                    "
                                                     label="Password"
                                                     required
                                                     :rules="[required]"
                                                 ></v-text-field>
                                             </v-col>
                                         </v-row>
-                                        <div class="error" v-if="error">{{error}}</div>
+                                        <div class="error" v-if="error">{{
+                                            error
+                                        }}</div>
                                     </v-container>
                                 </v-card-text>
 
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
-                                    <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-                                    <v-btn color="blue darken-1" text @click="save">Save</v-btn>
+                                    <v-btn
+                                        color="blue darken-1"
+                                        text
+                                        @click="close"
+                                        >Cancel</v-btn
+                                    >
+                                    <v-btn
+                                        color="blue darken-1"
+                                        text
+                                        @click="save"
+                                        >Save</v-btn
+                                    >
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
                     </v-toolbar>
                 </template>
                 <template v-slot:item.action="{ item }">
-                    <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
+                    <v-icon small class="mr-2" @click="editItem(item)"
+                        >edit</v-icon
+                    >
                     <v-icon small @click="deleteItem(item)">delete</v-icon>
                 </template>
             </v-data-table>

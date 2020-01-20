@@ -12,6 +12,7 @@ function jwtSignEmployee(employee) {
 module.exports = {
   async create(req, res) {
     try {
+
       const newEmployee = await employee.create(req.body)
       res.send(newEmployee.toJSON())
     } catch (err) {
