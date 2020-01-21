@@ -203,6 +203,7 @@ export default {
         };
     },
     async mounted() {
+        console.log(localStorage);
         this.contracts = (await ContractsServices.getAllContracts()).data;
         this.employees = (await EmployeesServices.getAllEmployees()).data;
 

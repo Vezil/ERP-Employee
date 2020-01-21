@@ -1,7 +1,7 @@
-import { store } from '../store';
+const token = localStorage.token || null;
 
 const config = {
-    headers: { Authorization: `Bearer ${localStorage.token}` }
+    headers: { Authorization: `Bearer ${token}` }
 };
 
 export { config };

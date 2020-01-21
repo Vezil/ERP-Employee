@@ -159,6 +159,7 @@ export default {
 
             return item;
         });
+        console.log(localStorage);
     },
     computed: {
         formTitle() {
