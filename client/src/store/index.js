@@ -9,7 +9,8 @@ export default new Vuex.Store({
         token: localStorage.getItem('token') || null,
         isLoggedIn: localStorage.getItem('logged') || null,
         isLoggedInAsAdmin: localStorage.getItem('admin') || null,
-        username: localStorage.getItem('username') || null
+        username: localStorage.getItem('username') || null,
+        id: localStorage.getItem('id') || null
     },
     getters: {
         token: state => {
@@ -22,7 +23,24 @@ export default new Vuex.Store({
 
             localStorage.setItem('admin', user.isAdmin);
             localStorage.setItem('username', user.name);
-            localStorage.setItem('logged', true);
+            localStorage.setItem('logged', !user.isAdmin);
+            localStorage.setItem('id', user.id);
+
+            this.state.id = user.id;
+            this.state.username = user.name;
+            this.state.isLoggedIn = !user.logged;
+            this.state.isLoggedInAsAdmin = user.isAdmin;
+
+            if (user.isAdmin === false) {
+                localStorage.setItem('admin', null);
+                localStorage.removeItem('admin');
+                this.state.isLoggedInAsAdmin = null;
+            }
+            if (user.isAdmin === true) {
+                localStorage.setItem('logged', null);
+                localStorage.removeItem('logged');
+                this.state.isLoggedIn = null;
+            }
         },
         setToken(state, token) {
             if (localStorage.token !== null) {
@@ -49,20 +67,28 @@ export default new Vuex.Store({
             }
         },
         unsetStorage(state, unset) {
-            state.user = unset;
+            this.state.user = unset;
 
             localStorage.setItem('admin', unset);
             localStorage.setItem('username', unset);
             localStorage.setItem('logged', unset);
             localStorage.setItem('token', unset);
+            localStorage.setItem('id', unset);
 
             localStorage.removeItem('admin');
             localStorage.removeItem('username');
             localStorage.removeItem('logged');
             localStorage.removeItem('token');
+            localStorage.removeItem('id');
+
+            this.state.isLoggedIn = null;
+            this.state.isLoggedInAsAdmin = null;
+            this.state.username = null;
+            this.state.id = null;
+            this.state.token = null;
+
             console.log(localStorage);
-            console.log(unset);
-            console.log('THIU'); // id przekazac localstorage!
+            console.log(this.state.id);
         }
     },
     actions: {

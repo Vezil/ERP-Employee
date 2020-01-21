@@ -127,6 +127,7 @@
     </div>
 </template>
 <script>
+import { store } from '../store';
 export default {
     name: 'Navbar',
     data() {

@@ -11,7 +11,7 @@
                     <v-toolbar flat dark>
                         <v-toolbar-title class="table_title"
                             >Your requests for holidays
-                            {{ $store.state.user.id }}</v-toolbar-title
+                            {{ $store.state.id }}</v-toolbar-title
                         >
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-spacer></v-spacer>
@@ -139,7 +139,7 @@ export default {
                 start_date: '',
                 finish_date: '',
                 confirmed: 0,
-                employeeId: this.$store.state.user.id
+                employeeId: this.$store.state.id
             },
 
             required: value => !!value || 'Required.',
@@ -148,7 +148,7 @@ export default {
     },
     async mounted() {
         this.holidays_user = await HolidaysForUserServices.getEmployeeRequests(
-            this.$store.state.user.id
+            this.$store.state.id
         );
 
         this.holidays_user = this.holidays_user.data;

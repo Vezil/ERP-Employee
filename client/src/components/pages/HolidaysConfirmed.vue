@@ -51,7 +51,7 @@ export default {
     },
     async mounted() {
         this.holidays_user = await HolidaysForUserServices.getHolidaysByEmployeeId(
-            this.$store.state.user.id
+            this.$store.state.id
         );
         this.holidays_user = this.holidays_user.data;
 
