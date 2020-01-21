@@ -127,13 +127,15 @@
     </div>
 </template>
 <script>
-import { store } from '../store';
 export default {
     name: 'Navbar',
     data() {
         return {
             drawer: null
         };
+    },
+    mounted() {
+        console.log(this.$store.state);
     }
 };
 </script>

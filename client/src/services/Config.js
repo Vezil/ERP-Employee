@@ -1,4 +1,4 @@
-const token = localStorage.token || null;
+const token = localStorage.getItem('token') || null;
 
 const config = {
     headers: { Authorization: `Bearer ${token}` }

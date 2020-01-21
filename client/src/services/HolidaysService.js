@@ -1,5 +1,6 @@
 import Api from '@/services/Api';
 require('dotenv').config();
+import { config } from '@/services/Config';
 
 export default {
     getHolidays() {

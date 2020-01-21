@@ -1,4 +1,6 @@
 import Api from '@/services/Api';
+import { config } from '@/services/Config';
+
 require('dotenv').config();
 
 export default {

@@ -14,7 +14,7 @@ export default {
             this.$store.dispatch('unsetStorage', null);
 
             this.$router.push({
-                name: 'dashboard'
+                name: 'login'
             });
         }
     }

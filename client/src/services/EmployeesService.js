@@ -1,12 +1,16 @@
 import Api from '@/services/Api';
-import { config } from '@/services/Config';
+import Axios from 'axios';
 
 require('dotenv').config();
 
 export default {
+    create() {},
+
     getAllEmployees() {
-        return Api().get('employees', config);
+        console.log(Axios.defaults);
+        return Axios.get('employees');
     },
+
     addNewEmployee(employee) {
         return Api().post('employees', employee);
     },

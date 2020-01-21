@@ -196,9 +196,6 @@ import HolidaysServices from '../../services/HolidaysService';
 
 export default {
     name: 'admindashboard',
-    components: {
-        // HelloWorld
-    },
     data() {
         return {
             employees: [],
@@ -338,17 +335,23 @@ export default {
         },
 
         async createEmployee(employee) {
-            // const areAll = Object.keys(employee).every(key => !!employee[key]);
-            // console.log(employee);
+            var areAll = true;
+            Object.keys(employee).forEach(value => {
+                if (employee[value] === '' || employee[value] === undefined) {
+                    areAll = false;
+                }
+            });
 
-            // if (!areAll) {
-            //     this.error = 'All fields are required !';
-            //     return;
-            // }
-            // if (areAll) {
-            //     this.error = null;
-            // }
+            if (areAll === false) {
+                this.error = 'All fields are required !';
+
+                return;
+            }
+            if (areAll) {
+                this.error = null;
+            }
             try {
+                console.log(employee);
                 await EmployeesServices.addNewEmployee(employee);
             } catch (err) {
                 console.error(err);
