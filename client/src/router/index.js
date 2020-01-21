@@ -6,6 +6,7 @@ import Login from '../components/pages/Login.vue'
 import Holidays from '../components/pages/Holidays.vue'
 import HolidaysRequests from '../components/pages/HolidaysRequests.vue'
 import HolidaysConfirmed from '../components/pages/HolidaysConfirmed.vue'
+import Logout from '../components/pages/Logout.vue'
 
 Vue.use(VueRouter)
 
@@ -39,6 +40,11 @@ const routes = [
     path: '/HolidaysConfirmed',
     component: HolidaysConfirmed,
     name: 'holidaysconfirmed'
+  },
+  {
+    path: '/Logout',
+    component: Logout,
+    name: 'logout'
   },
 
   {

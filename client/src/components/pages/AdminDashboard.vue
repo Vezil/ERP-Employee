@@ -1,22 +1,37 @@
 <template>
-    <v-app class="grey">
+    <v-app class="grey page">
         <div class="container">
-            <v-data-table :headers="headers" :items="employees" class="elevation-1" dark>
+            <v-data-table
+                :headers="headers"
+                :items="employees"
+                @click:row="profile"
+                class="elevation-1 table"
+                dark
+            >
                 <template v-slot:top>
                     <v-toolbar flat dark>
-                        <v-toolbar-title>Your Employees</v-toolbar-title>
+                        <v-toolbar-title class="table_title"
+                            >Your Employees</v-toolbar-title
+                        >
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-spacer></v-spacer>
-                        <v-dialog v-model="dialog" max-width="500px">
+                        <v-dialog v-model="isDialogOpen" max-width="500px">
                             <template v-slot:activator="{ on }">
-                                <v-btn color="primary" dark class="mb-2" v-on="on">
+                                <v-btn
+                                    color="primary"
+                                    dark
+                                    class="mb-2"
+                                    v-on="on"
+                                >
                                     New Employee
                                     <v-icon>add</v-icon>
                                 </v-btn>
                             </template>
                             <v-card>
                                 <v-card-title>
-                                    <span class="headline">{{ formTitle }}</span>
+                                    <span class="headline">{{
+                                        formTitle
+                                    }}</span>
                                 </v-card-title>
 
                                 <v-card-text>
@@ -46,7 +61,9 @@
                                                 <v-text-field
                                                     type="text"
                                                     onfocus="(this.type='date')"
-                                                    v-model="editedItem.birthdate"
+                                                    v-model="
+                                                        editedItem.birthdate
+                                                    "
                                                     label="Birthdate"
                                                     required
                                                     :rules="[required]"
@@ -66,28 +83,105 @@
                                                 <v-text-field
                                                     type="password"
                                                     name="password"
-                                                    v-model="editedItem.password"
+                                                    v-model="
+                                                        editedItem.password
+                                                    "
                                                     label="Password"
                                                     required
                                                     :rules="[required]"
                                                 ></v-text-field>
                                             </v-col>
                                         </v-row>
-                                        <div class="error" v-if="error">{{error}}</div>
+                                        <div class="error" v-if="error">{{
+                                            error
+                                        }}</div>
                                     </v-container>
                                 </v-card-text>
 
                                 <v-card-actions>
                                     <v-spacer></v-spacer>
-                                    <v-btn color="blue darken-1" text @click="close">Cancel</v-btn>
-                                    <v-btn color="blue darken-1" text @click="save">Save</v-btn>
+                                    <v-btn
+                                        color="blue darken-1"
+                                        text
+                                        @click="close"
+                                        >Cancel</v-btn
+                                    >
+                                    <v-btn
+                                        color="blue darken-1"
+                                        text
+                                        @click="save"
+                                        >Save</v-btn
+                                    >
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
+                        <v-dialog v-model="isDialogProfileOpen" width="500">
+                            <v-card>
+                                <v-card-title
+                                    class="headline grey lighten-2"
+                                    primary-title
+                                >
+                                    <h2
+                                        >{{ profileItem.name }}
+                                        {{ profileItem.surname }}</h2
+                                    >
+                                </v-card-title>
+
+                                <v-card-text class="profileInner">
+                                    <div class="data">
+                                        <div
+                                            ><b>Email:</b>
+                                            {{ profileItem.email }}</div
+                                        >
+                                        <div>
+                                            Date of Birth:
+                                            {{ profileItem.birthdate }}
+                                        </div>
+                                        <div
+                                            >Days off (left):
+                                            {{ profileItem.days_left }}</div
+                                        >
+                                    </div>
+                                    <div
+                                        class="data"
+                                        v-for="oneContract in contractsEmployee"
+                                        :key="oneContract.id"
+                                    >
+                                        <div>
+                                            <b>Contract</b> for
+                                            {{ oneContract.contract }}
+                                            months</div
+                                        >
+                                        <div
+                                            >Start date of this contract:
+                                            {{ oneContract.start_date }}</div
+                                        >
+                                        <div
+                                            >Finish date of this contract:
+                                            {{ oneContract.finish_date }}</div
+                                        >
+                                    </div>
+                                </v-card-text>
+
+                                <v-divider></v-divider>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn
+                                        color="primary"
+                                        text
+                                        @click="isDialogProfileOpen = false"
+                                    >
+                                        OK
+                                    </v-btn>
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
                     </v-toolbar>
                 </template>
                 <template v-slot:item.action="{ item }">
-                    <v-icon small class="mr-2" @click="editItem(item)">edit</v-icon>
+                    <v-icon small class="mr-2" @click="editItem(item)"
+                        >edit</v-icon
+                    >
                     <v-icon small @click="deleteItem(item)">delete</v-icon>
                 </template>
             </v-data-table>
@@ -96,7 +190,9 @@
 </template>
 
 <script>
-import AdminServices from '../../services/AdminService';
+import EmployeesServices from '../../services/EmployeesService';
+import ContractsServices from '../../services/ContractsService';
+import HolidaysServices from '../../services/HolidaysService';
 
 export default {
     name: 'admindashboard',
@@ -107,7 +203,9 @@ export default {
         return {
             employees: [],
             holidays: [],
-            dialog: false,
+            contractsEmployee: [],
+            isDialogOpen: false,
+            isDialogProfileOpen: false,
             newPass: false,
             headers: [
                 {
@@ -131,23 +229,25 @@ export default {
                 name: '',
                 surname: '',
                 birthdate: '',
-                email: ''
-                // days_left: ''
+                email: '',
+                days_left: 0,
+                isAdmin: false
             },
-            defaultItem: {
+            profileItem: {
                 name: '',
                 surname: '',
                 birthdate: '',
-                email: ''
-                // days_left: ''
+                email: '',
+                days_left: 0,
+                contracts: []
             },
             error: null,
             required: value => !!value || 'Required.'
         };
     },
     async mounted() {
-        this.employees = (await AdminServices.getAllEmployees()).data;
-        this.holidays = (await AdminServices.getHolidays()).data;
+        this.employees = (await EmployeesServices.getAllEmployees()).data;
+        this.holidays = (await HolidaysServices.getHolidays()).data;
 
         this.employees.forEach(employee => {
             let newBirthdate = employee.birthdate;
@@ -163,7 +263,7 @@ export default {
     },
 
     watch: {
-        dialog(val) {
+        isDialogOpen(val) {
             val || this.close();
         }
     },
@@ -172,7 +272,7 @@ export default {
         editItem(item) {
             this.editedIndex = this.employees.indexOf(item);
             this.editedItem = Object.assign({}, item);
-            this.dialog = true;
+            this.isDialogOpen = true;
         },
 
         deleteItem(item) {
@@ -184,7 +284,7 @@ export default {
 
         close() {
             this.error = null;
-            this.dialog = false;
+            this.isDialogOpen = false;
             setTimeout(() => {
                 this.editedItem = Object.assign({}, this.defaultItem);
                 this.editedIndex = -1;
@@ -206,46 +306,73 @@ export default {
                 this.close();
             }
         },
-        async createEmployee(employee) {
-            const areAll = Object.keys(employee).every(key => !!employee[key]);
-            if (!areAll) {
-                this.error = 'All fields are required !';
-                return;
+        async profile(user) {
+            if (this.editedIndex > -1) {
+                this.isDialogProfileOpen = false;
+            } else {
+                this.isDialogProfileOpen = true;
             }
-            if (areAll) {
-                this.error = null;
-            }
+
+            this.profileItem.id = user.id;
+            this.profileItem.email = user.email;
+            this.profileItem.name = user.name;
+            this.profileItem.surname = user.surname;
+            this.profileItem.birthdate = user.birthdate;
+            this.profileItem.days_left = user.days_left;
+
             try {
-                await AdminServices.addNewEmployee(employee);
+                this.contractsEmployee = await ContractsServices.getContractsEmployee(
+                    user.id
+                );
+                this.contractsEmployee = this.contractsEmployee.data;
+                this.profileItem.contracts = this.contractsEmployee;
+
+                this.contractsEmployee = this.contractsEmployee.map(item => {
+                    item.start_date = item.start_date.slice(0, 10);
+                    item.finish_date = item.finish_date.slice(0, 10);
+                    return item;
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        },
+
+        async createEmployee(employee) {
+            // const areAll = Object.keys(employee).every(key => !!employee[key]);
+            // console.log(employee);
+
+            // if (!areAll) {
+            //     this.error = 'All fields are required !';
+            //     return;
+            // }
+            // if (areAll) {
+            //     this.error = null;
+            // }
+            try {
+                await EmployeesServices.addNewEmployee(employee);
             } catch (err) {
                 console.error(err);
             }
         },
         async updateEmployee(employee) {
-            const areAll = Object.keys(employee).every(key => !!employee[key]);
-            if (!areAll) {
-                this.error = 'All fields are required !';
-                return;
-            }
-            if (areAll) {
-                this.error = null;
-            }
+            // const areAll = Object.keys(employee).every(key => !!employee[key]);
+
+            // if (!areAll) {
+            //     this.error = 'All fields are required !';
+            //     return;
+            // }
+            // if (areAll) {
+            //     this.error = null;
+            // }
             try {
-                const employeeClearUpdate = {
-                    id: employee.id,
-                    email: employee.email,
-                    name: employee.name,
-                    surname: employee.surname,
-                    birthdate: employee.birthdate
-                };
-                await AdminServices.updateEmployee(employee);
+                await EmployeesServices.updateEmployee(employee);
             } catch (err) {
                 console.error(err);
             }
         },
         async deleteEmployee(employee) {
             try {
-                await AdminServices.deleteEmployee(employee);
+                await EmployeesServices.deleteEmployee(employee);
             } catch (err) {
                 console.error(err);
             }
@@ -257,5 +384,21 @@ export default {
 .error {
     padding: 12px;
     color: black;
+}
+.profileInner {
+    margin-bottom: 10px;
+    margin-top: 50px;
+}
+.data {
+    border: 4px dashed rgb(54, 80, 54);
+    border-top: 0px;
+    font-size: 20px;
+    padding: 20px;
+}
+.data:first-child {
+    border-top: 4px dashed rgb(54, 80, 54);
+}
+.table:hover {
+    cursor: pointer;
 }
 </style>

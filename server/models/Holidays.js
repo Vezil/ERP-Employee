@@ -1,7 +1,6 @@
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
-
   const Holidays = sequelize.define('holidays', {
     days_taken: {
       type: DataTypes.INTEGER,
@@ -15,7 +14,6 @@ module.exports = (sequelize, DataTypes) => {
     confirmed: {
       type: DataTypes.BOOLEAN,
     }
-
   });
 
   Holidays.associate = function (models) {

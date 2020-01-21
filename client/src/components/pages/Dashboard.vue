@@ -1,16 +1,18 @@
 <template>
-    <v-app class="grey">
+    <v-app class="grey page">
         <div class="local_container">
             <h1>
                 Welcome to ERP
                 <div v-if="$store.state.isLoggedIn">
-                    <b>{{$store.state.user.name}}!</b>
+                    <b>{{ $store.state.username }}!</b>
                 </div>
             </h1>
-
-            <div v-if="$store.state.isLoggedIn">
-                <!-- <admin-dashboard /> -->
-                <employee-dashboard />
+            <div>
+                <admin-dashboard v-if="$store.state.isLoggedInAsAdmin" />
+                <employee-dashboard v-if="$store.state.isLoggedIn" />
+                <!-- <a -->
+                <!-- href="https://www.freepik.com/free-photos-vectors/background" -->
+                <!-- >Background photo created by dashu83 - www.freepik.com</a> -->
             </div>
         </div>
     </v-app>
@@ -19,24 +21,43 @@
 <script>
 import AdminDashboard from './AdminDashboard.vue';
 import EmployeeDashboard from './EmployeeDashboard.vue';
-
+import { store } from '../../store';
 export default {
     name: 'dashboard',
     components: {
         AdminDashboard,
         EmployeeDashboard
+    },
+    data() {
+        return {
+            // loggedIn: null
+        };
     }
 };
 </script>
 <style>
+@import url('https://fonts.googleapis.com/css?family=Arvo|Pacifico&display=swap');
+
 .local_container {
-    margin-left: auto;
-    margin: auto;
     text-align: center;
-    color: rgb(8, 1, 1);
-    padding: 50px;
+    color: white;
+    padding: 10px;
 }
 .local_container h1 {
-    padding: 80px;
+    padding: 10px;
+}
+.table {
+    margin: 10% !important;
+    letter-spacing: 1px;
+}
+.table_title {
+    font-size: 30px;
+    color: rgb(84, 199, 245);
+}
+
+h1 {
+    font-family: 'Arvo', serif !important;
+    font-size: 60px;
+    margin-top: 7%;
 }
 </style>
