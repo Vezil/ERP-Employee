@@ -7,8 +7,10 @@ Vue.use(Vuex);
 export default new Vuex.Store({
     state: {
         token: localStorage.getItem('token') || null,
-        isLoggedIn: localStorage.getItem('logged') === 'true' || false,
-        isLoggedInAsAdmin: localStorage.getItem('admin') === 'true' || false,
+        isLoggedInAsUser:
+            localStorage.getItem('isLoggedInAsUser') === 'true' || false,
+        isLoggedInAsAdmin:
+            localStorage.getItem('isLoggedInAsAdmin') === 'true' || false,
         username: localStorage.getItem('username') || null,
         id: localStorage.getItem('id') || null
     },
@@ -21,14 +23,14 @@ export default new Vuex.Store({
 
     mutations: {
         setUser(state, user) {
-            localStorage.setItem('admin', !!user.isAdmin);
+            localStorage.setItem('isLoggedInAsAdmin', !!user.isAdmin);
             localStorage.setItem('username', user.name);
-            localStorage.setItem('logged', !user.isAdmin);
+            localStorage.setItem('isLoggedInAsUser', !user.isAdmin);
             localStorage.setItem('id', user.id);
 
             this.state.id = user.id;
             this.state.username = user.name;
-            this.state.isLoggedIn = !user.isAdmin;
+            this.state.isLoggedInAsUser = !user.isAdmin;
             this.state.isLoggedInAsAdmin = !!user.isAdmin;
         },
 
@@ -40,14 +42,14 @@ export default new Vuex.Store({
         },
 
         unsetStorage(state) {
-            localStorage.removeItem('admin');
+            localStorage.removeItem('isLoggedInAsAdmin');
             localStorage.removeItem('username');
-            localStorage.removeItem('logged');
+            localStorage.removeItem('isLoggedInAsUser');
             localStorage.removeItem('token');
             localStorage.removeItem('id');
 
-            this.state.isLoggedIn = null;
-            this.state.isLoggedInAsAdmin = null;
+            this.state.isLoggedInAsUser = false;
+            this.state.isLoggedInAsAdmin = false;
             this.state.username = null;
             this.state.id = null;
             this.state.token = null;
@@ -62,7 +64,7 @@ export default new Vuex.Store({
             commit('setToken', token);
         },
         unsetStorage({ commit }, unset) {
-            commit('unsetStorage', unset);
+            commit('unsetStorage');
         }
     },
 

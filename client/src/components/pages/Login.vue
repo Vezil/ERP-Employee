@@ -68,8 +68,6 @@ export default {
                     password: this.password
                 });
 
-                console.log(data);
-
                 this.$store.dispatch('setUser', data.employee);
                 this.$store.dispatch('setToken', data.token);
 

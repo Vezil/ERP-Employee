@@ -16,7 +16,7 @@
                 </router-link>
                 <router-link
                     v-if="
-                        !$store.state.isLoggedIn &&
+                        !$store.state.isLoggedInAsUser &&
                             !$store.state.isLoggedInAsAdmin
                     "
                     to="Login"
@@ -66,7 +66,7 @@
                     </v-list-item>
                 </router-link>
                 <router-link
-                    v-if="$store.state.isLoggedIn"
+                    v-if="$store.state.isLoggedInAsUser"
                     to="HolidaysRequests"
                 >
                     <v-list-item class="menu_el">
@@ -82,7 +82,7 @@
                     </v-list-item>
                 </router-link>
                 <router-link
-                    v-if="$store.state.isLoggedIn"
+                    v-if="$store.state.isLoggedInAsUser"
                     to="HolidaysConfirmed"
                 >
                     <v-list-item class="menu_el">
@@ -99,7 +99,7 @@
                 </router-link>
                 <router-link
                     v-if="
-                        $store.state.isLoggedIn ||
+                        $store.state.isLoggedInAsUser ||
                             $store.state.isLoggedInAsAdmin
                     "
                     to="Logout"
@@ -133,9 +133,6 @@ export default {
         return {
             drawer: null
         };
-    },
-    mounted() {
-        console.log(this.$store.state);
     }
 };
 </script>

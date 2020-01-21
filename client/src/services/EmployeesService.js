@@ -1,29 +1,29 @@
-import Api from '@/services/Api';
 import Axios from 'axios';
 
 require('dotenv').config();
 
 export default {
-    create() {},
+    create() {
+        return Axios.post('employees', credentials);
+    },
 
     getAllEmployees() {
-        console.log(Axios.defaults);
         return Axios.get('employees');
     },
 
     addNewEmployee(employee) {
-        return Api().post('employees', employee);
+        return Axios.post('employees', employee);
     },
 
     updateEmployee(employee) {
-        return Api().put(`employees/${employee.id}`, employee);
+        return Axios.put(`employees/${employee.id}`, employee);
     },
 
     deleteEmployee(employee) {
-        return Api().delete(`employees/${employee.id}`, employee);
+        return Axios.delete(`employees/${employee.id}`, employee);
     },
 
     getOneEmployee(id) {
-        return Api().get(`employees/${id}`);
+        return Axios.get(`employees/${id}`);
     }
 };

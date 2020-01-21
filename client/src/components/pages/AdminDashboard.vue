@@ -297,6 +297,7 @@ export default {
                 );
             } else {
                 this.employees.push(this.editedItem);
+                console.log(this.editItem);
                 this.createEmployee(this.editedItem);
             }
             if (!this.error) {
@@ -351,22 +352,26 @@ export default {
                 this.error = null;
             }
             try {
-                console.log(employee);
                 await EmployeesServices.addNewEmployee(employee);
             } catch (err) {
                 console.error(err);
             }
         },
         async updateEmployee(employee) {
-            // const areAll = Object.keys(employee).every(key => !!employee[key]);
+            var areAll = true;
+            Object.keys(employee).forEach(value => {
+                if (employee[value] === '' || employee[value] === undefined) {
+                    areAll = false;
+                }
+            });
 
-            // if (!areAll) {
-            //     this.error = 'All fields are required !';
-            //     return;
-            // }
-            // if (areAll) {
-            //     this.error = null;
-            // }
+            if (!areAll) {
+                this.error = 'All fields are required !';
+                return;
+            }
+            if (areAll) {
+                this.error = null;
+            }
             try {
                 await EmployeesServices.updateEmployee(employee);
             } catch (err) {

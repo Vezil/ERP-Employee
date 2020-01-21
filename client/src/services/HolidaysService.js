@@ -1,22 +1,22 @@
-import Api from '@/services/Api';
+import Axios from 'axios';
+
 require('dotenv').config();
-import { config } from '@/services/Config';
 
 export default {
     getHolidays() {
-        return Api().get('holidays');
+        return Axios.get('holidays');
     },
     addHolidays(holidays) {
-        return Api().post('holidays', holidays);
+        return Axios.post('holidays', holidays);
     },
 
     newHolidays(holidays) {
-        return Api().post(`holidays/${holidays.id}`, holidays);
+        return Axios.post(`holidays/${holidays.id}`, holidays);
     },
     updateHolidays(holidays) {
-        return Api().put(`holidays/${holidays.id}`, holidays);
+        return Axios.put(`holidays/${holidays.id}`, holidays);
     },
     deleteHolidays(holidays) {
-        return Api().delete(`holidays/${holidays.id}`);
+        return Axios.delete(`holidays/${holidays.id}`);
     }
 };

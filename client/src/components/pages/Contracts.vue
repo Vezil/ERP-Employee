@@ -203,7 +203,6 @@ export default {
         };
     },
     async mounted() {
-        console.log(localStorage);
         this.contracts = (await ContractsServices.getAllContracts()).data;
         this.employees = (await EmployeesServices.getAllEmployees()).data;
 
@@ -290,7 +289,6 @@ export default {
                     }
                 });
 
-                // delete this.editedItem.email;
                 this.createContract(this.editedItem);
                 this.holidays.id = this.editedItem.employeeId;
 
