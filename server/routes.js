@@ -14,7 +14,11 @@ module.exports = app => {
     app.post('/login', AuthenticationController.login);
 
     app.post('/employees', EmployeesController.Create);
-    app.get('/employees', EmployeesController.Show);
+    app.get(
+        '/employees',
+        AuthenticationController.verifyToken,
+        EmployeesController.Show
+    );
     app.get('/employees/:id', EmployeesController.getOne);
     app.put('/employees/:id', EmployeesController.Update);
     app.delete('/employees/:id', EmployeesController.Delete);

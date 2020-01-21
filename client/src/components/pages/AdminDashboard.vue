@@ -307,7 +307,12 @@ export default {
             }
         },
         async profile(user) {
-            this.isDialogProfileOpen = true;
+            if (this.editedIndex > -1) {
+                this.isDialogProfileOpen = false;
+            } else {
+                this.isDialogProfileOpen = true;
+            }
+
             this.profileItem.id = user.id;
             this.profileItem.email = user.email;
             this.profileItem.name = user.name;

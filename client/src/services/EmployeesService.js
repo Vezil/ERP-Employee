@@ -1,9 +1,11 @@
 import Api from '@/services/Api';
+import { config } from '@/services/Config';
+
 require('dotenv').config();
 
 export default {
     getAllEmployees() {
-        return Api().get('employees');
+        return Api().get('employees', config);
     },
     addNewEmployee(employee) {
         return Api().post('employees', employee);

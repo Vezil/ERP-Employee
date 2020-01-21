@@ -59,5 +59,32 @@ module.exports = {
                 error: 'This credenctials are incorrect. Try Again!'
             });
         }
+    },
+    async verifyToken(req, res, next) {
+        const bearerHeader = req.headers['authorization'];
+        if (typeof bearerHeader !== 'undefined') {
+            const bearer = bearerHeader.split(' ');
+            const bearerToken = bearer[1];
+            req.token = bearerToken;
+
+            jwt.verify(
+                bearerToken,
+                config.authentication.jwtSecret,
+                (err, authData) => {
+                    if (err) {
+                        res.sendStatus(403).json({
+                            auth: false,
+                            message: 'Failed to authenticate token.'
+                        });
+                    }
+                    next();
+                }
+            );
+        } else {
+            res.sendStatus(403).json({
+                auth: false,
+                message: 'Failed to authenticate token.'
+            });
+        }
     }
 };
