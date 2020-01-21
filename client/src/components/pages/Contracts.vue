@@ -14,7 +14,7 @@
                         >
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-spacer></v-spacer>
-                        <v-dialog v-model="dialog" max-width="500px">
+                        <v-dialog v-model="isDialogOpen" max-width="500px">
                             <template v-slot:activator="{ on }">
                                 <v-btn
                                     color="primary"
@@ -141,7 +141,7 @@ export default {
             contracts: [],
             employees: [],
             employee: [],
-            dialog: false,
+            isDialogOpen: false,
             newPass: false,
             headers: [
                 {
@@ -233,7 +233,7 @@ export default {
     },
 
     watch: {
-        dialog(val) {
+        isDialogOpen(val) {
             val || this.close();
         }
     },
@@ -252,7 +252,7 @@ export default {
         editItem(item) {
             this.editedIndex = this.contracts.indexOf(item);
             this.editedItem = Object.assign({}, item);
-            this.dialog = true;
+            this.isDialogOpen = true;
         },
 
         deleteItem(item) {
@@ -264,7 +264,7 @@ export default {
 
         close() {
             this.error = null;
-            this.dialog = false;
+            this.isDialogOpen = false;
             setTimeout(() => {
                 this.editedItem = Object.assign({}, this.defaultItem);
                 this.editedIndex = -1;
@@ -279,19 +279,22 @@ export default {
                     this.updateContract(this.editedItem)
                 );
             } else {
+                this.contracts.push(this.editedItem);
+
                 this.employees.forEach(employee => {
-                    if (this.editedItem.email == employee.email) {
+                    if (this.editedItem.email === employee.email) {
                         this.editedItem.employeeId = employee.id;
+                        this.editedItem.name = employee.name;
+                        this.editedItem.surname = employee.surname;
                     }
                 });
 
-                this.contracts.push(this.editedItem);
-
-                delete this.editedItem.email;
+                // delete this.editedItem.email;
                 this.createContract(this.editedItem);
                 this.holidays.id = this.editedItem.employeeId;
 
                 this.getDaysLeftBeforeAndSum(this.holidays.id);
+
                 this.createHolidays(this.holidays);
             }
             if (!this.error) {
@@ -318,9 +321,9 @@ export default {
         },
         async createHolidays(holidays) {
             try {
-                console.log(holidays.days_left);
+                console.log(holidays.days_left + ' first');
                 await EmployeesServices.updateEmployee(holidays);
-                console.log(holidays.days_left);
+                console.log(holidays.days_left + ' second');
                 await EmployeesServices.updateEmployee(holidays);
             } catch (err) {
                 console.error(err);

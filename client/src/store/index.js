@@ -51,8 +51,6 @@ export default new Vuex.Store({
                 state.token = localStorage.getItem('token');
                 axios.defaults.headers.common['Authorization'] =
                     'Bearer ' + state.token;
-
-                console.log(localStorage);
             }
 
             if (token) {
@@ -86,9 +84,6 @@ export default new Vuex.Store({
             this.state.username = null;
             this.state.id = null;
             this.state.token = null;
-
-            console.log(localStorage);
-            console.log(this.state.id);
         }
     },
     actions: {

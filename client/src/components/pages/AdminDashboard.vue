@@ -4,6 +4,7 @@
             <v-data-table
                 :headers="headers"
                 :items="employees"
+                @click:row="profile"
                 class="elevation-1 table"
                 dark
             >
@@ -14,7 +15,7 @@
                         >
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-spacer></v-spacer>
-                        <v-dialog v-model="dialog" max-width="500px">
+                        <v-dialog v-model="isDialogOpen" max-width="500px">
                             <template v-slot:activator="{ on }">
                                 <v-btn
                                     color="primary"
@@ -114,6 +115,67 @@
                                 </v-card-actions>
                             </v-card>
                         </v-dialog>
+                        <v-dialog v-model="isDialogProfileOpen" width="500">
+                            <v-card>
+                                <v-card-title
+                                    class="headline grey lighten-2"
+                                    primary-title
+                                >
+                                    <h2
+                                        >{{ profileItem.name }}
+                                        {{ profileItem.surname }}</h2
+                                    >
+                                </v-card-title>
+
+                                <v-card-text class="profileInner">
+                                    <div class="data">
+                                        <div
+                                            ><b>Email:</b>
+                                            {{ profileItem.email }}</div
+                                        >
+                                        <div>
+                                            Date of Birth:
+                                            {{ profileItem.birthdate }}
+                                        </div>
+                                        <div
+                                            >Days off (left):
+                                            {{ profileItem.days_left }}</div
+                                        >
+                                    </div>
+                                    <div
+                                        class="data"
+                                        v-for="oneContract in contractsEmployee"
+                                        :key="oneContract.id"
+                                    >
+                                        <div>
+                                            <b>Contract</b> for
+                                            {{ oneContract.contract }}
+                                            months</div
+                                        >
+                                        <div
+                                            >Start date of this contract:
+                                            {{ oneContract.start_date }}</div
+                                        >
+                                        <div
+                                            >Finish date of this contract:
+                                            {{ oneContract.finish_date }}</div
+                                        >
+                                    </div>
+                                </v-card-text>
+
+                                <v-divider></v-divider>
+                                <v-card-actions>
+                                    <v-spacer></v-spacer>
+                                    <v-btn
+                                        color="primary"
+                                        text
+                                        @click="isDialogProfileOpen = false"
+                                    >
+                                        OK
+                                    </v-btn>
+                                </v-card-actions>
+                            </v-card>
+                        </v-dialog>
                     </v-toolbar>
                 </template>
                 <template v-slot:item.action="{ item }">
@@ -129,6 +191,7 @@
 
 <script>
 import EmployeesServices from '../../services/EmployeesService';
+import ContractsServices from '../../services/ContractsService';
 import HolidaysServices from '../../services/HolidaysService';
 
 export default {
@@ -140,7 +203,9 @@ export default {
         return {
             employees: [],
             holidays: [],
-            dialog: false,
+            contractsEmployee: [],
+            isDialogOpen: false,
+            isDialogProfileOpen: false,
             newPass: false,
             headers: [
                 {
@@ -168,13 +233,13 @@ export default {
                 days_left: 0,
                 isAdmin: false
             },
-            defaultItem: {
+            profileItem: {
                 name: '',
                 surname: '',
                 birthdate: '',
                 email: '',
                 days_left: 0,
-                isAdmin: false
+                contracts: []
             },
             error: null,
             required: value => !!value || 'Required.'
@@ -198,7 +263,7 @@ export default {
     },
 
     watch: {
-        dialog(val) {
+        isDialogOpen(val) {
             val || this.close();
         }
     },
@@ -207,7 +272,7 @@ export default {
         editItem(item) {
             this.editedIndex = this.employees.indexOf(item);
             this.editedItem = Object.assign({}, item);
-            this.dialog = true;
+            this.isDialogOpen = true;
         },
 
         deleteItem(item) {
@@ -219,7 +284,7 @@ export default {
 
         close() {
             this.error = null;
-            this.dialog = false;
+            this.isDialogOpen = false;
             setTimeout(() => {
                 this.editedItem = Object.assign({}, this.defaultItem);
                 this.editedIndex = -1;
@@ -241,6 +306,32 @@ export default {
                 this.close();
             }
         },
+        async profile(user) {
+            this.isDialogProfileOpen = true;
+            this.profileItem.id = user.id;
+            this.profileItem.email = user.email;
+            this.profileItem.name = user.name;
+            this.profileItem.surname = user.surname;
+            this.profileItem.birthdate = user.birthdate;
+            this.profileItem.days_left = user.days_left;
+
+            try {
+                this.contractsEmployee = await ContractsServices.getContractsEmployee(
+                    user.id
+                );
+                this.contractsEmployee = this.contractsEmployee.data;
+                this.profileItem.contracts = this.contractsEmployee;
+
+                this.contractsEmployee = this.contractsEmployee.map(item => {
+                    item.start_date = item.start_date.slice(0, 10);
+                    item.finish_date = item.finish_date.slice(0, 10);
+                    return item;
+                });
+            } catch (err) {
+                console.error(err);
+            }
+        },
+
         async createEmployee(employee) {
             // const areAll = Object.keys(employee).every(key => !!employee[key]);
             // console.log(employee);
@@ -288,5 +379,21 @@ export default {
 .error {
     padding: 12px;
     color: black;
+}
+.profileInner {
+    margin-bottom: 10px;
+    margin-top: 50px;
+}
+.data {
+    border: 4px dashed rgb(54, 80, 54);
+    border-top: 0px;
+    font-size: 20px;
+    padding: 20px;
+}
+.data:first-child {
+    border-top: 4px dashed rgb(54, 80, 54);
+}
+.table:hover {
+    cursor: pointer;
 }
 </style>

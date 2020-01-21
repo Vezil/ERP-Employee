@@ -14,7 +14,7 @@
                         >
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-spacer></v-spacer>
-                        <v-dialog v-model="dialog" max-width="500px">
+                        <v-dialog v-model="isDialogOpen" max-width="500px">
                             <template v-slot:activator="{ on }">
                                 <v-btn
                                     color="primary"
@@ -124,7 +124,7 @@ export default {
             holidays: [],
             employees: [],
             employee: [],
-            dialog: false,
+            isDialogOpen: false,
             newPass: false,
             days_left: null,
             error_validation: null,
@@ -222,7 +222,7 @@ export default {
     },
 
     watch: {
-        dialog(val) {
+        isDialogOpen(val) {
             val || this.close();
         }
     },
@@ -230,7 +230,7 @@ export default {
         editItem(item) {
             this.editedIndex = this.holidays.indexOf(item);
             this.editedItem = Object.assign({}, item);
-            this.dialog = true;
+            this.isDialogOpen = true;
         },
 
         deleteItem(item) {
@@ -244,7 +244,7 @@ export default {
 
         close() {
             this.error = null;
-            this.dialog = false;
+            this.isDialogOpen = false;
             setTimeout(() => {
                 this.editedItem = Object.assign({}, this.defaultItem);
                 this.editedIndex = -1;
@@ -272,6 +272,8 @@ export default {
                 this.employees.forEach(employee => {
                     if (this.editedItem.email == employee.email) {
                         this.editedItem.employeeId = employee.id;
+                        this.editedItem.name = employee.name;
+                        this.editedItem.surname = employee.surname;
                     }
                 });
 
@@ -380,6 +382,7 @@ export default {
                     this.editedItem.employeeId,
                     'deleting'
                 );
+                console.log(holidays);
                 await HolidaysServices.deleteHolidays(holidays);
             } catch (err) {
                 console.error(err);

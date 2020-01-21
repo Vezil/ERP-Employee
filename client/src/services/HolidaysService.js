@@ -16,6 +16,6 @@ export default {
         return Api().put(`holidays/${holidays.id}`, holidays);
     },
     deleteHolidays(holidays) {
-        return Api().delete(`holidays/${holidays.id}`, holidays);
+        return Api().delete(`holidays/${holidays.id}`);
     }
 };

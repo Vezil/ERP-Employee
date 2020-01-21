@@ -14,6 +14,21 @@ module.exports = {
             });
         }
     },
+    async showContracts(req, res, next) {
+        try {
+            const Contracts = await contracts.findAll({
+                where: {
+                    employeeId: req.params.id
+                }
+            });
+
+            res.send(Contracts);
+        } catch (err) {
+            res.status(500).send({
+                error: 'Something went wrong with getting contracts ' + err
+            });
+        }
+    },
     async Create(req, res, next) {
         try {
             const newContract = await contracts.create(req.body);

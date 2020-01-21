@@ -20,6 +20,7 @@ module.exports = app => {
     app.delete('/employees/:id', EmployeesController.Delete);
 
     app.get('/contracts', ContractsController.Show);
+    app.get('/employees/:id/contracts', ContractsController.showContracts);
     app.post('/contracts', ContractsController.Create);
     app.put('/contracts/:id', ContractsController.Update);
     app.delete('/contracts/:id', ContractsController.Delete);

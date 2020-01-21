@@ -8,6 +8,9 @@ export default {
     getAllContracts() {
         return Api().get('contracts');
     },
+    getContractsEmployee(id) {
+        return Api().get(`employees/${id}/contracts`);
+    },
     updateContract(contract) {
         return Api().put(`contracts/${contract.id}`, contract);
     },

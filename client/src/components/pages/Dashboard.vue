@@ -34,9 +34,6 @@ export default {
         };
     }
 };
-
-console.log(localStorage);
-// console.log($store.state);
 </script>
 <style>
 @import url('https://fonts.googleapis.com/css?family=Arvo|Pacifico&display=swap');
