@@ -3,16 +3,13 @@
         <div class="local_container">
             <h1>
                 Welcome to ERP
-                <div v-if="$store.state.isLoggedIn">
+                <div v-if="$store.state.isLoggedInAsUser">
                     <b>{{ $store.state.username }}!</b>
                 </div>
             </h1>
             <div>
                 <admin-dashboard v-if="$store.state.isLoggedInAsAdmin" />
-                <employee-dashboard v-if="$store.state.isLoggedIn" />
-                <!-- <a -->
-                <!-- href="https://www.freepik.com/free-photos-vectors/background" -->
-                <!-- >Background photo created by dashu83 - www.freepik.com</a> -->
+                <employee-dashboard v-if="$store.state.isLoggedInAsUser" />
             </div>
         </div>
     </v-app>
@@ -29,9 +26,7 @@ export default {
         EmployeeDashboard
     },
     data() {
-        return {
-            // loggedIn: null
-        };
+        return {};
     }
 };
 </script>

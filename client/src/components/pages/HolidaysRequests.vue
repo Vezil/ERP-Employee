@@ -11,8 +11,7 @@
                     <v-toolbar flat dark>
                         <v-toolbar-title class="table_title"
                             >Your requests for holidays
-                            {{ $store.state.id }}</v-toolbar-title
-                        >
+                        </v-toolbar-title>
                         <v-divider class="mx-4" inset vertical></v-divider>
                         <v-spacer></v-spacer>
                         <v-dialog v-model="isDialogOpen" max-width="500px">
@@ -112,6 +111,7 @@ export default {
             newPass: false,
             days_left: null,
             error_validation: null,
+            areAll: true,
             headers: [
                 {
                     text: 'Days taken',
@@ -133,7 +133,6 @@ export default {
             ],
             editedIndex: -1,
             editedItem: {
-                id: '',
                 days_taken: '',
                 days_taken_old: '',
                 start_date: '',
@@ -207,12 +206,13 @@ export default {
                     this.editedItem.employeeId,
                     'editing'
                 );
-
-                Object.assign(
-                    this.holidays_user[this.editedIndex],
-                    this.editedItem,
-                    this.updateHolidaysRequest(this.editedItem)
-                );
+                this.updateHolidaysRequest(this.editedItem);
+                if (this.areAll) {
+                    Object.assign(
+                        this.holidays_user[this.editedIndex],
+                        this.editedItem
+                    );
+                }
             } else {
                 this.SumDaysTaken(
                     this.editedItem.start_date,
@@ -242,7 +242,7 @@ export default {
         },
         async updateDaysLeft(days_taken, id, option) {
             try {
-                const thisPerson = await EmployeesServices.getOneEmployee(id);
+                const thisPerson = await EmployeesServices.getEmployeeById(id);
                 this.days_left = thisPerson.data.days_left;
                 var new_days;
                 if (option === 'deleting') {
@@ -284,8 +284,26 @@ export default {
         },
 
         async addHolidaysRequest(holidays) {
+            delete holidays.days_taken_old;
+
+            this.areAll = true;
+
+            Object.keys(holidays).forEach(value => {
+                if (holidays[value] === '' || holidays[value] === undefined) {
+                    this.areAll = false;
+                    console.log(holidays[value]);
+                }
+            });
+
+            if (this.areAll === false) {
+                this.error = 'All fields are required !';
+
+                return;
+            }
+            if (this.areAll) {
+                this.error = null;
+            }
             try {
-                delete holidays.days_taken_old;
                 await HolidaysForUserServices.addHolidaysEmployee(holidays);
             } catch (err) {
                 console.error(err);
@@ -293,14 +311,21 @@ export default {
         },
 
         async updateHolidaysRequest(holidays) {
-            // const areAll = Object.keys(holidays).every(key => !!holidays[key]);
-            // if (!areAll) {
-            //     this.error = 'All fields are required !';
-            //     return;
-            // }
-            // if (areAll) {
-            //     this.error = null;
-            // }
+            this.areAll = true;
+            Object.keys(holidays).forEach(value => {
+                if (holidays[value] === '' || holidays[value] === undefined) {
+                    this.areAll = false;
+                }
+            });
+
+            if (this.areAll === false) {
+                this.error = 'All fields are required !';
+
+                return;
+            }
+            if (this.areAll) {
+                this.error = null;
+            }
             try {
                 await HolidaysForUserServices.editHolidaysEmployee(holidays);
             } catch (err) {

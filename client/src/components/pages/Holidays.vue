@@ -128,6 +128,7 @@ export default {
             newPass: false,
             days_left: null,
             error_validation: null,
+            areAll: true,
             headers: [
                 {
                     text: 'Name',
@@ -209,9 +210,7 @@ export default {
 
         let i = 0;
         this.employees.forEach(one => {
-            this.employee[i] =
-                // '' + one.name + ' ' + one.surname + '  |  ' +
-                one.email;
+            this.employee[i] = one.email;
             i++;
         });
     },
@@ -262,12 +261,13 @@ export default {
                     this.editedItem.employeeId,
                     'editing'
                 );
-                Object.assign(
-                    this.holidays[this.editedIndex],
-                    this.editedItem,
-
-                    this.updateHolidays(this.editedItem)
-                );
+                this.updateHolidays(this.editedItem);
+                if (this.areAll) {
+                    Object.assign(
+                        this.holidays[this.editedIndex],
+                        this.editedItem
+                    );
+                }
             } else {
                 this.employees.forEach(employee => {
                     if (this.editedItem.email == employee.email) {
@@ -307,7 +307,7 @@ export default {
         },
         async updateDaysLeft(days_taken, id, option) {
             try {
-                const thisPerson = await EmployeesServices.getOneEmployee(id);
+                const thisPerson = await EmployeesServices.getEmployeeById(id);
                 this.days_left = thisPerson.data.days_left;
                 var new_days;
                 if (option === 'deleting') {
@@ -322,7 +322,6 @@ export default {
                 } else {
                     console.log('error');
                 }
-                console.log(new_days);
 
                 if (new_days >= 0) {
                     this.days_left = new_days;
@@ -349,6 +348,21 @@ export default {
         },
 
         async createHolidays(holidays) {
+            this.areAll = true;
+            Object.keys(holidays).forEach(value => {
+                if (holidays[value] === '' || holidays[value] === undefined) {
+                    this.areAll = false;
+                }
+            });
+
+            if (this.areAll === false) {
+                this.error = 'All fields are required !';
+
+                return;
+            }
+            if (this.areAll) {
+                this.error = null;
+            }
             try {
                 await HolidaysServices.addHolidays(holidays);
             } catch (err) {
@@ -357,12 +371,19 @@ export default {
         },
 
         async updateHolidays(holidays) {
-            const areAll = Object.keys(holidays).every(key => !!holidays[key]);
-            if (!areAll) {
+            this.areAll = true;
+            Object.keys(holidays).forEach(value => {
+                if (holidays[value] === '' || holidays[value] === undefined) {
+                    this.areAll = false;
+                }
+            });
+
+            if (this.areAll === false) {
                 this.error = 'All fields are required !';
+
                 return;
             }
-            if (areAll) {
+            if (this.areAll) {
                 this.error = null;
             }
             try {

@@ -130,7 +130,6 @@
 </template>
 
 <script>
-import { METHODS } from 'http';
 import EmployeesServices from '../../services/EmployeesService';
 import ContractsServices from '../../services/ContractsService';
 
@@ -143,6 +142,7 @@ export default {
             employee: [],
             isDialogOpen: false,
             newPass: false,
+            areAll: true,
             headers: [
                 {
                     text: 'Name',
@@ -220,9 +220,7 @@ export default {
 
         let i = 0;
         this.employees.forEach(one => {
-            this.employee[i] =
-                // '' + one.name + ' ' + one.surname + '  |  ' +
-                one.email;
+            this.employee[i] = one.email;
             i++;
         });
     },
@@ -240,7 +238,7 @@ export default {
     methods: {
         async getThisEmployee(contract, id) {
             try {
-                const person = await EmployeeServices.getOneEmployee(id);
+                const person = await EmployeeServices.getEmployeeById(id);
                 (contract.name = person.data.name),
                     (contract.surname = person.data.surname),
                     (contract.email = person.data.email);
@@ -273,14 +271,14 @@ export default {
 
         save() {
             if (this.editedIndex > -1) {
-                Object.assign(
-                    this.contracts[this.editedIndex],
-                    this.editedItem,
-                    this.updateContract(this.editedItem)
-                );
+                this.updateContract(this.editedItem);
+                if (this.areAll) {
+                    Object.assign(
+                        this.contracts[this.editedIndex],
+                        this.editedItem
+                    );
+                }
             } else {
-                this.contracts.push(this.editedItem);
-
                 this.employees.forEach(employee => {
                     if (this.editedItem.email === employee.email) {
                         this.editedItem.employeeId = employee.id;
@@ -293,8 +291,10 @@ export default {
                 this.holidays.id = this.editedItem.employeeId;
 
                 this.getDaysLeftBeforeAndSum(this.holidays.id);
-
                 this.createHolidays(this.holidays);
+                if (this.areAll) {
+                    this.contracts.push(this.editedItem);
+                }
             }
             if (!this.error) {
                 this.close();
@@ -302,7 +302,7 @@ export default {
         },
         async getDaysLeftBeforeAndSum(id) {
             try {
-                const thisPerson = await EmployeesServices.getOneEmployee(id);
+                const thisPerson = await EmployeesServices.getEmployeeById(id);
                 this.holidays_before = thisPerson.data.days_left;
                 this.holidays.days_left = parseInt(this.holidays.days_left);
                 this.holidays_before = parseInt(this.holidays_before);
@@ -312,6 +312,21 @@ export default {
             }
         },
         async createContract(contract) {
+            this.areAll = true;
+            Object.keys(contract).forEach(value => {
+                if (contract[value] == '' || contract[value] == undefined) {
+                    this.areAll = false;
+                }
+            });
+
+            if (this.areAll === false) {
+                this.error = 'All fields are required !';
+
+                return;
+            }
+            if (this.areAll) {
+                this.error = null;
+            }
             try {
                 await ContractsServices.addContract(contract);
             } catch (err) {
@@ -329,12 +344,19 @@ export default {
             }
         },
         async updateContract(contract) {
-            const areAll = Object.keys(contract).every(key => !!contract[key]);
-            if (!areAll) {
+            this.areAll = true;
+            Object.keys(contract).forEach(value => {
+                if (contract[value] == '' || contract[value] == undefined) {
+                    this.areAll = false;
+                }
+            });
+
+            if (this.areAll === false) {
                 this.error = 'All fields are required !';
+
                 return;
             }
-            if (areAll) {
+            if (this.areAll) {
                 this.error = null;
             }
             try {

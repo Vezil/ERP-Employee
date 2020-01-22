@@ -23,7 +23,7 @@ export default {
         return Axios.delete(`employees/${employee.id}`, employee);
     },
 
-    getOneEmployee(id) {
+    getEmployeeById(id) {
         return Axios.get(`employees/${id}`);
     }
 };

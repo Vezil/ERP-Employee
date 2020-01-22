@@ -204,6 +204,7 @@ export default {
             isDialogOpen: false,
             isDialogProfileOpen: false,
             newPass: false,
+            areAll: true,
             headers: [
                 {
                     text: 'Name',
@@ -290,15 +291,20 @@ export default {
 
         save() {
             if (this.editedIndex > -1) {
-                Object.assign(
-                    this.employees[this.editedIndex],
-                    this.editedItem,
-                    this.updateEmployee(this.editedItem)
-                );
+                this.updateEmployee(this.editedItem);
+
+                if (this.areAll) {
+                    Object.assign(
+                        this.employees[this.editedIndex],
+                        this.editedItem
+                    );
+                }
             } else {
-                this.employees.push(this.editedItem);
-                console.log(this.editItem);
                 this.createEmployee(this.editedItem);
+
+                if (this.areAll) {
+                    this.employees.push(this.editedItem);
+                }
             }
             if (!this.error) {
                 this.close();
@@ -336,19 +342,20 @@ export default {
         },
 
         async createEmployee(employee) {
-            var areAll = true;
+            this.areAll = true;
+
             Object.keys(employee).forEach(value => {
                 if (employee[value] === '' || employee[value] === undefined) {
-                    areAll = false;
+                    this.areAll = false;
                 }
             });
 
-            if (areAll === false) {
+            if (this.areAll === false) {
                 this.error = 'All fields are required !';
 
                 return;
             }
-            if (areAll) {
+            if (this.areAll) {
                 this.error = null;
             }
             try {
@@ -358,18 +365,18 @@ export default {
             }
         },
         async updateEmployee(employee) {
-            var areAll = true;
+            this.areAll = true;
             Object.keys(employee).forEach(value => {
                 if (employee[value] === '' || employee[value] === undefined) {
-                    areAll = false;
+                    this.areAll = false;
                 }
             });
 
-            if (!areAll) {
+            if (!this.areAll) {
                 this.error = 'All fields are required !';
                 return;
             }
-            if (areAll) {
+            if (this.areAll) {
                 this.error = null;
             }
             try {
