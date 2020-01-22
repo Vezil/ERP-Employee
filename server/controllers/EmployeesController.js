@@ -39,7 +39,7 @@ module.exports = {
                 }
             });
 
-            res.send(req.body);
+            return res.send(req.body);
         } catch (err) {
             console.error(err);
 
@@ -71,9 +71,9 @@ module.exports = {
     async getOne(req, res) {
         try {
             const one = await Users.findByPk(req.params.id);
-            res.send(one);
+            return res.send(one);
         } catch (err) {
-            res.status(500).send({
+            return res.status(500).send({
                 error: 'Something went wrong with id of this user '
             });
         }

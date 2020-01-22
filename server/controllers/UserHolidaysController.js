@@ -8,14 +8,14 @@ module.exports = {
 
             const holidays = await Holidays.findAll({
                 where: {
-                    usser_Id: id,
+                    user_Id: id,
                     confirmed: 1
                 }
             });
 
             return res.send(holidays);
         } catch (err) {
-            res.status(500).send({
+            return res.status(500).send({
                 error: 'Something went wrong with getting holidays ' + err
             });
         }
@@ -31,7 +31,7 @@ module.exports = {
 
             return res.send(holidays);
         } catch (err) {
-            res.status(500).send({
+            return res.status(500).send({
                 error: 'Something went wrong with getting holidays ' + err
             });
         }
@@ -41,9 +41,9 @@ module.exports = {
         if (errors.isEmpty()) {
             try {
                 const newHolidays = await Holidays.create(req.body);
-                res.send(newHolidays);
+                return res.send(newHolidays);
             } catch (err) {
-                res.status(500).send({
+                return res.status(500).send({
                     error: 'Something went wrong with adding this contract'
                 });
             }
@@ -63,10 +63,10 @@ module.exports = {
                     }
                 });
 
-                res.send(req.body);
+                return res.send(req.body);
             } catch (err) {
                 console.log(req.body);
-                res.status(500).send({
+                return res.status(500).send({
                     error:
                         'Something went wrong with updating this Holidays (Employee)'
                 });
@@ -91,9 +91,9 @@ module.exports = {
 
             await one.destroy();
 
-            res.send(one);
+            return res.send(one);
         } catch (err) {
-            res.status(500).send({
+            return res.status(500).send({
                 error:
                     'Something went wrong with deleting this Holidays (Employee)'
             });

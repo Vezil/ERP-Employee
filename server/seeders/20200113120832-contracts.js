@@ -21,7 +21,7 @@ module.exports = {
     down: function(queryInterface, Sequelize) {
         return queryInterface.bulkDelete('contracts', [
             {
-                userId: 6
+                user_Id: 6
             }
         ]);
     }

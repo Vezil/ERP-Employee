@@ -3,28 +3,28 @@ const { Contracts, Users } = require('../models');
 module.exports = {
     async show(req, res, next) {
         try {
-            const Contracts = await contracts.findAll({
+            const contracts = await Contracts.findAll({
                 include: [{ model: Users, as: 'employee' }]
             });
 
-            return res.send(Contracts);
+            return res.send(contracts);
         } catch (err) {
-            res.status(500).send({
+            return res.status(500).send({
                 error: 'Something went wrong with getting employees'
             });
         }
     },
     async showContracts(req, res, next) {
         try {
-            const Contracts = await Contracts.findAll({
+            const contracts = await Contracts.findAll({
                 where: {
                     userId: req.params.id
                 }
             });
 
-            res.send(Contracts);
+            return res.send(contracts);
         } catch (err) {
-            res.status(500).send({
+            return res.status(500).send({
                 error: 'Something went wrong with getting contracts ' + err
             });
         }
@@ -48,11 +48,11 @@ module.exports = {
                 }
             });
 
-            res.send(req.body);
+            return res.send(req.body);
         } catch (err) {
             console.error(err);
 
-            res.status(500).send({
+            return res.status(500).send({
                 error: 'Something went wrong with updating this contract'
             });
         }
@@ -68,11 +68,11 @@ module.exports = {
 
             await one.destroy();
 
-            res.send(one);
+            return res.send(one);
         } catch (err) {
             console.err(err);
 
-            res.status(500).send({
+            return res.status(500).send({
                 error: 'Something went wrong with deleting this employee'
             });
         }

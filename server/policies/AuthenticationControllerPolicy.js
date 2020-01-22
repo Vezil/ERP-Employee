@@ -15,27 +15,27 @@ module.exports = {
         if (error) {
             switch (error.details[0].context.key) {
                 case 'name':
-                    res.status(400).send({
+                    return res.status(400).send({
                         error: 'Error with name'
                     });
                     break;
                 case 'surname':
-                    res.status(400).send({
+                    return res.status(400).send({
                         error: 'Error with surname'
                     });
                     break;
                 case 'birthdate':
-                    res.status(400).send({
+                    return res.status(400).send({
                         error: 'Error with birthdate'
                     });
                     break;
                 case 'password':
-                    res.status(400).send({
+                    return res.status(400).send({
                         error: 'Error with password'
                     });
                     break;
                 default:
-                    res.status(400).send({
+                    return res.status(400).send({
                         error: 'Invalid data'
                     });
             }

@@ -187,7 +187,7 @@ export default {
     async mounted() {
         this.holidays = (await HolidaysServices.getHolidays()).data;
         this.employees = (await EmployeesServices.getAllEmployees()).data;
-
+        console.log(this.holidays);
         for (const holiday of this.holidays) {
             holiday.name = holiday.employee.name;
             holiday.surname = holiday.employee.surname;

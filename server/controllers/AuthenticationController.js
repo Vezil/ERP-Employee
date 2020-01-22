@@ -18,7 +18,7 @@ module.exports = {
                 where: {
                     email: email
                 },
-                include: [{ model: Roles, as: 'role' }]
+                include: [{ model: Roles, as: 'Role' }]
             });
 
             if (!user) {
@@ -61,7 +61,7 @@ module.exports = {
                 config.authentication.jwtSecret,
                 (err, authData) => {
                     if (err) {
-                        res.sendStatus(403).json({
+                        return res.sendStatus(403).json({
                             auth: false,
                             message: 'Failed to authenticate token.'
                         });
@@ -70,7 +70,7 @@ module.exports = {
                 }
             );
         } else {
-            res.sendStatus(403).json({
+            return res.sendStatus(403).json({
                 auth: false,
                 message: 'Failed to authenticate token.'
             });

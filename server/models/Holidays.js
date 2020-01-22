@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     Holidays.associate = function(models) {
         Holidays.belongsTo(models.Users, {
             as: 'employee',
-            foreignKey: 'user_Id'
+            foreignKey: 'userId'
         });
     };
 

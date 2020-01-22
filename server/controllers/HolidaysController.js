@@ -37,11 +37,11 @@ module.exports = {
                 }
             });
 
-            res.send(req.body);
+            return res.send(req.body);
         } catch (err) {
             console.log(req.body);
 
-            res.status(500).send({
+            return res.status(500).send({
                 error: 'Something went wrong with updating holidays '
             });
         }
@@ -59,7 +59,7 @@ module.exports = {
 
             return res.send(one);
         } catch (err) {
-            res.status(500).send({
+            return res.status(500).send({
                 error: 'Something went wrong with deleting this user'
             });
         }

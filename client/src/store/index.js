@@ -37,11 +37,11 @@ export default new Vuex.Store({
                 'Bearer ' + this.state.token;
         },
         setRole(state, role) {
-            if (role.admin) {
+            if (role.name === 'admin') {
                 localStorage.setItem('isLoggedInAsAdmin', true);
 
                 this.state.isLoggedInAsAdmin = true;
-            } else if (role.user) {
+            } else if (role.name === 'user') {
                 localStorage.setItem('isLoggedInAsUser', true);
 
                 this.state.isLoggedInAsUser = true;
