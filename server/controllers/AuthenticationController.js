@@ -1,4 +1,4 @@
-const { employee } = require('../models');
+const { users } = require('../models');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 
@@ -14,7 +14,7 @@ module.exports = {
         try {
             const { email, password } = req.body;
 
-            const user = await employee.findOne({
+            const user = await users.findOne({
                 where: {
                     email: email
                 }
@@ -37,7 +37,7 @@ module.exports = {
             const userJson = user.toJSON();
 
             return res.send({
-                employee: userJson,
+                users: userJson,
                 token: jwtSignEmployee(userJson)
             });
         } catch (err) {
@@ -45,6 +45,21 @@ module.exports = {
 
             return res.status(500).send({
                 error: 'This credenctials are incorrect. Try Again!'
+            });
+        }
+    },
+    async getRole(req, res, next) {
+        try {
+            const Role = await roles.findAll({
+                where: {
+                    userId: req.params.id
+                }
+            });
+
+            res.send(Role);
+        } catch (err) {
+            res.status(500).send({
+                error: 'Something went wrong with getting roles'
             });
         }
     },

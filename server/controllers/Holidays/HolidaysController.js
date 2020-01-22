@@ -1,10 +1,10 @@
-const { employee, holidays } = require('../../models');
+const { users, holidays } = require('../../models');
 
 module.exports = {
     async show(req, res, next) {
         try {
             const allHolidays = await holidays.findAll({
-                include: [{ model: employee, as: 'employee' }]
+                include: [{ model: users, as: 'user' }]
             });
 
             return res.send(allHolidays);
@@ -60,7 +60,7 @@ module.exports = {
             return res.send(one);
         } catch (err) {
             res.status(500).send({
-                error: 'Something went wrong with deleting this employee'
+                error: 'Something went wrong with deleting this user'
             });
         }
     }

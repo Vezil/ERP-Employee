@@ -12,9 +12,9 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     Contracts.associate = function(models) {
-        Contracts.belongsTo(models.employee, {
+        Contracts.belongsTo(models.users, {
             as: 'employee',
-            foreignKey: 'employeeId'
+            foreignKey: 'userId'
         });
     };
 

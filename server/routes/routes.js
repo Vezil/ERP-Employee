@@ -124,4 +124,9 @@ module.exports = app => {
         AuthenticationController.verifyToken,
         UserHolidaysController.delete
     );
+    app.get(
+        '/employees/:id/roles',
+        AuthenticationController.verifyToken,
+        AuthenticationController.getRole
+    );
 };

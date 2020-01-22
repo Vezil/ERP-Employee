@@ -4,16 +4,15 @@ const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'));
 module.exports = {
     up: function(queryInterface, Sequelize) {
         return queryInterface.bulkInsert(
-            'employees',
+            'users',
             [
                 {
                     name: 'John',
                     surname: 'Doe',
                     email: 'JohnDoe@wp.pl',
                     birthdate: '1999-11-10',
-                    password: HashPassword('aasddasf4'),
+                    password: HashPassword('password'),
                     days_left: 26,
-                    isAdmin: false,
                     createdAt: new Date(),
                     updatedAt: new Date()
                 },
@@ -22,9 +21,8 @@ module.exports = {
                     surname: 'Dores',
                     email: 'Monar@wp.pl',
                     birthdate: '1994-11-10',
-                    password: HashPassword('awassdfsf4'),
+                    password: HashPassword('password'),
                     days_left: 26,
-                    isAdmin: false,
                     createdAt: new Date(),
                     updatedAt: new Date()
                 },
@@ -33,9 +31,8 @@ module.exports = {
                     surname: 'Poasfes',
                     email: 'Monaafwawr@wp.pl',
                     birthdate: '1993-11-10',
-                    password: HashPassword('awawfafawdfsf4'),
+                    password: HashPassword('password'),
                     days_left: 26,
-                    isAdmin: false,
                     createdAt: new Date(),
                     updatedAt: new Date()
                 },
@@ -44,9 +41,9 @@ module.exports = {
                     surname: 'Doasdaes',
                     email: 'M2323r@wp.pl',
                     birthdate: '1993-11-10',
-                    password: HashPassword('Pitsadsdfsf4'),
+                    password: HashPassword('password'),
                     days_left: 26,
-                    isAdmin: false,
+
                     createdAt: new Date(),
                     updatedAt: new Date()
                 },
@@ -55,9 +52,8 @@ module.exports = {
                     surname: 'Poasfes',
                     email: '2234rwwawr@wp.pl',
                     birthdate: '1992-11-10',
-                    password: HashPassword('awgawgawdfsf4'),
+                    password: HashPassword('password'),
                     days_left: 26,
-                    isAdmin: false,
                     createdAt: new Date(),
                     updatedAt: new Date()
                 },
@@ -66,9 +62,8 @@ module.exports = {
                     surname: 'aasfasf',
                     email: 'SzymonYerba@wp.pl',
                     birthdate: '1992-11-10',
-                    password: HashPassword('12345qwert'),
+                    password: HashPassword('password'),
                     days_left: 23,
-                    isAdmin: false,
                     createdAt: new Date(),
                     updatedAt: new Date()
                 },
@@ -77,9 +72,8 @@ module.exports = {
                     surname: 'Doasdaes',
                     email: 'asfasafs3r@wp.pl',
                     birthdate: '1995-11-15',
-                    password: HashPassword('Piasfawsfdsdfsf4'),
+                    password: HashPassword('password'),
                     days_left: 19,
-                    isAdmin: false,
                     createdAt: new Date(),
                     updatedAt: new Date()
                 },
@@ -88,9 +82,8 @@ module.exports = {
                     surname: 'Admin',
                     email: 'admin@wp.pl',
                     birthdate: '1999-11-11',
-                    password: HashPassword('adminadmin123'),
+                    password: HashPassword('password'),
                     days_left: 0,
-                    isAdmin: true,
                     createdAt: new Date(),
                     updatedAt: new Date()
                 }
@@ -100,7 +93,7 @@ module.exports = {
     },
 
     down: function(queryInterface, Sequelize) {
-        return queryInterface.bulkDelete('employees', [
+        return queryInterface.bulkDelete('users', [
             {
                 email: 'JohnDoe@wp.pl'
             },
@@ -109,6 +102,9 @@ module.exports = {
             },
             {
                 email: 'Monaafwawr@wp.pl'
+            },
+            {
+                email: 'M2323r@wp.pl'
             },
             {
                 email: '2234rwwawr@wp.pl'

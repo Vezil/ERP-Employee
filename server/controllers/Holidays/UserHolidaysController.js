@@ -1,5 +1,5 @@
 const { holidays } = require('../../models');
-const { check, validationResult } = require('express-validator');
+const { validationResult } = require('express-validator');
 
 module.exports = {
     async showHolidays(req, res, next) {
@@ -8,7 +8,7 @@ module.exports = {
         try {
             const Holidays = await holidays.findAll({
                 where: {
-                    employeeId: id,
+                    userId: id,
                     confirmed: 1
                 }
             });
@@ -24,7 +24,7 @@ module.exports = {
         try {
             const Holidays = await holidays.findAll({
                 where: {
-                    employeeId: req.params.id,
+                    userId: req.params.id,
                     confirmed: 0
                 }
             });
@@ -58,7 +58,7 @@ module.exports = {
             try {
                 await holidays.update(req.body, {
                     where: {
-                        employeeId: req.params.id,
+                        userId: req.params.id,
                         id: req.params.holidaysId
                     }
                 });
@@ -80,7 +80,7 @@ module.exports = {
         try {
             const one = await holidays.findOne({
                 where: {
-                    employeeId: req.params.id,
+                    userId: req.params.id,
                     id: req.params.holidaysId
                 }
             });

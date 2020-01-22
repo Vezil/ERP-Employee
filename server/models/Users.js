@@ -1,24 +1,24 @@
 const Promise = require('bluebird');
 const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'));
 
-function hashPassword(employee, options) {
+function hashPassword(user, options) {
     const SALT_F = 8;
 
-    if (!employee.changed('password')) {
+    if (!user.changed('password')) {
         return;
     }
 
     return bcrypt
         .genSaltAsync(SALT_F)
-        .then(salt => bcrypt.hashAsync(employee.password, salt, null))
+        .then(salt => bcrypt.hashAsync(user.password, salt, null))
         .then(hash => {
-            employee.setDataValue('password', hash);
+            user.setDataValue('password', hash);
         });
 }
 
 module.exports = (sequelize, DataTypes) => {
-    const employee = sequelize.define(
-        'employee',
+    const Users = sequelize.define(
+        'users',
         {
             email: {
                 type: DataTypes.STRING,
@@ -38,9 +38,6 @@ module.exports = (sequelize, DataTypes) => {
             },
             days_left: {
                 type: DataTypes.INTEGER
-            },
-            isAdmin: {
-                type: DataTypes.BOOLEAN
             }
         },
         {
@@ -50,14 +47,15 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
 
-    employee.associate = function(models) {
-        employee.hasMany(models.holidays);
-        employee.hasMany(models.contracts);
+    Users.associate = function(models) {
+        Users.hasMany(models.holidays);
+        Users.hasMany(models.contracts);
+        Users.hasOne(models.roles);
     };
 
-    employee.prototype.comparePassword = function(password) {
+    Users.prototype.comparePassword = function(password) {
         return bcrypt.compareAsync(password, this.password);
     };
 
-    return employee;
+    return Users;
 };
