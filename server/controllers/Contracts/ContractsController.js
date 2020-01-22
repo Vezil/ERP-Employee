@@ -1,7 +1,7 @@
 const { contracts, employee } = require('../../models');
 
 module.exports = {
-    async Show(req, res, next) {
+    async show(req, res, next) {
         try {
             const Contracts = await contracts.findAll({
                 include: [{ model: employee, as: 'employee' }]
@@ -29,7 +29,7 @@ module.exports = {
             });
         }
     },
-    async Create(req, res, next) {
+    async create(req, res, next) {
         try {
             const newContract = await contracts.create(req.body);
 
@@ -40,7 +40,7 @@ module.exports = {
             });
         }
     },
-    async Update(req, res, next) {
+    async update(req, res, next) {
         try {
             await contracts.update(req.body, {
                 where: {
@@ -58,7 +58,7 @@ module.exports = {
         }
     },
 
-    async Delete(req, res, next) {
+    async delete(req, res, next) {
         try {
             const one = await contracts.findOne({
                 where: {

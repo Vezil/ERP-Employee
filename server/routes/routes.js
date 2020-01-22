@@ -3,26 +3,21 @@ const AuthenticationControllerPolicy = require('../policies/AuthenticationContro
 const HolidaysController = require('../controllers/Holidays/HolidaysController');
 const EmployeesController = require('../controllers/Employees/EmployeesController');
 const ContractsController = require('../controllers/Contracts/ContractsController');
-const HolidaysUserController = require('../controllers/Holidays/HolidaysUserController');
+const UserHolidaysController = require('../controllers/Holidays/UserHolidaysController');
 
 module.exports = app => {
-    app.post(
-        '/create',
-        AuthenticationControllerPolicy.create,
-        AuthenticationController.verifyToken,
-        AuthenticationController.create
-    );
     app.post('/login', AuthenticationController.login);
 
     app.post(
         '/employees',
         AuthenticationController.verifyToken,
-        EmployeesController.Create
+        EmployeesController.create
     );
     app.get(
         '/employees',
+        AuthenticationControllerPolicy.create,
         AuthenticationController.verifyToken,
-        EmployeesController.Show
+        EmployeesController.show
     );
     app.get(
         '/employees/:id',
@@ -32,18 +27,18 @@ module.exports = app => {
     app.put(
         '/employees/:id',
         AuthenticationController.verifyToken,
-        EmployeesController.Update
+        EmployeesController.update
     );
     app.delete(
         '/employees/:id',
         AuthenticationController.verifyToken,
-        EmployeesController.Delete
+        EmployeesController.delete
     );
 
     app.get(
         '/contracts',
         AuthenticationController.verifyToken,
-        ContractsController.Show
+        ContractsController.show
     );
     app.get(
         '/employees/:id/contracts',
@@ -53,63 +48,63 @@ module.exports = app => {
     app.post(
         '/contracts',
         AuthenticationController.verifyToken,
-        ContractsController.Create
+        ContractsController.create
     );
     app.put(
         '/contracts/:id',
         AuthenticationController.verifyToken,
-        ContractsController.Update
+        ContractsController.update
     );
     app.delete(
         '/contracts/:id',
         AuthenticationController.verifyToken,
-        ContractsController.Delete
+        ContractsController.delete
     );
 
     app.get(
         '/holidays',
         AuthenticationController.verifyToken,
-        HolidaysController.Show
+        HolidaysController.show
     );
     app.post(
         '/holidays',
         AuthenticationController.verifyToken,
-        HolidaysController.Create
+        HolidaysController.create
     );
     app.put(
         '/holidays/:id',
         AuthenticationController.verifyToken,
-        HolidaysController.Update
+        HolidaysController.update
     );
     app.delete(
         '/holidays/:id',
         AuthenticationController.verifyToken,
-        HolidaysController.Delete
+        HolidaysController.delete
     );
 
     app.get(
         '/employees/:id/holidays',
         AuthenticationController.verifyToken,
-        HolidaysUserController.showHolidays
+        UserHolidaysController.showHolidays
     );
     app.get(
         '/employees/:id/holidaysRequests',
         AuthenticationController.verifyToken,
-        HolidaysUserController.showRequests
+        UserHolidaysController.showRequests
     );
     app.post(
         '/employees/:id/holidays',
         AuthenticationController.verifyToken,
-        HolidaysUserController.Create
+        UserHolidaysController.create
     );
     app.put(
         '/employees/:id/holidays/:holidaysId',
         AuthenticationController.verifyToken,
-        HolidaysUserController.Update
+        UserHolidaysController.update
     );
     app.delete(
         '/employees/:id/holidays/:holidaysId',
         AuthenticationController.verifyToken,
-        HolidaysUserController.Delete
+        UserHolidaysController.delete
     );
 };

@@ -35,7 +35,7 @@ module.exports = {
             });
         }
     },
-    async Create(req, res, next) {
+    async create(req, res, next) {
         try {
             const newHolidays = await holidays.create(req.body);
             res.send(newHolidays);
@@ -45,7 +45,7 @@ module.exports = {
             });
         }
     },
-    async Update(req, res, next) {
+    async update(req, res, next) {
         try {
             await holidays.update(req.body, {
                 where: {
@@ -63,7 +63,7 @@ module.exports = {
             });
         }
     },
-    async Delete(req, res, next) {
+    async delete(req, res, next) {
         try {
             const one = await holidays.findOne({
                 where: {
@@ -73,9 +73,7 @@ module.exports = {
             });
 
             if (!one) {
-                return res.status(403).send({
-                    error: `This employee doesn't exist`
-                });
+                return res.status(204).send();
             }
 
             await one.destroy();

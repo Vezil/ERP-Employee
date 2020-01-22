@@ -1,7 +1,7 @@
 const { employee, holidays } = require('../../models');
 
 module.exports = {
-    async Show(req, res, next) {
+    async show(req, res, next) {
         try {
             const allHolidays = await holidays.findAll({
                 include: [{ model: employee, as: 'employee' }]
@@ -17,7 +17,7 @@ module.exports = {
         }
     },
 
-    async Create(req, res, next) {
+    async create(req, res, next) {
         try {
             const newHolidays = await holidays.create(req.body);
 
@@ -29,7 +29,7 @@ module.exports = {
         }
     },
 
-    async Update(req, res, next) {
+    async update(req, res, next) {
         try {
             await holidays.update(req.body, {
                 where: {
@@ -47,7 +47,7 @@ module.exports = {
         }
     },
 
-    async Delete(req, res, next) {
+    async delete(req, res, next) {
         try {
             const one = await holidays.findOne({
                 where: {

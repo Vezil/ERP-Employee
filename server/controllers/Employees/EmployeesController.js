@@ -1,7 +1,7 @@
 const { employee } = require('../../models');
 
 module.exports = {
-    async Show(req, res, next) {
+    async show(req, res, next) {
         try {
             const getEmployees = await employee.findAll({
                 where: { isAdmin: false }
@@ -13,10 +13,10 @@ module.exports = {
             });
         }
     },
-    async Create(req, res) {
+    async create(req, res) {
         try {
             const newEmployee = await employee.create(req.body);
-            res.send(newEmployee);
+            res.send(newEmployee.toJSON());
         } catch (err) {
             res.status(500).send({
                 error: 'Something went wrong with adding this employee'
@@ -24,7 +24,7 @@ module.exports = {
         }
     },
 
-    async Update(req, res, next) {
+    async update(req, res, next) {
         try {
             await employee.update(req.body, {
                 where: {
@@ -42,7 +42,7 @@ module.exports = {
         }
     },
 
-    async Delete(req, res, next) {
+    async delete(req, res, next) {
         try {
             const one = await employee.findOne({
                 where: {

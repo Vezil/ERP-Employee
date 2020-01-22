@@ -16,16 +16,16 @@ export default {
         );
     },
 
-    editHolidaysEmployee(holidays) {
+    editHolidaysEmployee(holidays_Id) {
         return Axios.put(
-            `employees/${holidays.employeeId}/holidays/${holidays.id}`,
+            `employees/${holidays_Id.employeeId}/holidays/${holidays_Id.id}`,
             holidays
         );
     },
 
-    deleteHolidaysEmployee(holidays) {
+    deleteHolidaysEmployee(holidays_Id) {
         return Axios.delete(
-            `employees/${holidays.employeeId}/holidays/${holidays.id}`
+            `employees/${holidays_Id.employeeId}/holidays/${holidays_Id.id}`
         );
     }
 };

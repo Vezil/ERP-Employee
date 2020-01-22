@@ -291,7 +291,6 @@ export default {
             Object.keys(holidays).forEach(value => {
                 if (holidays[value] === '' || holidays[value] === undefined) {
                     this.areAll = false;
-                    console.log(holidays[value]);
                 }
             });
 
