@@ -4,6 +4,7 @@ const HolidaysController = require('../controllers/Holidays/HolidaysController')
 const EmployeesController = require('../controllers/Employees/EmployeesController');
 const ContractsController = require('../controllers/Contracts/ContractsController');
 const UserHolidaysController = require('../controllers/Holidays/UserHolidaysController');
+const { check } = require('express-validator');
 
 module.exports = app => {
     app.post('/login', AuthenticationController.login);
@@ -94,11 +95,27 @@ module.exports = app => {
     );
     app.post(
         '/employees/:id/holidays',
+        [
+            check('start_date')
+                .notEmpty()
+                .isLength({ max: 10 }),
+            check('finish_date')
+                .notEmpty()
+                .isLength({ max: 10 })
+        ],
         AuthenticationController.verifyToken,
         UserHolidaysController.create
     );
     app.put(
         '/employees/:id/holidays/:holidaysId',
+        [
+            check('start_date')
+                .notEmpty()
+                .isLength({ max: 10 }),
+            check('finish_date')
+                .notEmpty()
+                .isLength({ max: 10 })
+        ],
         AuthenticationController.verifyToken,
         UserHolidaysController.update
     );
