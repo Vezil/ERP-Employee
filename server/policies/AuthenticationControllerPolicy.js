@@ -7,8 +7,7 @@ module.exports = {
             surname: Joi.string(),
             email: Joi.string().email(),
             birthdate: Joi.date(),
-            password: Joi.string().regex(new RegExp('^[a-zA-Z0-9]{8,32}$')),
-            isAdmin: Joi.boolean()
+            password: Joi.string().regex(new RegExp('^[a-zA-Z0-9]{8,32}$'))
         };
 
         const { error, value } = Joi.validate(req.body, schema);
@@ -33,11 +32,6 @@ module.exports = {
                 case 'password':
                     res.status(400).send({
                         error: 'Error with password'
-                    });
-                    break;
-                case 'isAdmin':
-                    res.status(400).send({
-                        error: 'Error with isAdmin'
                     });
                     break;
                 default:

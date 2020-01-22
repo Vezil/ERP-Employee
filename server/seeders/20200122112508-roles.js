@@ -6,61 +6,53 @@ module.exports = {
             'roles',
             [
                 {
-                    admin: false,
-                    user: true,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    userId: 1
+                    name: 'user',
+                    created_At: new Date(),
+                    updated_At: new Date(),
+                    user_Id: 1
                 },
                 {
-                    admin: false,
-                    user: true,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    userId: 2
+                    name: 'user',
+                    created_At: new Date(),
+                    updated_At: new Date(),
+                    user_Id: 2
                 },
                 {
-                    admin: false,
-                    user: true,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    userId: 3
+                    name: 'user',
+                    created_At: new Date(),
+                    updated_At: new Date(),
+                    user_Id: 3
                 },
                 {
-                    admin: false,
-                    user: true,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    userId: 4
+                    name: 'user',
+                    created_At: new Date(),
+                    updated_At: new Date(),
+                    user_Id: 4
                 },
                 {
-                    admin: false,
-                    user: true,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    userId: 5
+                    name: 'user',
+                    created_At: new Date(),
+                    updated_At: new Date(),
+                    user_Id: 5
                 },
                 {
-                    admin: false,
-                    user: true,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    userId: 6
+                    name: 'user',
+                    created_At: new Date(),
+                    updated_At: new Date(),
+                    user_Id: 6
                 },
                 {
-                    admin: false,
-                    user: true,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    userId: 7
+                    name: 'user',
+                    created_At: new Date(),
+                    updated_At: new Date(),
+                    user_Id: 7
                 },
 
                 {
-                    admin: true,
-                    user: false,
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    userId: 8
+                    name: 'admin',
+                    created_At: new Date(),
+                    updated_At: new Date(),
+                    user_Id: 8
                 }
             ],
             {}
@@ -70,28 +62,28 @@ module.exports = {
     down: function(queryInterface, Sequelize) {
         return queryInterface.bulkDelete('roles', [
             {
-                userId: 1
+                user_Id: 1
             },
             {
-                userId: 2
+                user_Id: 2
             },
             {
-                userId: 3
+                user_Id: 3
             },
             {
-                userId: 4
+                user_Id: 4
             },
             {
-                userId: 5
+                user_Id: 5
             },
             {
-                userId: 6
+                user_Id: 6
             },
             {
-                userId: 7
+                user_Id: 7
             },
             {
-                userId: 8
+                user_Id: 8
             }
         ]);
     }

@@ -18,7 +18,7 @@ function hashPassword(user, options) {
 
 module.exports = (sequelize, DataTypes) => {
     const Users = sequelize.define(
-        'users',
+        'Users',
         {
             email: {
                 type: DataTypes.STRING,
@@ -41,6 +41,9 @@ module.exports = (sequelize, DataTypes) => {
             }
         },
         {
+            tableName: 'users',
+            underscored: true,
+
             hooks: {
                 beforeSave: hashPassword
             }
@@ -48,9 +51,9 @@ module.exports = (sequelize, DataTypes) => {
     );
 
     Users.associate = function(models) {
-        Users.hasMany(models.holidays);
-        Users.hasMany(models.contracts);
-        Users.hasOne(models.roles);
+        Users.hasMany(models.Holidays);
+        Users.hasMany(models.Contracts);
+        Users.hasOne(models.Roles);
     };
 
     Users.prototype.comparePassword = function(password) {

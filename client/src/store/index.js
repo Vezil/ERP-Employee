@@ -23,30 +23,39 @@ export default new Vuex.Store({
 
     mutations: {
         setUser(state, user) {
-            localStorage.setItem('isLoggedInAsAdmin', !!user.isAdmin);
             localStorage.setItem('username', user.name);
-            localStorage.setItem('isLoggedInAsUser', !user.isAdmin);
             localStorage.setItem('id', user.id);
 
             this.state.id = user.id;
             this.state.username = user.name;
-            this.state.isLoggedInAsUser = !user.isAdmin;
-            this.state.isLoggedInAsAdmin = !!user.isAdmin;
         },
 
         setToken(state, token) {
             localStorage.setItem('token', token);
-            state.token = token;
+            this.state.token = token;
             Axios.defaults.headers.common['Authorization'] =
-                'Bearer ' + state.token;
+                'Bearer ' + this.state.token;
+        },
+        setRole(state, role) {
+            if (role.admin) {
+                localStorage.setItem('isLoggedInAsAdmin', true);
+
+                this.state.isLoggedInAsAdmin = true;
+            } else if (role.user) {
+                localStorage.setItem('isLoggedInAsUser', true);
+
+                this.state.isLoggedInAsUser = true;
+            } else {
+                console.error('error with role');
+            }
         },
 
-        unsetStorage(state) {
+        unsetStorage() {
             localStorage.removeItem('isLoggedInAsAdmin');
-            localStorage.removeItem('username');
             localStorage.removeItem('isLoggedInAsUser');
-            localStorage.removeItem('token');
+            localStorage.removeItem('username');
             localStorage.removeItem('id');
+            localStorage.removeItem('token');
 
             this.state.isLoggedInAsUser = false;
             this.state.isLoggedInAsAdmin = false;
@@ -63,8 +72,11 @@ export default new Vuex.Store({
         setToken({ commit }, token) {
             commit('setToken', token);
         },
-        unsetStorage({ commit }, unset) {
+        unsetStorage({ commit }) {
             commit('unsetStorage');
+        },
+        setRole({ commit }, role) {
+            commit('setRole', role);
         }
     },
 

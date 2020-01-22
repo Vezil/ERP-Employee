@@ -182,7 +182,7 @@ export default {
                 contract: '',
                 start_date: '',
                 finish_date: '',
-                employeeId: ''
+                userId: ''
             },
 
             newContract: {
@@ -190,7 +190,7 @@ export default {
                 contract: '',
                 start_date: '',
                 finish_date: '',
-                employeeId: ''
+                userId: ''
             },
             holidays: {
                 days_left: '',
@@ -281,14 +281,14 @@ export default {
             } else {
                 this.employees.forEach(employee => {
                     if (this.editedItem.email === employee.email) {
-                        this.editedItem.employeeId = employee.id;
+                        this.editedItem.userId = employee.id;
                         this.editedItem.name = employee.name;
                         this.editedItem.surname = employee.surname;
                     }
                 });
 
                 this.createContract(this.editedItem);
-                this.holidays.id = this.editedItem.employeeId;
+                this.holidays.id = this.editedItem.userId;
 
                 this.getDaysLeftBeforeAndSum(this.holidays.id);
                 this.createHolidays(this.holidays);

@@ -1,9 +1,9 @@
 const AuthenticationController = require('../controllers/AuthenticationController');
 const AuthenticationControllerPolicy = require('../policies/AuthenticationControllerPolicy');
-const HolidaysController = require('../controllers/Holidays/HolidaysController');
-const EmployeesController = require('../controllers/Employees/EmployeesController');
-const ContractsController = require('../controllers/Contracts/ContractsController');
-const UserHolidaysController = require('../controllers/Holidays/UserHolidaysController');
+const HolidaysController = require('../controllers/HolidaysController');
+const EmployeesController = require('../controllers/EmployeesController');
+const ContractsController = require('../controllers/ContractsController');
+const UserHolidaysController = require('../controllers/UserHolidaysController');
 const { check } = require('express-validator');
 
 module.exports = app => {
@@ -12,11 +12,11 @@ module.exports = app => {
     app.post(
         '/employees',
         AuthenticationController.verifyToken,
+        AuthenticationControllerPolicy.create,
         EmployeesController.create
     );
     app.get(
         '/employees',
-        AuthenticationControllerPolicy.create,
         AuthenticationController.verifyToken,
         EmployeesController.show
     );
@@ -123,10 +123,5 @@ module.exports = app => {
         '/employees/:id/holidays/:holidaysId',
         AuthenticationController.verifyToken,
         UserHolidaysController.delete
-    );
-    app.get(
-        '/employees/:id/roles',
-        AuthenticationController.verifyToken,
-        AuthenticationController.getRole
     );
 };

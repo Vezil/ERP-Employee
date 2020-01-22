@@ -1,10 +1,10 @@
-const { users, holidays } = require('../../models');
+const { Users, Holidays } = require('../models');
 
 module.exports = {
     async show(req, res, next) {
         try {
-            const allHolidays = await holidays.findAll({
-                include: [{ model: users, as: 'user' }]
+            const allHolidays = await Holidays.findAll({
+                include: [{ model: Users, as: 'employee' }]
             });
 
             return res.send(allHolidays);
@@ -19,7 +19,7 @@ module.exports = {
 
     async create(req, res, next) {
         try {
-            const newHolidays = await holidays.create(req.body);
+            const newHolidays = await Holidays.create(req.body);
 
             return res.send(newHolidays);
         } catch (err) {
@@ -31,7 +31,7 @@ module.exports = {
 
     async update(req, res, next) {
         try {
-            await holidays.update(req.body, {
+            await Holidays.update(req.body, {
                 where: {
                     id: req.params.id
                 }
@@ -42,14 +42,14 @@ module.exports = {
             console.log(req.body);
 
             res.status(500).send({
-                error: 'Something went wrong with updating holidays ' + err
+                error: 'Something went wrong with updating holidays '
             });
         }
     },
 
     async delete(req, res, next) {
         try {
-            const one = await holidays.findOne({
+            const one = await Holidays.findOne({
                 where: {
                     id: req.params.id
                 }

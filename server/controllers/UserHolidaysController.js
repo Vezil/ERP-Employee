@@ -1,19 +1,19 @@
-const { holidays } = require('../../models');
+const { Holidays } = require('../models');
 const { validationResult } = require('express-validator');
 
 module.exports = {
     async showHolidays(req, res, next) {
-        const { id } = req.params;
-
         try {
-            const Holidays = await holidays.findAll({
+            const { id } = req.params;
+
+            const holidays = await Holidays.findAll({
                 where: {
-                    userId: id,
+                    usser_Id: id,
                     confirmed: 1
                 }
             });
 
-            res.send(Holidays);
+            return res.send(holidays);
         } catch (err) {
             res.status(500).send({
                 error: 'Something went wrong with getting holidays ' + err
@@ -22,14 +22,14 @@ module.exports = {
     },
     async showRequests(req, res, next) {
         try {
-            const Holidays = await holidays.findAll({
+            const holidays = await Holidays.findAll({
                 where: {
-                    userId: req.params.id,
+                    user_Id: req.params.id,
                     confirmed: 0
                 }
             });
 
-            res.send(Holidays);
+            return res.send(holidays);
         } catch (err) {
             res.status(500).send({
                 error: 'Something went wrong with getting holidays ' + err
@@ -40,7 +40,7 @@ module.exports = {
         const errors = validationResult(req);
         if (errors.isEmpty()) {
             try {
-                const newHolidays = await holidays.create(req.body);
+                const newHolidays = await Holidays.create(req.body);
                 res.send(newHolidays);
             } catch (err) {
                 res.status(500).send({
@@ -56,9 +56,9 @@ module.exports = {
         const errors = validationResult(req);
         if (errors.isEmpty()) {
             try {
-                await holidays.update(req.body, {
+                await Holidays.update(req.body, {
                     where: {
-                        userId: req.params.id,
+                        user_Id: req.params.id,
                         id: req.params.holidaysId
                     }
                 });
@@ -78,9 +78,9 @@ module.exports = {
     },
     async delete(req, res, next) {
         try {
-            const one = await holidays.findOne({
+            const one = await Holidays.findOne({
                 where: {
-                    userId: req.params.id,
+                    user_Id: req.params.id,
                     id: req.params.holidaysId
                 }
             });

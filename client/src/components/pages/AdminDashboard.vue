@@ -228,8 +228,7 @@ export default {
                 surname: '',
                 birthdate: '',
                 email: '',
-                days_left: 0,
-                isAdmin: false
+                days_left: 0
             },
             profileItem: {
                 name: '',

@@ -10,18 +10,18 @@ module.exports = {
                     confirmed: '0',
                     start_date: '2019-12-01',
                     finish_date: '2019-12-04',
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    userId: 6
+                    created_At: new Date(),
+                    updated_At: new Date(),
+                    user_Id: 6
                 },
                 {
                     days_taken: 7,
                     confirmed: '1',
                     start_date: '2019-12-02',
                     finish_date: '2019-12-09',
-                    createdAt: new Date(),
-                    updatedAt: new Date(),
-                    userId: 7
+                    created_At: new Date(),
+                    updated_At: new Date(),
+                    user_Id: 7
                 }
             ],
             {}
@@ -31,10 +31,10 @@ module.exports = {
     down: function(queryInterface, Sequelize) {
         return queryInterface.bulkDelete('holidays', [
             {
-                userId: 6
+                user_Id: 6
             },
             {
-                userId: 7
+                user_Id: 7
             }
         ]);
     }

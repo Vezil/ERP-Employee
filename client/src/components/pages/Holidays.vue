@@ -177,15 +177,7 @@ export default {
                 start_date: '',
                 finish_date: '',
                 confirmed: 1,
-                employeeId: ''
-            },
-
-            newContract: {
-                days_taken: '',
-                start_date: '',
-                finish_date: '',
-                confirmed: 1,
-                employeeId: ''
+                userId: ''
             },
 
             required: value => !!value || 'Required.',
@@ -258,7 +250,7 @@ export default {
                 );
                 this.updateDaysLeft(
                     this.editedItem.days_taken,
-                    this.editedItem.employeeId,
+                    this.editedItem.userId,
                     'editing'
                 );
                 this.updateHolidays(this.editedItem);
@@ -271,7 +263,7 @@ export default {
             } else {
                 this.employees.forEach(employee => {
                     if (this.editedItem.email == employee.email) {
-                        this.editedItem.employeeId = employee.id;
+                        this.editedItem.userId = employee.id;
                         this.editedItem.name = employee.name;
                         this.editedItem.surname = employee.surname;
                     }
@@ -283,7 +275,7 @@ export default {
                 );
                 this.updateDaysLeft(
                     this.editedItem.days_taken,
-                    this.editedItem.employeeId,
+                    this.editedItem.userId,
                     'adding'
                 );
 
@@ -400,7 +392,7 @@ export default {
                 );
                 this.updateDaysLeft(
                     this.editedItem.days_taken,
-                    this.editedItem.employeeId,
+                    this.editedItem.userId,
                     'deleting'
                 );
                 console.log(holidays);

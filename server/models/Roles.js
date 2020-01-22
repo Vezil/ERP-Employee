@@ -1,19 +1,21 @@
 'use strict';
 
 module.exports = (sequelize, DataTypes) => {
-    const Roles = sequelize.define('roles', {
-        admin: {
-            type: DataTypes.BOOLEAN
+    const Roles = sequelize.define(
+        'Roles',
+        {
+            name: DataTypes.STRING
         },
-        user: {
-            type: DataTypes.BOOLEAN
+        {
+            tableName: 'roles',
+            underscored: true
         }
-    });
+    );
 
     Roles.associate = function(models) {
-        Roles.belongsTo(models.users, {
+        Roles.belongsTo(models.Users, {
             as: 'employee',
-            foreignKey: 'userId'
+            foreignKey: 'user_Id'
         });
     };
 

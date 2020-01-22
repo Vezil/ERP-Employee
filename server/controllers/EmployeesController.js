@@ -1,24 +1,31 @@
-const { users } = require('../../models');
+const { Users, Roles } = require('../models');
 
 module.exports = {
     async show(req, res, next) {
         try {
-            const getEmployees = await users.findAll({
-                where: { isAdmin: false }
+            const employees = await Users.findAll({
+                include: [
+                    {
+                        model: Roles
+                    }
+                ]
             });
-            res.send(getEmployees);
+
+            return res.send(employees);
         } catch (err) {
-            res.status(500).send({
-                error: 'Something went wrong with getting user'
+            return res.status(500).send({
+                error: 'Something went wrong with showing this users'
             });
         }
     },
+
     async create(req, res) {
         try {
-            const newEmployee = await users.create(req.body);
-            res.send(newEmployee.toJSON());
+            const employee = await Users.create(req.body);
+
+            return res.send(employee.toJSON());
         } catch (err) {
-            res.status(500).send({
+            return res.status(500).send({
                 error: 'Something went wrong with adding this user'
             });
         }
@@ -26,7 +33,7 @@ module.exports = {
 
     async update(req, res, next) {
         try {
-            await users.update(req.body, {
+            await Users.update(req.body, {
                 where: {
                     id: req.params.id
                 }
@@ -63,12 +70,7 @@ module.exports = {
     },
     async getOne(req, res) {
         try {
-            const one = await user.findByPk({
-                where: {
-                    id: req.params.id
-                },
-                include: [{ model: roles, as: 'role' }]
-            });
+            const one = await Users.findByPk(req.params.id);
             res.send(one);
         } catch (err) {
             res.status(500).send({

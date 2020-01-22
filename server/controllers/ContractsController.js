@@ -1,10 +1,10 @@
-const { contracts, users } = require('../../models');
+const { Contracts, Users } = require('../models');
 
 module.exports = {
     async show(req, res, next) {
         try {
             const Contracts = await contracts.findAll({
-                include: [{ model: users, as: 'employee' }]
+                include: [{ model: Users, as: 'employee' }]
             });
 
             return res.send(Contracts);
@@ -16,7 +16,7 @@ module.exports = {
     },
     async showContracts(req, res, next) {
         try {
-            const Contracts = await contracts.findAll({
+            const Contracts = await Contracts.findAll({
                 where: {
                     userId: req.params.id
                 }
@@ -42,7 +42,7 @@ module.exports = {
     },
     async update(req, res, next) {
         try {
-            await contracts.update(req.body, {
+            await Contracts.update(req.body, {
                 where: {
                     id: req.params.id
                 }
@@ -60,7 +60,7 @@ module.exports = {
 
     async delete(req, res, next) {
         try {
-            const one = await contracts.findOne({
+            const one = await Contracts.findOne({
                 where: {
                     id: req.params.id
                 }

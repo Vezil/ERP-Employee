@@ -68,8 +68,9 @@ export default {
                     password: this.password
                 });
 
-                this.$store.dispatch('setUser', data.employee);
+                this.$store.dispatch('setUser', data.user);
                 this.$store.dispatch('setToken', data.token);
+                this.$store.dispatch('setRole', data.user.role);
 
                 this.$router.push({
                     name: 'dashboard'

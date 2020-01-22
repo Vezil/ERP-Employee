@@ -138,7 +138,7 @@ export default {
                 start_date: '',
                 finish_date: '',
                 confirmed: 0,
-                employeeId: this.$store.state.id
+                userId: this.$store.state.id
             },
 
             required: value => !!value || 'Required.',
@@ -203,7 +203,7 @@ export default {
                 );
                 this.updateDaysLeft(
                     this.editedItem.days_taken,
-                    this.editedItem.employeeId,
+                    this.editedItem.userId,
                     'editing'
                 );
                 this.updateHolidaysRequest(this.editedItem);
@@ -220,7 +220,7 @@ export default {
                 );
                 this.updateDaysLeft(
                     this.editedItem.days_taken,
-                    this.editedItem.employeeId,
+                    this.editedItem.userId,
                     'adding'
                 );
 
@@ -339,7 +339,7 @@ export default {
                 );
                 this.updateDaysLeft(
                     this.editedItem.days_taken,
-                    this.editedItem.employeeId,
+                    this.editedItem.userId,
                     'deleting'
                 );
                 delete holidays.days_taken_old;
