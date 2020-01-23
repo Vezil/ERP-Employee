@@ -1,29 +1,19 @@
 const AuthenticationController = require('../controllers/AuthenticationController');
-const AuthenticationControllerPolicy = require('../policies/AuthenticationControllerPolicy');
 const HolidaysController = require('../controllers/HolidaysController');
 const EmployeesController = require('../controllers/EmployeesController');
 const ContractsController = require('../controllers/ContractsController');
 const UserHolidaysController = require('../controllers/UserHolidaysController');
 const datesValidator = require('../validations/datesValidator');
 const loginValidator = require('../validations/loginValidator');
-const { body } = require('express-validator/check');
+const employeeValidator = require('../validations/employeeValidator');
 
 module.exports = app => {
-    app.post(
-        '/login',
-        [
-            body(['password'])
-                .exists()
-                .isLength({ min: 8 })
-                .withMessage('Is required')
-        ],
-        AuthenticationController.login
-    );
+    app.post('/login', loginValidator, AuthenticationController.login);
 
     app.post(
         '/employees',
-        AuthenticationController.verifyToken,
-        AuthenticationControllerPolicy.create,
+        // AuthenticationController.verifyToken,
+        employeeValidator,
         EmployeesController.create
     );
     app.get(

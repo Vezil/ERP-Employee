@@ -1,4 +1,5 @@
 const { Users, Roles } = require('../models');
+const { validationResult } = require('express-validator/check');
 
 module.exports = {
     async show(req, res, next) {
@@ -21,6 +22,16 @@ module.exports = {
     },
 
     async create(req, res, next) {
+        const validationErrors = validationResult(req);
+
+        if (!validationErrors.isEmpty()) {
+            const errors = validationErrors.array().map(e => {
+                return { message: e.msg, param: e.param };
+            });
+
+            return res.status(422).json({ errors });
+        }
+
         try {
             const employee = await Users.create(req.body);
 

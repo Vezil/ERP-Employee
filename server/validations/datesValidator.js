@@ -1,10 +1,15 @@
-const { check } = require('express-validator');
+const { body } = require('express-validator/check');
 
 module.exports = [
-    check('start_date')
-        .notEmpty()
-        .isLength({ min: 10, max: 10 }),
-    check('finish_date')
-        .notEmpty()
-        .isLength({ min: 10, max: 10 })
+    body(['start_date'])
+        .exists()
+        .isISO8601()
+        .toDate()
+        .withMessage('Invalid date format'),
+
+    body(['finish_date'])
+        .exists()
+        .isISO8601()
+        .toDate()
+        .withMessage('Invalid date format')
 ];
