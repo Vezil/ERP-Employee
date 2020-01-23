@@ -41,6 +41,7 @@ module.exports = {
         if (errors.isEmpty()) {
             try {
                 const newHolidays = await Holidays.create(req.body);
+
                 return res.send(newHolidays);
             } catch (err) {
                 return res.status(500).send({
@@ -65,7 +66,6 @@ module.exports = {
 
                 return res.send(req.body);
             } catch (err) {
-                console.log(req.body);
                 return res.status(500).send({
                     error:
                         'Something went wrong with updating this Holidays (Employee)'

@@ -4,7 +4,6 @@ require('dotenv').config();
 
 export default {
     create(credentials) {
-        console.log(credentials);
         return Axios.post('employees', credentials);
     },
 
@@ -13,6 +12,7 @@ export default {
     },
 
     updateEmployee(employee) {
+        console.log(employee);
         return Axios.put(`employees/${employee.id}`, employee);
     },
 

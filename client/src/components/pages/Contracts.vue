@@ -311,8 +311,10 @@ export default {
                 console.error(err);
             }
         },
+
         async createContract(contract) {
             this.areAll = true;
+
             Object.keys(contract).forEach(value => {
                 if (contract[value] == '' || contract[value] == undefined) {
                     this.areAll = false;
@@ -324,25 +326,30 @@ export default {
 
                 return;
             }
+
             if (this.areAll) {
                 this.error = null;
             }
+
             try {
                 await ContractsServices.addContract(contract);
             } catch (err) {
                 console.error(err);
             }
         },
-        async createHolidays(holidays) {
-            try {
-                console.log(holidays.days_left + ' first');
-                await EmployeesServices.updateEmployee(holidays);
-                console.log(holidays.days_left + ' second');
-                await EmployeesServices.updateEmployee(holidays);
-            } catch (err) {
-                console.error(err);
-            }
-        },
+        // async createHolidays(holidays) {
+        //     try {
+        //         // console.log(holidays.days_left + ' first');
+        //         // await EmployeesServices.updateEmployee(holidays);
+        //         // console.log(holidays.days_left + ' second');
+
+        //         console.log(JSON.stringify(holidays));
+
+        //         await EmployeesServices.updateEmployee(holidays);
+        //     } catch (err) {
+        //         console.error(err);
+        //     }
+        // },
         async updateContract(contract) {
             this.areAll = true;
             Object.keys(contract).forEach(value => {

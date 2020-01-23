@@ -5,12 +5,15 @@ export default {
     addContract(contract) {
         return Axios.post('contracts', contract);
     },
+
     getAllContracts() {
         return Axios.get('contracts');
     },
+
     getContractsEmployee(id) {
         return Axios.get(`employees/${id}/contracts`);
     },
+
     updateContract(contract) {
         return Axios.put(`contracts/${contract.id}`, contract);
     },

@@ -14,6 +14,7 @@ module.exports = {
             });
         }
     },
+
     async showContracts(req, res, next) {
         try {
             const contracts = await Contracts.findAll({
@@ -25,13 +26,25 @@ module.exports = {
             return res.send(contracts);
         } catch (err) {
             return res.status(500).send({
-                error: 'Something went wrong with getting contracts ' + err
+                error: 'Something went wrong with getting contracts '
             });
         }
     },
+
     async create(req, res, next) {
+        // validate: contract_lenght (contract => contract_lenght)
+        // validate: start_date, finish_date
+        // validate: holidays_per_year (20/26)
+        // validate: employee_id
+
+        const holidaysToAdd = ceil((holidays_per_year / 12) * contract_length);
+
         try {
             const newContract = await Contracts.create(req.body);
+
+            const employee = await Employees.findOne(employee_id);
+
+            await employee.update({ days_left: holidaysToAdd });
 
             return res.send(newContract);
         } catch (err) {

@@ -4,10 +4,21 @@ const HolidaysController = require('../controllers/HolidaysController');
 const EmployeesController = require('../controllers/EmployeesController');
 const ContractsController = require('../controllers/ContractsController');
 const UserHolidaysController = require('../controllers/UserHolidaysController');
-const { check } = require('express-validator');
+const datesValidator = require('../validations/datesValidator');
+const loginValidator = require('../validations/loginValidator');
+const { body } = require('express-validator/check');
 
 module.exports = app => {
-    app.post('/login', AuthenticationController.login);
+    app.post(
+        '/login',
+        [
+            body(['password'])
+                .exists()
+                .isLength({ min: 8 })
+                .withMessage('Is required')
+        ],
+        AuthenticationController.login
+    );
 
     app.post(
         '/employees',
@@ -95,27 +106,13 @@ module.exports = app => {
     );
     app.post(
         '/employees/:id/holidays',
-        [
-            check('start_date')
-                .notEmpty()
-                .isLength({ max: 10 }),
-            check('finish_date')
-                .notEmpty()
-                .isLength({ max: 10 })
-        ],
+        datesValidator,
         AuthenticationController.verifyToken,
         UserHolidaysController.create
     );
     app.put(
         '/employees/:id/holidays/:holidaysId',
-        [
-            check('start_date')
-                .notEmpty()
-                .isLength({ max: 10 }),
-            check('finish_date')
-                .notEmpty()
-                .isLength({ max: 10 })
-        ],
+        datesValidator,
         AuthenticationController.verifyToken,
         UserHolidaysController.update
     );

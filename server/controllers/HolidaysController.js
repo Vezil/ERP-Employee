@@ -39,8 +39,6 @@ module.exports = {
 
             return res.send(req.body);
         } catch (err) {
-            console.log(req.body);
-
             return res.status(500).send({
                 error: 'Something went wrong with updating holidays '
             });

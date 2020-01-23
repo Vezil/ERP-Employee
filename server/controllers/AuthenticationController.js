@@ -1,6 +1,7 @@
 const { Users, Roles } = require('../models');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
+const { validationResult } = require('express-validator/check');
 
 function jwtSignEmployee(employee) {
     const ONE_DAY = 60 * 60 * 24;
@@ -10,7 +11,17 @@ function jwtSignEmployee(employee) {
 }
 
 module.exports = {
-    async login(req, res) {
+    async login(req, res, next) {
+        const validationErrors = validationResult(req);
+
+        if (!validationErrors.isEmpty()) {
+            const errors = validationErrors.array().map(e => {
+                return { message: e.msg, param: e.param };
+            });
+
+            return res.status(422).json({ errors });
+        }
+
         try {
             const { email, password } = req.body;
 
@@ -45,10 +56,11 @@ module.exports = {
             console.error(err);
 
             return res.status(500).send({
-                error: 'This credenctials are incorrect. Try Again!'
+                error: 'This email or password are incorrect. Try Again!'
             });
         }
     },
+
     async verifyToken(req, res, next) {
         const bearerHeader = req.headers['authorization'];
         if (typeof bearerHeader !== 'undefined') {
@@ -76,4 +88,8 @@ module.exports = {
             });
         }
     }
+
+    // async updatePassword() {
+    //     // validate: old_password, new_password, new_password_confirm
+    // }
 };

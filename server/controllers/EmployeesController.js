@@ -38,6 +38,8 @@ module.exports = {
     },
 
     async update(req, res, next) {
+        // validate: name, email, surname, birthdate
+
         try {
             await Users.update(req.body, {
                 where: {
@@ -57,15 +59,33 @@ module.exports = {
 
     async delete(req, res, next) {
         try {
-            const one = await Users.findOne({
+            const employee = await Users.findOne({
                 where: {
                     id: req.params.id
                 }
             });
+            const role = await Roles.findOne({
+                where: {
+                    userId: req.params.id
+                }
+            });
+            const holidays = await Holidays.findAll({
+                where: {
+                    userId: req.params.id
+                }
+            });
+            const contracts = await Contracts.findAll({
+                where: {
+                    userId: req.params.id
+                }
+            });
 
-            await one.destroy();
+            await employee.destroy();
+            await role.destroy();
+            await holidays.destroy();
+            await contracts.destroy();
 
-            return res.send(one);
+            return res.send(employee);
         } catch (err) {
             console.error(err);
 
@@ -77,6 +97,7 @@ module.exports = {
     async getOne(req, res, next) {
         try {
             const one = await Users.findByPk(req.params.id);
+
             return res.send(one);
         } catch (err) {
             return res.status(500).send({

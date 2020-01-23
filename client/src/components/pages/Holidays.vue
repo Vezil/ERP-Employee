@@ -129,6 +129,7 @@ export default {
             days_left: null,
             error_validation: null,
             areAll: true,
+            new_days,
             headers: [
                 {
                     text: 'Name',
@@ -299,25 +300,27 @@ export default {
             try {
                 const thisPerson = await EmployeesServices.getEmployeeById(id);
                 this.days_left = thisPerson.data.days_left;
-                var new_days;
+                this.new_days = 0;
                 if (option === 'deleting') {
-                    new_days = thisPerson.data.days_left + parseInt(days_taken);
+                    this.new_days =
+                        thisPerson.data.days_left + parseInt(days_taken);
                 } else if (option === 'adding') {
-                    new_days = thisPerson.data.days_left - parseInt(days_taken);
+                    this.new_days =
+                        thisPerson.data.days_left - parseInt(days_taken);
                 } else if (option === 'editing') {
                     let cashe_days =
                         thisPerson.data.days_left +
                         parseInt(this.editedItem.days_taken_old);
-                    new_days = cashe_days - parseInt(days_taken);
+                    this.new_days = cashe_days - parseInt(days_taken);
                 } else {
                     console.log('error');
                 }
 
-                if (new_days >= 0) {
-                    this.days_left = new_days;
+                if (this.new_days >= 0) {
+                    this.days_left = this.new_days;
                     const update = {
                         id: id,
-                        days_left: new_days
+                        days_left: this.new_days
                     };
                     try {
                         await EmployeesServices.updateEmployee(update);
