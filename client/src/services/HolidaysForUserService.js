@@ -10,22 +10,19 @@ export default {
     },
 
     addHolidaysEmployee(holidays) {
-        return Axios.post(
-            `employees/${holidays.employeeId}/holidays`,
-            holidays
-        );
+        return Axios.post(`employees/${holidays.userId}/holidays`, holidays);
     },
 
-    editHolidaysEmployee(holidays_Id) {
+    editHolidaysEmployee(holidays) {
         return Axios.put(
-            `employees/${holidays_Id.employeeId}/holidays/${holidays_Id.id}`,
+            `employees/${holidays.userId}/holidays/${holidays.id}`,
             holidays
         );
     },
 
-    deleteHolidaysEmployee(holidays_Id) {
+    deleteHolidaysEmployee(holidays) {
         return Axios.delete(
-            `employees/${holidays_Id.employeeId}/holidays/${holidays_Id.id}`
+            `employees/${holidays.userId}/holidays/${holidays.id}`
         );
     }
 };

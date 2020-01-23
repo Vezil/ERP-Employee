@@ -358,11 +358,12 @@ export default {
                 this.error = null;
             }
             try {
-                await EmployeesServices.addNewEmployee(employee);
+                await EmployeesServices.create(employee);
             } catch (err) {
                 console.error(err);
             }
         },
+
         async updateEmployee(employee) {
             this.areAll = true;
             Object.keys(employee).forEach(value => {

@@ -16,7 +16,7 @@ module.exports = {
             return res.send(holidays);
         } catch (err) {
             return res.status(500).send({
-                error: 'Something went wrong with getting holidays ' + err
+                error: 'Something went wrong with getting holidays '
             });
         }
     },
@@ -32,7 +32,7 @@ module.exports = {
             return res.send(holidays);
         } catch (err) {
             return res.status(500).send({
-                error: 'Something went wrong with getting holidays ' + err
+                error: 'Something went wrong with getting holidays '
             });
         }
     },

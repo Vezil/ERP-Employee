@@ -31,7 +31,7 @@ module.exports = {
     },
     async create(req, res, next) {
         try {
-            const newContract = await contracts.create(req.body);
+            const newContract = await Contracts.create(req.body);
 
             return res.send(newContract);
         } catch (err) {

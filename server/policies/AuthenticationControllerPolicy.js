@@ -5,8 +5,9 @@ module.exports = {
         const schema = {
             name: Joi.string(),
             surname: Joi.string(),
-            email: Joi.string().email(),
             birthdate: Joi.date(),
+            email: Joi.string().email(),
+            days_left: Joi.number(),
             password: Joi.string().regex(new RegExp('^[a-zA-Z0-9]{8,32}$'))
         };
 
@@ -15,29 +16,40 @@ module.exports = {
         if (error) {
             switch (error.details[0].context.key) {
                 case 'name':
-                    return res.status(400).send({
+                    res.status(400).send({
                         error: 'Error with name'
                     });
                     break;
                 case 'surname':
-                    return res.status(400).send({
+                    res.status(400).send({
                         error: 'Error with surname'
                     });
                     break;
                 case 'birthdate':
-                    return res.status(400).send({
+                    res.status(400).send({
                         error: 'Error with birthdate'
                     });
                     break;
+                case 'email':
+                    res.status(400).send({
+                        error: 'Error with email'
+                    });
+                    break;
+                case 'days_left':
+                    res.status(400).send({
+                        error: 'Error with days_left'
+                    });
+                    break;
                 case 'password':
-                    return res.status(400).send({
+                    res.status(400).send({
                         error: 'Error with password'
                     });
                     break;
                 default:
-                    return res.status(400).send({
+                    res.status(400).send({
                         error: 'Invalid data'
                     });
+                    break;
             }
         } else {
             next();

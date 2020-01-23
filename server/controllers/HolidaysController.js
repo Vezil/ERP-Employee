@@ -24,7 +24,7 @@ module.exports = {
             return res.send(newHolidays);
         } catch (err) {
             return res.status(500).send({
-                error: 'Something went wrong with adding this contract'
+                error: 'Something went wrong with adding this holidays'
             });
         }
     },

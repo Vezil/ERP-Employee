@@ -187,7 +187,7 @@ export default {
     async mounted() {
         this.holidays = (await HolidaysServices.getHolidays()).data;
         this.employees = (await EmployeesServices.getAllEmployees()).data;
-        console.log(this.holidays);
+
         for (const holiday of this.holidays) {
             holiday.name = holiday.employee.name;
             holiday.surname = holiday.employee.surname;
@@ -280,8 +280,6 @@ export default {
                 );
 
                 if (this.error_validation == null) {
-                    console.log(this.editedItem);
-
                     this.createHolidays(this.editedItem);
                     this.holidays.push(this.editedItem);
                 }
@@ -341,6 +339,10 @@ export default {
 
         async createHolidays(holidays) {
             this.areAll = true;
+            delete holidays.days_taken_old;
+
+            console.log(holidays);
+
             Object.keys(holidays).forEach(value => {
                 if (holidays[value] === '' || holidays[value] === undefined) {
                     this.areAll = false;
@@ -395,7 +397,6 @@ export default {
                     this.editedItem.userId,
                     'deleting'
                 );
-                console.log(holidays);
                 await HolidaysServices.deleteHolidays(holidays);
             } catch (err) {
                 console.error(err);

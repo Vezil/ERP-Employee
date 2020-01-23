@@ -6,7 +6,8 @@ module.exports = {
             const employees = await Users.findAll({
                 include: [
                     {
-                        model: Roles
+                        model: Roles,
+                        where: { name: 'user' }
                     }
                 ]
             });
@@ -19,9 +20,14 @@ module.exports = {
         }
     },
 
-    async create(req, res) {
+    async create(req, res, next) {
         try {
             const employee = await Users.create(req.body);
+
+            await Roles.create({
+                name: 'user',
+                userId: employee.id
+            });
 
             return res.send(employee.toJSON());
         } catch (err) {
@@ -51,7 +57,7 @@ module.exports = {
 
     async delete(req, res, next) {
         try {
-            const one = await users.findOne({
+            const one = await Users.findOne({
                 where: {
                     id: req.params.id
                 }
@@ -68,7 +74,7 @@ module.exports = {
             });
         }
     },
-    async getOne(req, res) {
+    async getOne(req, res, next) {
         try {
             const one = await Users.findByPk(req.params.id);
             return res.send(one);
