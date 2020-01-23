@@ -3,17 +3,19 @@ const HolidaysController = require('../controllers/HolidaysController');
 const EmployeesController = require('../controllers/EmployeesController');
 const ContractsController = require('../controllers/ContractsController');
 const UserHolidaysController = require('../controllers/UserHolidaysController');
-const datesValidator = require('../validations/datesValidator');
-const loginValidator = require('../validations/loginValidator');
-const employeeValidator = require('../validations/employeeValidator');
+const DatesValidator = require('../validations/DatesValidator');
+const LoginValidator = require('../validations/LoginValidator');
+const EmployeeValidator = require('../validations/EmployeeValidator');
+const ContractValidator = require('../validations/ContractValidator');
+const HolidaysValidator = require('../validations/HolidaysValidator');
 
 module.exports = app => {
-    app.post('/login', loginValidator, AuthenticationController.login);
+    app.post('/login', LoginValidator, AuthenticationController.login);
 
     app.post(
         '/employees',
-        // AuthenticationController.verifyToken,
-        employeeValidator,
+        AuthenticationController.verifyToken,
+        EmployeeValidator,
         EmployeesController.create
     );
     app.get(
@@ -29,6 +31,7 @@ module.exports = app => {
     app.put(
         '/employees/:id',
         AuthenticationController.verifyToken,
+        EmployeeValidator,
         EmployeesController.update
     );
     app.delete(
@@ -50,11 +53,13 @@ module.exports = app => {
     app.post(
         '/contracts',
         AuthenticationController.verifyToken,
+        ContractValidator,
         ContractsController.create
     );
     app.put(
         '/contracts/:id',
         AuthenticationController.verifyToken,
+        ContractValidator,
         ContractsController.update
     );
     app.delete(
@@ -70,12 +75,14 @@ module.exports = app => {
     );
     app.post(
         '/holidays',
-        AuthenticationController.verifyToken,
+        // AuthenticationController.verifyToken,
+        HolidaysValidator,
         HolidaysController.create
     );
     app.put(
         '/holidays/:id',
-        AuthenticationController.verifyToken,
+        // AuthenticationController.verifyToken,
+        HolidaysValidator,
         HolidaysController.update
     );
     app.delete(
@@ -96,13 +103,13 @@ module.exports = app => {
     );
     app.post(
         '/employees/:id/holidays',
-        datesValidator,
+        DatesValidator,
         AuthenticationController.verifyToken,
         UserHolidaysController.create
     );
     app.put(
         '/employees/:id/holidays/:holidaysId',
-        datesValidator,
+        DatesValidator,
         AuthenticationController.verifyToken,
         UserHolidaysController.update
     );

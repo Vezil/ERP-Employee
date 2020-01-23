@@ -1,5 +1,5 @@
 const { Users, Roles } = require('../models');
-const { validationResult } = require('express-validator/check');
+const { validationResult } = require('express-validator');
 
 module.exports = {
     async show(req, res, next) {
@@ -43,13 +43,21 @@ module.exports = {
             return res.send(employee.toJSON());
         } catch (err) {
             return res.status(500).send({
-                error: 'Something went wrong with adding this user'
+                error: 'Something went wrong with adding this user '
             });
         }
     },
 
     async update(req, res, next) {
-        // validate: name, email, surname, birthdate
+        const validationErrors = validationResult(req);
+
+        if (!validationErrors.isEmpty()) {
+            const errors = validationErrors.array().map(e => {
+                return { message: e.msg, param: e.param };
+            });
+
+            return res.status(422).json({ errors });
+        }
 
         try {
             await Users.update(req.body, {

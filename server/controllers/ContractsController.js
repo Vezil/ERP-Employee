@@ -1,4 +1,5 @@
 const { Contracts, Users } = require('../models');
+const { validationResult } = require('express-validator');
 
 module.exports = {
     async show(req, res, next) {
@@ -32,34 +33,61 @@ module.exports = {
     },
 
     async create(req, res, next) {
-        // validate: contract_lenght (contract => contract_lenght)
-        // validate: start_date, finish_date
-        // validate: holidays_per_year (20/26)
-        // validate: employee_id
+        // validate: contract_length (contract => contract_lenght)
 
-        const holidaysToAdd = ceil((holidays_per_year / 12) * contract_length);
+        const holidaysToAdd = Math.ceil(
+            (req.body.holidays_per_year / 12) * req.body.contract
+        );
+
+        const validationErrors = validationResult(req);
+
+        if (!validationErrors.isEmpty()) {
+            const errors = validationErrors.array().map(e => {
+                return { message: e.msg, param: e.param };
+            });
+
+            return res.status(422).json({ errors });
+        }
 
         try {
             const newContract = await Contracts.create(req.body);
 
-            const employee = await Employees.findOne(employee_id);
+            const employee = await Users.findByPk(req.body.userId);
 
             await employee.update({ days_left: holidaysToAdd });
 
             return res.send(newContract);
         } catch (err) {
             return res.status(500).send({
-                error: 'Something went wrong with adding this contract'
+                error: 'Something went wrong with adding this contract '
             });
         }
     },
     async update(req, res, next) {
+        const holidaysToChange = Math.ceil(
+            (req.body.holidays_per_year / 12) * req.body.contract
+        );
+
+        const validationErrors = validationResult(req);
+
+        if (!validationErrors.isEmpty()) {
+            const errors = validationErrors.array().map(e => {
+                return { message: e.msg, param: e.param };
+            });
+
+            return res.status(422).json({ errors });
+        }
+
         try {
             await Contracts.update(req.body, {
                 where: {
                     id: req.params.id
                 }
             });
+
+            const employee = await Users.findByPk(req.body.userId);
+
+            await employee.update({ days_left: holidaysToChange });
 
             return res.send(req.body);
         } catch (err) {
