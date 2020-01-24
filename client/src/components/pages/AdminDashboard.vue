@@ -8,6 +8,10 @@
                 class="elevation-1 table"
                 dark
             >
+                <template v-slot:item.birthdate="{ item }"
+                    >{{ item.birthdate | formatDate }}
+                </template>
+
                 <template v-slot:top>
                     <v-toolbar flat dark>
                         <v-toolbar-title class="table_title"
@@ -63,6 +67,10 @@
                                                     onfocus="(this.type='date')"
                                                     v-model="
                                                         editedItem.birthdate
+                                                    "
+                                                    :value="
+                                                        editedItem.birthdate
+                                                            | formatDate
                                                     "
                                                     label="Birthdate"
                                                     required
@@ -143,7 +151,10 @@
                                         >
                                         <div>
                                             Date of Birth:
-                                            {{ profileItem.birthdate }}
+                                            {{
+                                                profileItem.birthdate
+                                                    | formatDate
+                                            }}
                                         </div>
                                         <div
                                             >Days off (left):
@@ -162,11 +173,17 @@
                                         >
                                         <div
                                             >Start date of this contract:
-                                            {{ oneContract.start_date }}</div
+                                            {{
+                                                oneContract.start_date
+                                                    | formatDate
+                                            }}</div
                                         >
                                         <div
                                             >Finish date of this contract:
-                                            {{ oneContract.finish_date }}</div
+                                            {{
+                                                oneContract.finish_date
+                                                    | formatDate
+                                            }}</div
                                         >
                                     </div>
                                 </v-card-text>
@@ -198,6 +215,7 @@
 </template>
 
 <script>
+import moment from 'moment';
 import EmployeesServices from '../../services/EmployeesService';
 import ContractsServices from '../../services/ContractsService';
 
@@ -246,6 +264,7 @@ export default {
             },
             error: null,
             errors_from_server: null,
+
             required: value => !!value || 'Required.'
         };
     },
@@ -267,13 +286,6 @@ export default {
     methods: {
         async fetchEmployees() {
             this.employees = (await EmployeesServices.getAllEmployees()).data;
-
-            this.employees.forEach(employee => {
-                let newBirthdate = employee.birthdate;
-                newBirthdate = newBirthdate.slice(0, 10);
-
-                employee.birthdate = newBirthdate;
-            });
         },
         editItem(item) {
             this.editedIndex = this.employees.indexOf(item);
@@ -286,12 +298,14 @@ export default {
             confirm('Are you sure you want to delete this employee?') &&
                 this.employees.splice(index, 1) &&
                 this.deleteEmployee(item);
+
             this.fetchEmployees();
         },
 
         close() {
             this.error = null;
             this.isDialogOpen = false;
+
             setTimeout(() => {
                 this.editedItem = Object.assign({}, this.defaultItem);
                 this.editedIndex = -1;
@@ -301,13 +315,6 @@ export default {
         save() {
             if (this.editedIndex > -1) {
                 this.updateEmployee(this.editedItem);
-
-                if (this.areAll) {
-                    Object.assign(
-                        this.employees[this.editedIndex],
-                        this.editedItem
-                    );
-                }
             } else {
                 this.createEmployee(this.editedItem);
             }
@@ -332,12 +339,6 @@ export default {
                 );
                 this.contractsEmployee = this.contractsEmployee.data;
                 this.profileItem.contracts = this.contractsEmployee;
-
-                this.contractsEmployee = this.contractsEmployee.map(item => {
-                    item.start_date = item.start_date.slice(0, 10);
-                    item.finish_date = item.finish_date.slice(0, 10);
-                    return item;
-                });
             } catch (err) {
                 console.error(err);
             }

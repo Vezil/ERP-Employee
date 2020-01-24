@@ -7,6 +7,26 @@
                 class="elevation-1 table"
                 dark
             >
+                <template v-slot:item.name="{ item }"
+                    >{{ item.employee.name }}
+                </template>
+
+                <template v-slot:item.surname="{ item }"
+                    >{{ item.employee.surname }}
+                </template>
+
+                <template v-slot:item.email="{ item }"
+                    >{{ item.employee.email }}
+                </template>
+
+                <template v-slot:item.start_date="{ item }"
+                    >{{ item.start_date | formatDate }}
+                </template>
+
+                <template v-slot:item.finish_date="{ item }"
+                    >{{ item.finish_date | formatDate }}
+                </template>
+
                 <template v-slot:top>
                     <v-toolbar flat dark>
                         <v-toolbar-title class="table_title"
@@ -61,6 +81,10 @@
                                                     v-model="
                                                         editedItem.start_date
                                                     "
+                                                    :value="
+                                                        editedItem.start_date
+                                                            | formatDate
+                                                    "
                                                     label="Start Day"
                                                     required
                                                     :rules="[required]"
@@ -72,6 +96,10 @@
                                                     onfocus="(this.type='date')"
                                                     v-model="
                                                         editedItem.finish_date
+                                                    "
+                                                    :value="
+                                                        editedItem.finish_date
+                                                            | formatDate
                                                     "
                                                     label="Finish Day"
                                                     required
@@ -173,7 +201,7 @@ export default {
                 },
                 {
                     text: 'Contract for (months)',
-                    value: 'contract',
+                    value: 'contract_length',
                     sortable: false
                 },
                 {
@@ -221,34 +249,11 @@ export default {
             this.contracts = (await ContractsServices.getAllContracts()).data;
             this.employees = (await EmployeesServices.getAllEmployees()).data;
 
-            for (const contract of this.contracts) {
-                contract.name = contract.employee.name;
-                contract.surname = contract.employee.surname;
-                contract.email = contract.employee.email;
-            }
-
-            this.contracts = this.contracts.map(item => {
-                item.start_date = item.start_date.slice(0, 10);
-                item.finish_date = item.finish_date.slice(0, 10);
-                return item;
-            });
-
             let i = 0;
             this.employees.forEach(one => {
                 this.employee[i] = one.email;
                 i++;
             });
-        },
-
-        async getThisEmployee(contract, id) {
-            try {
-                const person = await EmployeeServices.getEmployeeById(id);
-                (contract.name = person.data.name),
-                    (contract.surname = person.data.surname),
-                    (contract.email = person.data.email);
-            } catch (err) {
-                console.error(err);
-            }
         },
 
         editItem(item) {
@@ -284,7 +289,6 @@ export default {
                         this.editedItem.surname = employee.surname;
                     }
                 });
-
                 this.createContract(this.editedItem);
             }
         },
@@ -295,6 +299,7 @@ export default {
 
             Object.keys(contract).forEach(value => {
                 if (contract[value] == '' || contract[value] == undefined) {
+                    console.log(contract);
                     this.areAll = false;
                 }
             });
