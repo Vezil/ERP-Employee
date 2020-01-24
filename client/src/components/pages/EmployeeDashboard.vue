@@ -17,14 +17,11 @@ import EmployeesServices from '../../services/EmployeesService';
 export default {
     name: 'employeedashboard',
 
-    components: {
-        // HelloWorld
-    },
     data() {
         return { holidays_user: [] };
     },
     async mounted() {
-        this.holidays_user = await EmployeesServices.getOneEmployee(
+        this.holidays_user = await EmployeesServices.getEmployeeById(
             this.$store.state.id
         );
         this.holidays_user = this.holidays_user.data;

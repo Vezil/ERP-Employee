@@ -49,7 +49,7 @@
                                                     v-model="
                                                         editedItem.contract
                                                     "
-                                                    label="Contract"
+                                                    label="Contract (1/3/6/12)"
                                                     required
                                                     :rules="[required]"
                                                 ></v-text-field>
@@ -78,19 +78,23 @@
                                                     :rules="[required]"
                                                 ></v-text-field>
                                             </v-col>
+                                            <v-col cols="12" sm="6" md="4">
+                                                <v-text-field
+                                                    type="number"
+                                                    v-model="
+                                                        editedItem.holidays_per_year
+                                                    "
+                                                    label="Holidays (20/26)"
+                                                    required
+                                                    :rules="[required]"
+                                                ></v-text-field>
+                                            </v-col>
                                             <v-col
                                                 cols="12"
                                                 sm="6"
                                                 md="4"
                                                 v-if="editedIndex == -1"
                                             >
-                                                <v-text-field
-                                                    type="number"
-                                                    v-model="holidays.days_left"
-                                                    label="Holidays"
-                                                    required
-                                                    :rules="[required]"
-                                                ></v-text-field>
                                             </v-col>
                                         </v-row>
                                         <div class="error" v-if="error">{{
@@ -130,7 +134,6 @@
 </template>
 
 <script>
-import { METHODS } from 'http';
 import EmployeesServices from '../../services/EmployeesService';
 import ContractsServices from '../../services/ContractsService';
 
@@ -143,6 +146,7 @@ export default {
             employee: [],
             isDialogOpen: false,
             newPass: false,
+            areAll: true,
             headers: [
                 {
                     text: 'Name',
@@ -182,50 +186,16 @@ export default {
                 contract: '',
                 start_date: '',
                 finish_date: '',
-                employeeId: ''
+                userId: '',
+                holidays_per_year: ''
             },
-
-            newContract: {
-                email: '',
-                contract: '',
-                start_date: '',
-                finish_date: '',
-                employeeId: ''
-            },
-            holidays: {
-                days_left: '',
-                id: ''
-            },
-            holidays_before: '',
 
             required: value => !!value || 'Required.',
             error: null
         };
     },
-    async mounted() {
-        console.log(localStorage);
-        this.contracts = (await ContractsServices.getAllContracts()).data;
-        this.employees = (await EmployeesServices.getAllEmployees()).data;
-
-        for (const contract of this.contracts) {
-            contract.name = contract.employee.name;
-            contract.surname = contract.employee.surname;
-            contract.email = contract.employee.email;
-        }
-
-        this.contracts = this.contracts.map(item => {
-            item.start_date = item.start_date.slice(0, 10);
-            item.finish_date = item.finish_date.slice(0, 10);
-            return item;
-        });
-
-        let i = 0;
-        this.employees.forEach(one => {
-            this.employee[i] =
-                // '' + one.name + ' ' + one.surname + '  |  ' +
-                one.email;
-            i++;
-        });
+    mounted() {
+        this.fetchContracts();
     },
     computed: {
         formTitle() {
@@ -239,9 +209,32 @@ export default {
         }
     },
     methods: {
+        async fetchContracts() {
+            this.contracts = (await ContractsServices.getAllContracts()).data;
+            this.employees = (await EmployeesServices.getAllEmployees()).data;
+
+            for (const contract of this.contracts) {
+                contract.name = contract.employee.name;
+                contract.surname = contract.employee.surname;
+                contract.email = contract.employee.email;
+            }
+
+            this.contracts = this.contracts.map(item => {
+                item.start_date = item.start_date.slice(0, 10);
+                item.finish_date = item.finish_date.slice(0, 10);
+                return item;
+            });
+
+            let i = 0;
+            this.employees.forEach(one => {
+                this.employee[i] = one.email;
+                i++;
+            });
+        },
+
         async getThisEmployee(contract, id) {
             try {
-                const person = await EmployeeServices.getOneEmployee(id);
+                const person = await EmployeeServices.getEmployeeById(id);
                 (contract.name = person.data.name),
                     (contract.surname = person.data.surname),
                     (contract.email = person.data.email);
@@ -274,73 +267,77 @@ export default {
 
         save() {
             if (this.editedIndex > -1) {
-                Object.assign(
-                    this.contracts[this.editedIndex],
-                    this.editedItem,
-                    this.updateContract(this.editedItem)
-                );
+                this.updateContract(this.editedItem);
             } else {
-                this.contracts.push(this.editedItem);
-
                 this.employees.forEach(employee => {
                     if (this.editedItem.email === employee.email) {
-                        this.editedItem.employeeId = employee.id;
+                        this.editedItem.userId = employee.id;
                         this.editedItem.name = employee.name;
                         this.editedItem.surname = employee.surname;
                     }
                 });
 
-                // delete this.editedItem.email;
                 this.createContract(this.editedItem);
-                this.holidays.id = this.editedItem.employeeId;
-
-                this.getDaysLeftBeforeAndSum(this.holidays.id);
-
-                this.createHolidays(this.holidays);
             }
             if (!this.error) {
                 this.close();
             }
         },
-        async getDaysLeftBeforeAndSum(id) {
-            try {
-                const thisPerson = await EmployeesServices.getOneEmployee(id);
-                this.holidays_before = thisPerson.data.days_left;
-                this.holidays.days_left = parseInt(this.holidays.days_left);
-                this.holidays_before = parseInt(this.holidays_before);
-                this.holidays.days_left += this.holidays_before;
-            } catch (err) {
-                console.error(err);
-            }
-        },
+
         async createContract(contract) {
-            try {
-                await ContractsServices.addContract(contract);
-            } catch (err) {
-                console.error(err);
-            }
-        },
-        async createHolidays(holidays) {
-            try {
-                console.log(holidays.days_left + ' first');
-                await EmployeesServices.updateEmployee(holidays);
-                console.log(holidays.days_left + ' second');
-                await EmployeesServices.updateEmployee(holidays);
-            } catch (err) {
-                console.error(err);
-            }
-        },
-        async updateContract(contract) {
-            const areAll = Object.keys(contract).every(key => !!contract[key]);
-            if (!areAll) {
+            this.areAll = true;
+
+            Object.keys(contract).forEach(value => {
+                if (contract[value] == '' || contract[value] == undefined) {
+                    this.areAll = false;
+                }
+            });
+
+            if (this.areAll === false) {
                 this.error = 'All fields are required !';
+
                 return;
             }
-            if (areAll) {
+
+            if (this.areAll) {
+                this.error = null;
+            }
+
+            try {
+                delete contract.email;
+                delete contract.name;
+                delete contract.surname;
+
+                await ContractsServices.addContract(contract);
+                this.fetchHolidays();
+            } catch (err) {
+                console.error(err);
+            }
+        },
+
+        async updateContract(contract) {
+            this.areAll = true;
+            Object.keys(contract).forEach(value => {
+                if (contract[value] == '' || contract[value] == undefined) {
+                    this.areAll = false;
+                }
+            });
+
+            if (this.areAll === false) {
+                this.error = 'All fields are required !';
+
+                return;
+            }
+            if (this.areAll) {
                 this.error = null;
             }
             try {
+                delete contract.email;
+                delete contract.name;
+                delete contract.surname;
+
                 await ContractsServices.updateContract(contract);
+                this.fetchHolidays();
             } catch (err) {
                 console.error(err);
             }
@@ -348,6 +345,7 @@ export default {
         async deleteContract(contract) {
             try {
                 await ContractsServices.deleteContract(contract);
+                this.fetchContracts();
             } catch (err) {
                 console.error(err);
             }

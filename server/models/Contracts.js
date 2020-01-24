@@ -2,19 +2,22 @@
 
 module.exports = (sequelize, DataTypes) => {
     const Contracts = sequelize.define(
-        'contracts',
+        'Contracts',
         {
             contract: DataTypes.INTEGER,
             start_date: DataTypes.DATE,
             finish_date: DataTypes.DATE
         },
-        {}
+        {
+            tableName: 'contracts',
+            underscored: true
+        }
     );
 
     Contracts.associate = function(models) {
-        Contracts.belongsTo(models.employee, {
+        Contracts.belongsTo(models.Users, {
             as: 'employee',
-            foreignKey: 'employeeId'
+            foreignKey: 'userId'
         });
     };
 

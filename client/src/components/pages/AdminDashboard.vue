@@ -196,9 +196,6 @@ import HolidaysServices from '../../services/HolidaysService';
 
 export default {
     name: 'admindashboard',
-    components: {
-        // HelloWorld
-    },
     data() {
         return {
             employees: [],
@@ -207,6 +204,7 @@ export default {
             isDialogOpen: false,
             isDialogProfileOpen: false,
             newPass: false,
+            areAll: true,
             headers: [
                 {
                     text: 'Name',
@@ -230,8 +228,7 @@ export default {
                 surname: '',
                 birthdate: '',
                 email: '',
-                days_left: 0,
-                isAdmin: false
+                days_left: 0
             },
             profileItem: {
                 name: '',
@@ -246,15 +243,7 @@ export default {
         };
     },
     async mounted() {
-        this.employees = (await EmployeesServices.getAllEmployees()).data;
-        this.holidays = (await HolidaysServices.getHolidays()).data;
-
-        this.employees.forEach(employee => {
-            let newBirthdate = employee.birthdate;
-            newBirthdate = newBirthdate.slice(0, 10);
-
-            employee.birthdate = newBirthdate;
-        });
+        this.fetchEmployees();
     },
     computed: {
         formTitle() {
@@ -269,6 +258,17 @@ export default {
     },
 
     methods: {
+        async fetchEmployees() {
+            this.employees = (await EmployeesServices.getAllEmployees()).data;
+            this.holidays = (await HolidaysServices.getHolidays()).data;
+
+            this.employees.forEach(employee => {
+                let newBirthdate = employee.birthdate;
+                newBirthdate = newBirthdate.slice(0, 10);
+
+                employee.birthdate = newBirthdate;
+            });
+        },
         editItem(item) {
             this.editedIndex = this.employees.indexOf(item);
             this.editedItem = Object.assign({}, item);
@@ -280,6 +280,7 @@ export default {
             confirm('Are you sure you want to delete this employee?') &&
                 this.employees.splice(index, 1) &&
                 this.deleteEmployee(item);
+            this.fetchEmployees();
         },
 
         close() {
@@ -293,13 +294,15 @@ export default {
 
         save() {
             if (this.editedIndex > -1) {
-                Object.assign(
-                    this.employees[this.editedIndex],
-                    this.editedItem,
-                    this.updateEmployee(this.editedItem)
-                );
+                this.updateEmployee(this.editedItem);
+
+                if (this.areAll) {
+                    Object.assign(
+                        this.employees[this.editedIndex],
+                        this.editedItem
+                    );
+                }
             } else {
-                this.employees.push(this.editedItem);
                 this.createEmployee(this.editedItem);
             }
             if (!this.error) {
@@ -338,34 +341,48 @@ export default {
         },
 
         async createEmployee(employee) {
-            // const areAll = Object.keys(employee).every(key => !!employee[key]);
-            // console.log(employee);
+            this.areAll = true;
 
-            // if (!areAll) {
-            //     this.error = 'All fields are required !';
-            //     return;
-            // }
-            // if (areAll) {
-            //     this.error = null;
-            // }
+            Object.keys(employee).forEach(value => {
+                if (employee[value] === '' || employee[value] === undefined) {
+                    this.areAll = false;
+                }
+            });
+
+            if (this.areAll === false) {
+                this.error = 'All fields are required !';
+
+                return;
+            }
+            if (this.areAll) {
+                this.error = null;
+            }
             try {
-                await EmployeesServices.addNewEmployee(employee);
+                await EmployeesServices.create(employee);
+                this.fetchHolidays();
             } catch (err) {
                 console.error(err);
             }
         },
-        async updateEmployee(employee) {
-            // const areAll = Object.keys(employee).every(key => !!employee[key]);
 
-            // if (!areAll) {
-            //     this.error = 'All fields are required !';
-            //     return;
-            // }
-            // if (areAll) {
-            //     this.error = null;
-            // }
+        async updateEmployee(employee) {
+            this.areAll = true;
+            Object.keys(employee).forEach(value => {
+                if (employee[value] === '' || employee[value] === undefined) {
+                    this.areAll = false;
+                }
+            });
+
+            if (!this.areAll) {
+                this.error = 'All fields are required !';
+                return;
+            }
+            if (this.areAll) {
+                this.error = null;
+            }
             try {
                 await EmployeesServices.updateEmployee(employee);
+                this.fetchHolidays();
             } catch (err) {
                 console.error(err);
             }
@@ -373,6 +390,7 @@ export default {
         async deleteEmployee(employee) {
             try {
                 await EmployeesServices.deleteEmployee(employee);
+                this.fetchEmployees();
             } catch (err) {
                 console.error(err);
             }

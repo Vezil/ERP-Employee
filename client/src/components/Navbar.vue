@@ -16,7 +16,7 @@
                 </router-link>
                 <router-link
                     v-if="
-                        !$store.state.isLoggedIn &&
+                        !$store.state.isLoggedInAsUser &&
                             !$store.state.isLoggedInAsAdmin
                     "
                     to="Login"
@@ -66,7 +66,7 @@
                     </v-list-item>
                 </router-link>
                 <router-link
-                    v-if="$store.state.isLoggedIn"
+                    v-if="$store.state.isLoggedInAsUser"
                     to="HolidaysRequests"
                 >
                     <v-list-item class="menu_el">
@@ -82,7 +82,7 @@
                     </v-list-item>
                 </router-link>
                 <router-link
-                    v-if="$store.state.isLoggedIn"
+                    v-if="$store.state.isLoggedInAsUser"
                     to="HolidaysConfirmed"
                 >
                     <v-list-item class="menu_el">
@@ -99,7 +99,7 @@
                 </router-link>
                 <router-link
                     v-if="
-                        $store.state.isLoggedIn ||
+                        $store.state.isLoggedInAsUser ||
                             $store.state.isLoggedInAsAdmin
                     "
                     to="Logout"
@@ -127,7 +127,6 @@
     </div>
 </template>
 <script>
-import { store } from '../store';
 export default {
     name: 'Navbar',
     data() {

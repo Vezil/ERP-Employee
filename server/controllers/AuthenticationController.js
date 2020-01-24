@@ -1,6 +1,7 @@
-const { employee } = require('../models');
+const { Users, Roles } = require('../models');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
+const { validationResult } = require('express-validator/check');
 
 function jwtSignEmployee(employee) {
     const ONE_DAY = 60 * 60 * 24;
@@ -10,26 +11,25 @@ function jwtSignEmployee(employee) {
 }
 
 module.exports = {
-    async create(req, res) {
-        try {
-            const newEmployee = await employee.create(req.body);
-            res.send(newEmployee.toJSON());
-        } catch (err) {
-            res.status(400).send({
-                error:
-                    'This credenctials are incorrect / email is already in use'
-            });
-        }
-    },
+    async login(req, res, next) {
+        const validationErrors = validationResult(req);
 
-    async login(req, res) {
+        if (!validationErrors.isEmpty()) {
+            const errors = validationErrors.array().map(e => {
+                return { message: e.msg, param: e.param };
+            });
+
+            return res.status(422).json({ errors });
+        }
+
         try {
             const { email, password } = req.body;
 
-            const user = await employee.findOne({
+            const user = await Users.findOne({
                 where: {
                     email: email
-                }
+                },
+                include: [{ model: Roles, as: 'Role' }]
             });
 
             if (!user) {
@@ -49,17 +49,18 @@ module.exports = {
             const userJson = user.toJSON();
 
             return res.send({
-                employee: userJson,
+                user: userJson,
                 token: jwtSignEmployee(userJson)
             });
         } catch (err) {
             console.error(err);
 
             return res.status(500).send({
-                error: 'This credenctials are incorrect. Try Again!'
+                error: 'This email or password are incorrect. Try Again!'
             });
         }
     },
+
     async verifyToken(req, res, next) {
         const bearerHeader = req.headers['authorization'];
         if (typeof bearerHeader !== 'undefined') {
@@ -72,7 +73,7 @@ module.exports = {
                 config.authentication.jwtSecret,
                 (err, authData) => {
                     if (err) {
-                        res.sendStatus(403).json({
+                        return res.sendStatus(403).json({
                             auth: false,
                             message: 'Failed to authenticate token.'
                         });
@@ -81,10 +82,14 @@ module.exports = {
                 }
             );
         } else {
-            res.sendStatus(403).json({
+            return res.sendStatus(403).json({
                 auth: false,
                 message: 'Failed to authenticate token.'
             });
         }
     }
+
+    // async updatePassword() {
+    //     // validate: old_password, new_password, new_password_confirm
+    // }
 };

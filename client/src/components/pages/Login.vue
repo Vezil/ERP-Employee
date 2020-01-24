@@ -15,6 +15,7 @@
                         placeholder="Email"
                         outlined
                         solo-inverted
+                        :rules="emailRules"
                     ></v-text-field>
                     <br />
                     <v-text-field
@@ -25,10 +26,11 @@
                         placeholder="Password"
                         outlined
                         solo-inverted
+                        :rules="passwordRules"
                     ></v-text-field>
                     <br />
                     <br />
-                    <div class="error" v-if="error"></div>
+                    <div class="error" v-if="error">{{ this.error }}</div>
                     <br />
                     <v-btn class="cyan" @click="login">Login</v-btn>
                 </div>
@@ -45,6 +47,14 @@ export default {
     name: 'NewEmployee',
     data() {
         return {
+            emailRules: [
+                v => !!v || 'E-mail is required',
+                v =>
+                    /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/.test(
+                        v
+                    ) || 'E-mail must be valid'
+            ],
+            passwordRules: [v => v.length > 7 || 'Minimum 8 characters'],
             email: '',
             password: '',
             error: null
@@ -53,13 +63,14 @@ export default {
     methods: {
         async login() {
             try {
-                const response = await AuthenticationService.login({
+                const { data } = await AuthenticationService.login({
                     email: this.email,
                     password: this.password
-                }).then(response => {
-                    this.$store.dispatch('setUser', response.data.employee);
-                    this.$store.dispatch('setToken', response.data.token);
                 });
+
+                this.$store.dispatch('setUser', data.user);
+                this.$store.dispatch('setToken', data.token);
+                this.$store.dispatch('setRole', data.user.Role);
 
                 this.$router.push({
                     name: 'dashboard'
