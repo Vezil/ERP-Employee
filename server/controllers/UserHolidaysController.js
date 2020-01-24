@@ -58,6 +58,12 @@ module.exports = {
         const employee = await Users.findByPk(req.body.user_id);
         const new_days_left = employee.days_left - days_taken;
 
+        if (days_taken > employee.days_left) {
+            return res.status(422).send({
+                error: "You doesn't have " + days_taken + '  days left'
+            });
+        }
+
         try {
             req.body.days_taken = days_taken;
 
@@ -94,11 +100,15 @@ module.exports = {
 
             const employee = await Users.findByPk(req.body.user_id);
 
-            //cases >0 itd...
-
             const old_days_taken = await Holidays.findByPk(
                 req.params.holidays_id
             );
+
+            if (new_days_taken > employee.days_left) {
+                return res.status(422).send({
+                    error: "You doesn't have " + new_days_taken + '  days left'
+                });
+            }
 
             const old_days_left = employee.days_left;
 

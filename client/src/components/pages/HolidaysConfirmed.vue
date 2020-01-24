@@ -7,6 +7,14 @@
                 class="elevation-1 table"
                 dark
             >
+                <template v-slot:item.start_date="{ item }"
+                    >{{ item.start_date | formatDate }}
+                </template>
+
+                <template v-slot:item.finish_date="{ item }"
+                    >{{ item.finish_date | formatDate }}
+                </template>
+
                 <template v-slot:top>
                     <v-toolbar flat dark>
                         <v-toolbar-title class="table_title"
@@ -54,12 +62,6 @@ export default {
             this.$store.state.id
         );
         this.holidays_user = this.holidays_user.data;
-
-        this.holidays_user = this.holidays_user.map(item => {
-            item.start_date = item.start_date.slice(0, 10);
-            item.finish_date = item.finish_date.slice(0, 10);
-            return item;
-        });
     }
 };
 </script>
