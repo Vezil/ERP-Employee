@@ -19,6 +19,6 @@ export default {
     },
 
     deleteContract(contract) {
-        return Axios.delete(`contracts/${contract.id}`, contract);
+        return Axios.delete(`contracts/${contract.id}`);
     }
 };

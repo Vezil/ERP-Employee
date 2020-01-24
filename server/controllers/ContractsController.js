@@ -109,7 +109,7 @@ module.exports = {
 
             await one.destroy();
 
-            return res.send(one);
+            return res.sendStatus(204);
         } catch (err) {
             console.err(err);
 

@@ -243,15 +243,7 @@ export default {
         };
     },
     async mounted() {
-        this.employees = (await EmployeesServices.getAllEmployees()).data;
-        this.holidays = (await HolidaysServices.getHolidays()).data;
-
-        this.employees.forEach(employee => {
-            let newBirthdate = employee.birthdate;
-            newBirthdate = newBirthdate.slice(0, 10);
-
-            employee.birthdate = newBirthdate;
-        });
+        this.fetchEmployees();
     },
     computed: {
         formTitle() {
@@ -266,6 +258,17 @@ export default {
     },
 
     methods: {
+        async fetchEmployees() {
+            this.employees = (await EmployeesServices.getAllEmployees()).data;
+            this.holidays = (await HolidaysServices.getHolidays()).data;
+
+            this.employees.forEach(employee => {
+                let newBirthdate = employee.birthdate;
+                newBirthdate = newBirthdate.slice(0, 10);
+
+                employee.birthdate = newBirthdate;
+            });
+        },
         editItem(item) {
             this.editedIndex = this.employees.indexOf(item);
             this.editedItem = Object.assign({}, item);
@@ -277,6 +280,7 @@ export default {
             confirm('Are you sure you want to delete this employee?') &&
                 this.employees.splice(index, 1) &&
                 this.deleteEmployee(item);
+            this.fetchEmployees();
         },
 
         close() {
@@ -300,10 +304,6 @@ export default {
                 }
             } else {
                 this.createEmployee(this.editedItem);
-
-                if (this.areAll) {
-                    this.employees.push(this.editedItem);
-                }
             }
             if (!this.error) {
                 this.close();
@@ -359,6 +359,7 @@ export default {
             }
             try {
                 await EmployeesServices.create(employee);
+                this.fetchHolidays();
             } catch (err) {
                 console.error(err);
             }
@@ -381,6 +382,7 @@ export default {
             }
             try {
                 await EmployeesServices.updateEmployee(employee);
+                this.fetchHolidays();
             } catch (err) {
                 console.error(err);
             }
@@ -388,6 +390,7 @@ export default {
         async deleteEmployee(employee) {
             try {
                 await EmployeesServices.deleteEmployee(employee);
+                this.fetchEmployees();
             } catch (err) {
                 console.error(err);
             }

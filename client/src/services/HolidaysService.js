@@ -6,6 +6,7 @@ export default {
     getHolidays() {
         return Axios.get('holidays');
     },
+
     addHolidays(holidays) {
         return Axios.post('holidays', holidays);
     },
@@ -13,9 +14,11 @@ export default {
     newHolidays(holidays) {
         return Axios.post(`holidays/${holidays.id}`, holidays);
     },
+
     updateHolidays(holidays) {
         return Axios.put(`holidays/${holidays.id}`, holidays);
     },
+
     deleteHolidays(holidays) {
         return Axios.delete(`holidays/${holidays.id}`);
     }

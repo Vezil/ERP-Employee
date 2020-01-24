@@ -123,34 +123,34 @@ module.exports = {
     },
     async delete(req, res, next) {
         try {
-            const employee = await Users.findByPk(req.body.userId);
+            console.log(req.body);
+            const employee = await Users.findOne({
+                where: {
+                    id: req.params.id
+                }
+            });
 
             const old_days_left = employee.days_left;
 
-            const one = await Holidays.findOne({
+            const holidays_to_delete = await Holidays.findOne({
                 where: {
                     user_Id: req.params.id,
                     id: req.params.holidaysId
                 }
             });
 
-            const old_days_taken = one.days_taken;
+            const old_days_taken = holidays_to_delete.days_taken;
 
             const new_days_left = old_days_taken + old_days_left;
 
-            const user = await Users.findOne({
-                where: {
-                    id: req.body.userId
-                }
-            });
+            await employee.update({ days_left: new_days_left });
 
-            await user.update({ days_left: new_days_left });
-            await one.destroy();
+            await holidays_to_delete.destroy();
 
-            return res.send(one);
+            return res.sendStatus(204);
         } catch (err) {
             return res.status(500).send({
-                error: 'Something went wrong with deleting this user'
+                error: 'Something went wrong with deleting this user '
             });
         }
     }

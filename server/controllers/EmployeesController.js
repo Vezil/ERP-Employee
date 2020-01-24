@@ -1,4 +1,4 @@
-const { Users, Roles } = require('../models');
+const { Users, Roles, Holidays, Contracts } = require('../models');
 const { validationResult } = require('express-validator');
 
 module.exports = {
@@ -78,36 +78,31 @@ module.exports = {
 
     async delete(req, res, next) {
         try {
-            const employee = await Users.findOne({
+            await Users.destroy({
                 where: {
                     id: req.params.id
                 }
             });
-            const role = await Roles.findOne({
+            await Roles.destroy({
                 where: {
                     userId: req.params.id
                 }
             });
-            const holidays = await Holidays.findAll({
+            await Holidays.destroy({
                 where: {
                     userId: req.params.id
                 }
             });
-            const contracts = await Contracts.findAll({
+            await Contracts.destroy({
                 where: {
                     userId: req.params.id
                 }
             });
 
-            await employee.destroy();
-            await role.destroy();
-            await holidays.destroy();
-            await contracts.destroy();
-
-            return res.send(employee);
+            return res.sendStatus(204);
         } catch (err) {
             console.error(err);
-
+            // return next(err)
             return res.status(500).send({
                 error: 'Something went wrong with deleting this user'
             });

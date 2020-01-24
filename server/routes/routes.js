@@ -92,29 +92,29 @@ module.exports = app => {
 
     app.get(
         '/employees/:id/holidays',
-        // AuthenticationController.verifyToken,
+        AuthenticationController.verifyToken,
         UserHolidaysController.showHolidays
     );
     app.get(
         '/employees/:id/holidaysRequests',
-        // AuthenticationController.verifyToken,
+        AuthenticationController.verifyToken,
         UserHolidaysController.showRequests
     );
     app.post(
         '/employees/:id/holidays',
         HolidaysValidator,
-        // AuthenticationController.verifyToken,
+        AuthenticationController.verifyToken,
         UserHolidaysController.create
     );
     app.put(
         '/employees/:id/holidays/:holidaysId',
         HolidaysValidator,
-        // AuthenticationController.verifyToken,
+        AuthenticationController.verifyToken,
         UserHolidaysController.update
     );
     app.delete(
         '/employees/:id/holidays/:holidaysId',
-        // AuthenticationController.verifyToken,
+        AuthenticationController.verifyToken,
         UserHolidaysController.delete
     );
 };

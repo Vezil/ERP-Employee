@@ -12,12 +12,11 @@ export default {
     },
 
     updateEmployee(employee) {
-        console.log(employee);
         return Axios.put(`employees/${employee.id}`, employee);
     },
 
     deleteEmployee(employee) {
-        return Axios.delete(`employees/${employee.id}`, employee);
+        return Axios.delete(`employees/${employee.id}`);
     },
 
     getEmployeeById(id) {

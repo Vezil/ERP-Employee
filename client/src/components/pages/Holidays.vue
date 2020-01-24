@@ -129,7 +129,6 @@ export default {
             days_left: null,
             error_validation: null,
             areAll: true,
-            new_days,
             headers: [
                 {
                     text: 'Name',
@@ -186,26 +185,7 @@ export default {
         };
     },
     async mounted() {
-        this.holidays = (await HolidaysServices.getHolidays()).data;
-        this.employees = (await EmployeesServices.getAllEmployees()).data;
-
-        for (const holiday of this.holidays) {
-            holiday.name = holiday.employee.name;
-            holiday.surname = holiday.employee.surname;
-            holiday.email = holiday.employee.email;
-        }
-
-        this.holidays = this.holidays.map(item => {
-            item.start_date = item.start_date.slice(0, 10);
-            item.finish_date = item.finish_date.slice(0, 10);
-            return item;
-        });
-
-        let i = 0;
-        this.employees.forEach(one => {
-            this.employee[i] = one.email;
-            i++;
-        });
+        this.fetchHolidays();
     },
     computed: {
         formTitle() {
@@ -219,6 +199,29 @@ export default {
         }
     },
     methods: {
+        async fetchHolidays() {
+            this.holidays = (await HolidaysServices.getHolidays()).data;
+            this.employees = (await EmployeesServices.getAllEmployees()).data;
+
+            for (const holiday of this.holidays) {
+                holiday.name = holiday.employee.name;
+                holiday.surname = holiday.employee.surname;
+                holiday.email = holiday.employee.email;
+            }
+
+            this.holidays = this.holidays.map(item => {
+                item.start_date = item.start_date.slice(0, 10);
+                item.finish_date = item.finish_date.slice(0, 10);
+
+                return item;
+            });
+
+            let i = 0;
+            this.employees.forEach(one => {
+                this.employee[i] = one.email;
+                i++;
+            });
+        },
         editItem(item) {
             this.editedIndex = this.holidays.indexOf(item);
             this.editedItem = Object.assign({}, item);
@@ -245,22 +248,7 @@ export default {
 
         save() {
             if (this.editedIndex > -1) {
-                this.SumDaysTaken(
-                    this.editedItem.start_date,
-                    this.editedItem.finish_date
-                );
-                this.updateDaysLeft(
-                    this.editedItem.days_taken,
-                    this.editedItem.userId,
-                    'editing'
-                );
                 this.updateHolidays(this.editedItem);
-                if (this.areAll) {
-                    Object.assign(
-                        this.holidays[this.editedIndex],
-                        this.editedItem
-                    );
-                }
             } else {
                 this.employees.forEach(employee => {
                     if (this.editedItem.email == employee.email) {
@@ -270,73 +258,12 @@ export default {
                     }
                 });
 
-                this.SumDaysTaken(
-                    this.editedItem.start_date,
-                    this.editedItem.finish_date
-                );
-                this.updateDaysLeft(
-                    this.editedItem.days_taken,
-                    this.editedItem.userId,
-                    'adding'
-                );
-
                 if (this.error_validation == null) {
                     this.createHolidays(this.editedItem);
-                    this.holidays.push(this.editedItem);
                 }
             }
             if (!this.error) {
                 this.close();
-            }
-        },
-        SumDaysTaken(start_date, finish_date) {
-            let sum = Date.parse(finish_date) - Date.parse(start_date);
-            sum /= 100000;
-            sum /= 864;
-            this.editedItem.days_taken_old = this.editedItem.days_taken;
-            this.editedItem.days_taken = sum;
-        },
-        async updateDaysLeft(days_taken, id, option) {
-            try {
-                const thisPerson = await EmployeesServices.getEmployeeById(id);
-                this.days_left = thisPerson.data.days_left;
-                this.new_days = 0;
-                if (option === 'deleting') {
-                    this.new_days =
-                        thisPerson.data.days_left + parseInt(days_taken);
-                } else if (option === 'adding') {
-                    this.new_days =
-                        thisPerson.data.days_left - parseInt(days_taken);
-                } else if (option === 'editing') {
-                    let cashe_days =
-                        thisPerson.data.days_left +
-                        parseInt(this.editedItem.days_taken_old);
-                    this.new_days = cashe_days - parseInt(days_taken);
-                } else {
-                    console.log('error');
-                }
-
-                if (this.new_days >= 0) {
-                    this.days_left = this.new_days;
-                    const update = {
-                        id: id,
-                        days_left: this.new_days
-                    };
-                    try {
-                        await EmployeesServices.updateEmployee(update);
-                    } catch (err) {
-                        console.error(err);
-                    }
-                } else {
-                    this.error_validation =
-                        "THIS EMPLOYEE DON'T HAVE " +
-                        days_taken +
-                        ' FREE DAYS, ONLY ' +
-                        this.days_left;
-                    console.error(this.error_validation);
-                }
-            } catch (err) {
-                console.error(err);
             }
         },
 
@@ -344,7 +271,7 @@ export default {
             this.areAll = true;
             delete holidays.days_taken_old;
 
-            console.log(holidays);
+            delete holidays.days_taken;
 
             Object.keys(holidays).forEach(value => {
                 if (holidays[value] === '' || holidays[value] === undefined) {
@@ -362,12 +289,19 @@ export default {
             }
             try {
                 await HolidaysServices.addHolidays(holidays);
+                this.fetchHolidays();
             } catch (err) {
                 console.error(err);
             }
         },
 
         async updateHolidays(holidays) {
+            delete holidays.days_taken;
+            delete holidays.employee;
+            delete holidays.name;
+            delete holidays.surname;
+            delete holidays.email;
+
             this.areAll = true;
             Object.keys(holidays).forEach(value => {
                 if (holidays[value] === '' || holidays[value] === undefined) {
@@ -385,22 +319,22 @@ export default {
             }
             try {
                 await HolidaysServices.updateHolidays(holidays);
+                this.fetchHolidays();
             } catch (err) {
                 console.error(err);
             }
         },
         async deleteHolidays(holidays) {
             try {
-                this.SumDaysTaken(
-                    this.editedItem.start_date,
-                    this.editedItem.finish_date
-                );
-                this.updateDaysLeft(
-                    this.editedItem.days_taken,
-                    this.editedItem.userId,
-                    'deleting'
-                );
+                delete holidays.days_taken;
+                delete holidays.employee;
+                delete holidays.name;
+                delete holidays.surname;
+                delete holidays.email;
+
                 await HolidaysServices.deleteHolidays(holidays);
+
+                this.fetchHolidays();
             } catch (err) {
                 console.error(err);
             }
