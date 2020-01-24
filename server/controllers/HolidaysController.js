@@ -29,16 +29,22 @@ module.exports = {
 
             return res.status(422).json({ errors });
         }
+
         const start = moment(req.body.start_date);
         const finish = moment(req.body.finish_date);
-        //update employee days_left
+
         const days_taken = Math.abs(
             moment.duration(start.diff(finish)).asDays()
         );
 
+        const employee = await Users.findByPk(req.body.userId);
+        const new_days_left = employee.days_left - days_taken;
+
         try {
             req.body.days_taken = days_taken;
+
             const newHolidays = await Holidays.create(req.body);
+            await employee.update({ days_left: new_days_left });
 
             return res.send(newHolidays);
         } catch (err) {
@@ -58,21 +64,29 @@ module.exports = {
 
             return res.status(422).json({ errors });
         }
+
         const start = moment(req.body.start_date);
         const finish = moment(req.body.finish_date);
 
-        const days_taken = Math.abs(
+        const new_days_taken = Math.abs(
             moment.duration(start.diff(finish)).asDays()
         );
+
         try {
-            req.body.days_taken = days_taken;
+            req.body.days_taken = new_days_taken;
 
             const employee = await Users.findByPk(req.body.userId);
 
             //cases >0 itd...
 
+            const old_days_taken = await Holidays.findByPk(
+                req.params.holidaysId
+            );
+
             const old_days_left = employee.days_left;
-            const new_days_left = old_days_left - days_taken;
+
+            const new_days_left =
+                old_days_left - (new_days_taken - old_days_taken.days_taken);
 
             await employee.update({ days_left: new_days_left });
 
@@ -92,12 +106,27 @@ module.exports = {
 
     async delete(req, res, next) {
         try {
+            const employee = await Users.findByPk(req.body.userId);
+
+            const old_days_left = employee.days_left;
+
             const one = await Holidays.findOne({
                 where: {
-                    id: req.params.id
+                    id: req.params.holidaysId
                 }
             });
 
+            const old_days_taken = one.days_taken;
+
+            const new_days_left = old_days_taken + old_days_left;
+
+            const user = await Users.findOne({
+                where: {
+                    id: req.body.userId
+                }
+            });
+
+            await user.update({ days_left: new_days_left });
             await one.destroy();
 
             return res.send(one);

@@ -3,7 +3,6 @@ const HolidaysController = require('../controllers/HolidaysController');
 const EmployeesController = require('../controllers/EmployeesController');
 const ContractsController = require('../controllers/ContractsController');
 const UserHolidaysController = require('../controllers/UserHolidaysController');
-const DatesValidator = require('../validations/DatesValidator');
 const LoginValidator = require('../validations/LoginValidator');
 const EmployeeValidator = require('../validations/EmployeeValidator');
 const ContractValidator = require('../validations/ContractValidator');
@@ -75,13 +74,13 @@ module.exports = app => {
     );
     app.post(
         '/holidays',
-        // AuthenticationController.verifyToken,
+        AuthenticationController.verifyToken,
         HolidaysValidator,
         HolidaysController.create
     );
     app.put(
         '/holidays/:id',
-        // AuthenticationController.verifyToken,
+        AuthenticationController.verifyToken,
         HolidaysValidator,
         HolidaysController.update
     );
@@ -93,29 +92,29 @@ module.exports = app => {
 
     app.get(
         '/employees/:id/holidays',
-        AuthenticationController.verifyToken,
+        // AuthenticationController.verifyToken,
         UserHolidaysController.showHolidays
     );
     app.get(
         '/employees/:id/holidaysRequests',
-        AuthenticationController.verifyToken,
+        // AuthenticationController.verifyToken,
         UserHolidaysController.showRequests
     );
     app.post(
         '/employees/:id/holidays',
-        DatesValidator,
-        AuthenticationController.verifyToken,
+        HolidaysValidator,
+        // AuthenticationController.verifyToken,
         UserHolidaysController.create
     );
     app.put(
         '/employees/:id/holidays/:holidaysId',
-        DatesValidator,
-        AuthenticationController.verifyToken,
+        HolidaysValidator,
+        // AuthenticationController.verifyToken,
         UserHolidaysController.update
     );
     app.delete(
         '/employees/:id/holidays/:holidaysId',
-        AuthenticationController.verifyToken,
+        // AuthenticationController.verifyToken,
         UserHolidaysController.delete
     );
 };
