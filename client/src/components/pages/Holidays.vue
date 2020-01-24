@@ -184,7 +184,7 @@ export default {
                 start_date: '',
                 finish_date: '',
                 confirmed: 1,
-                userId: ''
+                user_id: ''
             },
             error: null,
             errors_from_server: null,
@@ -261,7 +261,7 @@ export default {
             } else {
                 this.employees.forEach(employee => {
                     if (this.editedItem.email == employee.email) {
-                        this.editedItem.userId = employee.id;
+                        this.editedItem.user_id = employee.id;
                         this.editedItem.name = employee.name;
                         this.editedItem.surname = employee.surname;
                     }

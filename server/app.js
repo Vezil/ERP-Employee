@@ -26,7 +26,11 @@ app.use(express.urlencoded({ extended: false }));
 app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
-require('./routes/routes')(app);
+require('./routes/AuthenticationRoutes')(app);
+require('./routes/EmployeeRoutes')(app);
+require('./routes/ContractRoutes')(app);
+require('./routes/HolidaysRoutes')(app);
+require('./routes/UserHolidaysRoutes')(app);
 
 app.use(function(err, req, res, next) {
     if (
@@ -52,13 +56,13 @@ app.use(function(err, req, res, next) {
     return res.status(500).send('We messed something. Sorry!');
 });
 
-app.listen(config.port, config.host, () => {
-    console.log(`express -> HOST: ${config.host} PORT: ${config.port}`);
-});
-
-// sequelize.sync().then(() => {
-//     app.listen(config.port);
-//     console.log(`Server started on port ${config.port}`);
+// app.listen(config.port, config.host, () => {
+//     console.log(`express -> HOST: ${config.host} PORT: ${config.port}`);
 // });
+
+sequelize.sync().then(() => {
+    app.listen(config.port);
+    console.log(`Server started on port ${config.port}`);
+});
 
 module.exports = app;

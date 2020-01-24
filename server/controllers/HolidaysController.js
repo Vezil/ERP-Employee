@@ -37,7 +37,7 @@ module.exports = {
             moment.duration(start.diff(finish)).asDays()
         );
 
-        const employee = await Users.findByPk(req.body.userId);
+        const employee = await Users.findByPk(req.body.user_id);
         const new_days_left = employee.days_left - days_taken;
 
         try {
@@ -75,7 +75,7 @@ module.exports = {
         try {
             req.body.days_taken = new_days_taken;
 
-            const employee = await Users.findByPk(req.body.userId);
+            const employee = await Users.findByPk(req.body.user_id);
 
             //cases >0 itd...
 
@@ -108,7 +108,7 @@ module.exports = {
 
             const employee = await Users.findOne({
                 where: {
-                    id: holidays_to_delete.userId
+                    id: holidays_to_delete.user_id
                 }
             });
 

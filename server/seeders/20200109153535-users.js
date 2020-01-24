@@ -13,8 +13,8 @@ module.exports = {
                     birthdate: '1999-11-10',
                     password: HashPassword('password'),
                     days_left: 26,
-                    created_At: new Date(),
-                    updated_At: new Date()
+                    created_at: new Date(),
+                    updated_at: new Date()
                 },
                 {
                     name: 'Monar',
@@ -23,8 +23,8 @@ module.exports = {
                     birthdate: '1994-11-10',
                     password: HashPassword('password'),
                     days_left: 26,
-                    created_At: new Date(),
-                    updated_At: new Date()
+                    created_at: new Date(),
+                    updated_at: new Date()
                 },
                 {
                     name: 'Masfasf',
@@ -33,8 +33,8 @@ module.exports = {
                     birthdate: '1993-11-10',
                     password: HashPassword('password'),
                     days_left: 26,
-                    created_At: new Date(),
-                    updated_At: new Date()
+                    created_at: new Date(),
+                    updated_at: new Date()
                 },
                 {
                     name: 'KOaspndr',
@@ -44,8 +44,8 @@ module.exports = {
                     password: HashPassword('password'),
                     days_left: 26,
 
-                    created_At: new Date(),
-                    updated_At: new Date()
+                    created_at: new Date(),
+                    updated_at: new Date()
                 },
                 {
                     name: 'Masfasf',
@@ -54,8 +54,8 @@ module.exports = {
                     birthdate: '1992-11-10',
                     password: HashPassword('password'),
                     days_left: 26,
-                    created_At: new Date(),
-                    updated_At: new Date()
+                    created_at: new Date(),
+                    updated_at: new Date()
                 },
                 {
                     name: 'Szymon',
@@ -64,8 +64,8 @@ module.exports = {
                     birthdate: '1992-11-10',
                     password: HashPassword('password'),
                     days_left: 23,
-                    created_At: new Date(),
-                    updated_At: new Date()
+                    created_at: new Date(),
+                    updated_at: new Date()
                 },
                 {
                     name: 'KOaspndr',
@@ -74,8 +74,8 @@ module.exports = {
                     birthdate: '1995-11-15',
                     password: HashPassword('password'),
                     days_left: 19,
-                    created_At: new Date(),
-                    updated_At: new Date()
+                    created_at: new Date(),
+                    updated_at: new Date()
                 },
                 {
                     name: 'Admin',
@@ -84,8 +84,8 @@ module.exports = {
                     birthdate: '1999-11-11',
                     password: HashPassword('password'),
                     days_left: 0,
-                    created_At: new Date(),
-                    updated_At: new Date()
+                    created_at: new Date(),
+                    updated_at: new Date()
                 }
             ],
             {}

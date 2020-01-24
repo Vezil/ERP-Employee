@@ -16,9 +16,9 @@ module.exports = [
     body(['confirmed'])
         .exists()
         .isBoolean()
-        .withMessage('Something wrong with "confirmed"'),
+        .withMessage('Something wrong with "confirmed" field'),
 
-    body(['userId'])
+    body(['user_id'])
         .exists()
         .isLength({ min: 1 })
         .isInt()

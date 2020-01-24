@@ -20,7 +20,7 @@ module.exports = {
         try {
             const contracts = await Contracts.findAll({
                 where: {
-                    userId: req.params.id
+                    user_id: req.params.id
                 }
             });
 
@@ -52,7 +52,7 @@ module.exports = {
         try {
             const newContract = await Contracts.create(req.body);
 
-            const employee = await Users.findByPk(req.body.userId);
+            const employee = await Users.findByPk(req.body.user_id);
 
             await employee.update({ days_left: holidaysToAdd });
 
@@ -85,7 +85,7 @@ module.exports = {
                 }
             });
 
-            const employee = await Users.findByPk(req.body.userId);
+            const employee = await Users.findByPk(req.body.user_id);
 
             await employee.update({ days_left: holidaysToChange });
 

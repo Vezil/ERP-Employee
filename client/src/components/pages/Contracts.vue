@@ -47,7 +47,7 @@
                                                     type="number"
                                                     name="contract"
                                                     v-model="
-                                                        editedItem.contract
+                                                        editedItem.contract_length
                                                     "
                                                     label="Contract (1/3/6/12)"
                                                     required
@@ -191,10 +191,10 @@ export default {
             editedIndex: -1,
             editedItem: {
                 email: '',
-                contract: '',
+                contract_length: '',
                 start_date: '',
                 finish_date: '',
-                userId: '',
+                user_id: '',
                 holidays_per_year: ''
             },
             error: null,
@@ -279,7 +279,7 @@ export default {
             } else {
                 this.employees.forEach(employee => {
                     if (this.editedItem.email === employee.email) {
-                        this.editedItem.userId = employee.id;
+                        this.editedItem.user_id = employee.id;
                         this.editedItem.name = employee.name;
                         this.editedItem.surname = employee.surname;
                     }

@@ -145,7 +145,7 @@ export default {
                 start_date: '',
                 finish_date: '',
                 confirmed: 0,
-                userId: this.$store.state.id
+                user_id: this.$store.state.id
             },
             error: null,
             errors_from_server: null,

@@ -1,7 +1,7 @@
 const { body } = require('express-validator');
 
 module.exports = [
-    body(['contract'])
+    body(['contract_length'])
         .exists()
         .isLength({ min: 1, max: 2 })
         .isInt()
@@ -20,7 +20,7 @@ module.exports = [
         .toDate()
         .withMessage('Invalid date format'),
 
-    body(['userId'])
+    body(['user_id'])
         .exists()
         .isLength({ min: 1 })
         .isInt()
@@ -31,7 +31,5 @@ module.exports = [
         .isLength({ min: 2, max: 2 })
         .isInt()
         .isIn(['20', '26'])
-        .withMessage(
-            'Invalid type of holidays_per_year. It must be number (20/26)'
-        )
+        .withMessage('Invalid type of holidays. It must be number (20/26)')
 ];

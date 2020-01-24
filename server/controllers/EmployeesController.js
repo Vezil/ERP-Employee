@@ -37,7 +37,7 @@ module.exports = {
 
             await Roles.create({
                 name: 'user',
-                userId: employee.id
+                user_id: employee.id
             });
 
             return res.send(employee.toJSON());
@@ -83,17 +83,17 @@ module.exports = {
             });
             await Roles.destroy({
                 where: {
-                    userId: req.params.id
+                    user_id: req.params.id
                 }
             });
             await Holidays.destroy({
                 where: {
-                    userId: req.params.id
+                    user_id: req.params.id
                 }
             });
             await Contracts.destroy({
                 where: {
-                    userId: req.params.id
+                    user_id: req.params.id
                 }
             });
 
