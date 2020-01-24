@@ -92,9 +92,17 @@
                                                 ></v-text-field>
                                             </v-col>
                                         </v-row>
-                                        <div class="error" v-if="error">{{
-                                            error
-                                        }}</div>
+                                        <div class="error" v-if="error">
+                                            <div>{{ error }}</div>
+                                        </div>
+                                        <div
+                                            class="error"
+                                            v-for="(item,
+                                            index) in errors_from_server"
+                                            :key="index"
+                                        >
+                                            <div>{{ item.message }}</div>
+                                        </div>
                                     </v-container>
                                 </v-card-text>
 
@@ -192,14 +200,12 @@
 <script>
 import EmployeesServices from '../../services/EmployeesService';
 import ContractsServices from '../../services/ContractsService';
-import HolidaysServices from '../../services/HolidaysService';
 
 export default {
     name: 'admindashboard',
     data() {
         return {
             employees: [],
-            holidays: [],
             contractsEmployee: [],
             isDialogOpen: false,
             isDialogProfileOpen: false,
@@ -239,6 +245,7 @@ export default {
                 contracts: []
             },
             error: null,
+            errors_from_server: null,
             required: value => !!value || 'Required.'
         };
     },
@@ -260,7 +267,6 @@ export default {
     methods: {
         async fetchEmployees() {
             this.employees = (await EmployeesServices.getAllEmployees()).data;
-            this.holidays = (await HolidaysServices.getHolidays()).data;
 
             this.employees.forEach(employee => {
                 let newBirthdate = employee.birthdate;
@@ -305,9 +311,6 @@ export default {
             } else {
                 this.createEmployee(this.editedItem);
             }
-            if (!this.error) {
-                this.close();
-            }
         },
         async profile(user) {
             if (this.editedIndex > -1) {
@@ -342,6 +345,7 @@ export default {
 
         async createEmployee(employee) {
             this.areAll = true;
+            this.errors_from_server = null;
 
             Object.keys(employee).forEach(value => {
                 if (employee[value] === '' || employee[value] === undefined) {
@@ -354,19 +358,29 @@ export default {
 
                 return;
             }
+
             if (this.areAll) {
                 this.error = null;
             }
+
             try {
                 await EmployeesServices.create(employee);
-                this.fetchHolidays();
             } catch (err) {
+                this.errors_from_server = err.response.data.errors;
                 console.error(err);
             }
+
+            if (!this.error && !this.errors_from_server) {
+                this.close();
+            }
+
+            this.fetchEmployees();
         },
 
         async updateEmployee(employee) {
             this.areAll = true;
+            this.errors_from_server = null;
+
             Object.keys(employee).forEach(value => {
                 if (employee[value] === '' || employee[value] === undefined) {
                     this.areAll = false;
@@ -377,23 +391,31 @@ export default {
                 this.error = 'All fields are required !';
                 return;
             }
+
             if (this.areAll) {
                 this.error = null;
             }
+
             try {
                 await EmployeesServices.updateEmployee(employee);
-                this.fetchHolidays();
             } catch (err) {
+                this.errors_from_server = err.response.data.errors;
                 console.error(err);
             }
+
+            if (!this.error && !this.errors_from_server) {
+                this.close();
+            }
+
+            this.fetchEmployees();
         },
         async deleteEmployee(employee) {
             try {
                 await EmployeesServices.deleteEmployee(employee);
-                this.fetchEmployees();
             } catch (err) {
                 console.error(err);
             }
+            this.fetchEmployees();
         }
     }
 };

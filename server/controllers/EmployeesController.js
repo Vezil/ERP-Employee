@@ -42,9 +42,7 @@ module.exports = {
 
             return res.send(employee.toJSON());
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with adding this user '
-            });
+            return next(err);
         }
     },
 

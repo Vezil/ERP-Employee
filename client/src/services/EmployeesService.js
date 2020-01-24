@@ -3,8 +3,8 @@ import Axios from 'axios';
 require('dotenv').config();
 
 export default {
-    create(credentials) {
-        return Axios.post('employees', credentials);
+    create(employee) {
+        return Axios.post('employees', employee);
     },
 
     getAllEmployees() {

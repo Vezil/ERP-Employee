@@ -79,6 +79,14 @@
                                         <div class="error" v-if="error">{{
                                             error
                                         }}</div>
+                                        <div
+                                            class="error"
+                                            v-for="(item,
+                                            index) in errors_from_server"
+                                            :key="index"
+                                        >
+                                            <div>{{ item.message }}</div>
+                                        </div>
                                     </v-container>
                                 </v-card-text>
 
@@ -127,7 +135,6 @@ export default {
             isDialogOpen: false,
             newPass: false,
             days_left: null,
-            error_validation: null,
             areAll: true,
             headers: [
                 {
@@ -179,6 +186,8 @@ export default {
                 confirmed: 1,
                 userId: ''
             },
+            error: null,
+            errors_from_server: null,
 
             required: value => !!value || 'Required.',
             error: null
@@ -258,19 +267,15 @@ export default {
                     }
                 });
 
-                if (this.error_validation == null) {
-                    this.createHolidays(this.editedItem);
-                }
-            }
-            if (!this.error) {
-                this.close();
+                this.createHolidays(this.editedItem);
             }
         },
 
         async createHolidays(holidays) {
             this.areAll = true;
-            delete holidays.days_taken_old;
+            this.errors_from_server = null;
 
+            delete holidays.days_taken_old;
             delete holidays.days_taken;
 
             Object.keys(holidays).forEach(value => {
@@ -284,15 +289,22 @@ export default {
 
                 return;
             }
+
             if (this.areAll) {
                 this.error = null;
             }
+
             try {
                 await HolidaysServices.addHolidays(holidays);
-                this.fetchHolidays();
             } catch (err) {
+                this.errors_from_server = err.response.data.errors;
                 console.error(err);
             }
+
+            if (!this.error && !this.errors_from_server) {
+                this.close();
+            }
+            this.fetchHolidays();
         },
 
         async updateHolidays(holidays) {
@@ -302,7 +314,9 @@ export default {
             delete holidays.surname;
             delete holidays.email;
 
+            this.errors_from_server = null;
             this.areAll = true;
+
             Object.keys(holidays).forEach(value => {
                 if (holidays[value] === '' || holidays[value] === undefined) {
                     this.areAll = false;
@@ -314,15 +328,22 @@ export default {
 
                 return;
             }
+
             if (this.areAll) {
                 this.error = null;
             }
+
             try {
                 await HolidaysServices.updateHolidays(holidays);
-                this.fetchHolidays();
             } catch (err) {
+                this.errors_from_server = err.response.data.errors;
                 console.error(err);
             }
+
+            if (!this.error && !this.errors_from_server) {
+                this.close();
+            }
+            this.fetchHolidays();
         },
         async deleteHolidays(holidays) {
             try {
@@ -342,4 +363,3 @@ export default {
     }
 };
 </script>
-<style scoped></style>

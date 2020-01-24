@@ -64,6 +64,14 @@
                                         <div class="error" v-if="error">{{
                                             error
                                         }}</div>
+                                        <div
+                                            class="error"
+                                            v-for="(item,
+                                            index) in errors_from_server"
+                                            :key="index"
+                                        >
+                                            <div>{{ item.message }}</div>
+                                        </div>
                                     </v-container>
                                 </v-card-text>
 
@@ -110,7 +118,6 @@ export default {
             isDialogOpen: false,
             newPass: false,
             days_left: null,
-            error_validation: null,
             areAll: true,
             headers: [
                 {
@@ -140,6 +147,8 @@ export default {
                 confirmed: 0,
                 userId: this.$store.state.id
             },
+            error: null,
+            errors_from_server: null,
 
             required: value => !!value || 'Required.',
             error: null
@@ -184,6 +193,7 @@ export default {
             const index = this.holidays_user.indexOf(item);
             this.editedIndex = this.holidays_user.indexOf(item);
             this.editedItem = Object.assign({}, item);
+
             confirm('Are you sure you want to delete this contract?') &&
                 this.holidays_user.splice(index, 1) &&
                 this.deleteHolidaysRequest(item);
@@ -192,6 +202,7 @@ export default {
         close() {
             this.error = null;
             this.isDialogOpen = false;
+
             setTimeout(() => {
                 this.editedItem = Object.assign({}, this.defaultItem);
                 this.editedIndex = -1;
@@ -201,20 +212,8 @@ export default {
         save() {
             if (this.editedIndex > -1) {
                 this.updateHolidaysRequest(this.editedItem);
-                if (this.areAll) {
-                    Object.assign(
-                        this.holidays_user[this.editedIndex],
-                        this.editedItem
-                    );
-                }
             } else {
-                if (this.error_validation == null) {
-                    this.addHolidaysRequest(this.editedItem);
-                    this.holidays_user.push(this.editedItem);
-                }
-            }
-            if (!this.error) {
-                this.close();
+                this.addHolidaysRequest(this.editedItem);
             }
         },
 
@@ -223,6 +222,7 @@ export default {
             delete holidays.days_taken;
 
             this.areAll = true;
+            this.errors_from_server = null;
 
             Object.keys(holidays).forEach(value => {
                 if (holidays[value] === '' || holidays[value] === undefined) {
@@ -240,14 +240,23 @@ export default {
             }
             try {
                 await HolidaysForUserServices.addHolidaysEmployee(holidays);
-                this.fetchHolidays();
             } catch (err) {
+                this.errors_from_server = err.response.data.errors;
+
                 console.error(err);
             }
+
+            if (!this.error && !this.errors_from_server) {
+                this.close();
+            }
+
+            this.fetchHolidays();
         },
 
         async updateHolidaysRequest(holidays) {
             this.areAll = true;
+            this.errors_from_server = null;
+
             Object.keys(holidays).forEach(value => {
                 if (holidays[value] === '' || holidays[value] === undefined) {
                     this.areAll = false;
@@ -264,23 +273,29 @@ export default {
             }
             try {
                 await HolidaysForUserServices.editHolidaysEmployee(holidays);
-                this.fetchHolidays();
             } catch (err) {
+                this.errors_from_server = err.response.data.errors;
+
                 console.error(err);
             }
+
+            if (!this.error && !this.errors_from_server) {
+                this.close();
+            }
+
+            this.fetchHolidays();
         },
         async deleteHolidaysRequest(holidays) {
             try {
                 delete holidays.days_taken_old;
 
                 await HolidaysForUserServices.deleteHolidaysEmployee(holidays);
-
-                this.fetchHolidays();
             } catch (err) {
                 console.error(err);
             }
+
+            this.fetchHolidays();
         }
     }
 };
 </script>
-<style scoped></style>

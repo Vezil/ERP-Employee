@@ -13,7 +13,7 @@ module.exports = app => {
 
     app.post(
         '/employees',
-        AuthenticationController.verifyToken,
+        // AuthenticationController.verifyToken,
         EmployeeValidator,
         EmployeesController.create
     );

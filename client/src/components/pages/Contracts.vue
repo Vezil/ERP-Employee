@@ -44,7 +44,7 @@
                                         <v-row>
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
-                                                    type="text"
+                                                    type="number"
                                                     name="contract"
                                                     v-model="
                                                         editedItem.contract
@@ -100,6 +100,14 @@
                                         <div class="error" v-if="error">{{
                                             error
                                         }}</div>
+                                        <div
+                                            class="error"
+                                            v-for="(item,
+                                            index) in errors_from_server"
+                                            :key="index"
+                                        >
+                                            <div>{{ item.message }}</div>
+                                        </div>
                                     </v-container>
                                 </v-card-text>
 
@@ -189,9 +197,9 @@ export default {
                 userId: '',
                 holidays_per_year: ''
             },
-
-            required: value => !!value || 'Required.',
-            error: null
+            error: null,
+            errors_from_server: null,
+            required: value => !!value || 'Required.'
         };
     },
     mounted() {
@@ -279,13 +287,11 @@ export default {
 
                 this.createContract(this.editedItem);
             }
-            if (!this.error) {
-                this.close();
-            }
         },
 
         async createContract(contract) {
             this.areAll = true;
+            this.errors_from_server = null;
 
             Object.keys(contract).forEach(value => {
                 if (contract[value] == '' || contract[value] == undefined) {
@@ -309,14 +315,21 @@ export default {
                 delete contract.surname;
 
                 await ContractsServices.addContract(contract);
-                this.fetchHolidays();
             } catch (err) {
+                this.errors_from_server = err.response.data.errors;
                 console.error(err);
             }
+
+            if (!this.error && !this.errors_from_server) {
+                this.close();
+            }
+            this.fetchContracts();
         },
 
         async updateContract(contract) {
             this.areAll = true;
+            this.errors_from_server = null;
+
             Object.keys(contract).forEach(value => {
                 if (contract[value] == '' || contract[value] == undefined) {
                     this.areAll = false;
@@ -337,18 +350,24 @@ export default {
                 delete contract.surname;
 
                 await ContractsServices.updateContract(contract);
-                this.fetchHolidays();
             } catch (err) {
+                this.errors_from_server = err.response.data.errors;
                 console.error(err);
             }
+            if (!this.error && !this.errors_from_server) {
+                this.close();
+            }
+
+            this.fetchContracts();
         },
         async deleteContract(contract) {
             try {
                 await ContractsServices.deleteContract(contract);
-                this.fetchContracts();
             } catch (err) {
                 console.error(err);
             }
+
+            this.fetchContracts();
         }
     }
 };

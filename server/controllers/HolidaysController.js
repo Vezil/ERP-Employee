@@ -111,6 +111,7 @@ module.exports = {
                     id: holidays_to_delete.userId
                 }
             });
+
             const old_days_left = employee.days_left;
 
             const old_days_taken = holidays_to_delete.days_taken;
