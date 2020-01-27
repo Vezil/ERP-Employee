@@ -26,6 +26,13 @@
                 <template v-slot:item.finish_date="{ item }"
                     >{{ item.finish_date | formatDate }}
                 </template>
+                <template v-slot:item.confirmed="{ item }"
+                    ><v-chip
+                        class="confirmed"
+                        :color="getColor(item.confirmed)"
+                        >{{ item.confirmed }}</v-chip
+                    >
+                </template>
 
                 <template v-slot:top>
                     <v-toolbar flat dark>
@@ -149,10 +156,10 @@
 </template>
 
 <script>
-import { METHODS } from 'http';
 import EmployeesServices from '../../services/EmployeesService';
 import ContractsServices from '../../services/ContractsService';
 import HolidaysServices from '../../services/HolidaysService';
+
 export default {
     name: 'Holidays',
     data() {
@@ -188,17 +195,17 @@ export default {
                 {
                     text: 'Start date of the Holidays',
                     value: 'start_date',
-                    sortable: false
+                    sortable: true
                 },
                 {
                     text: 'Finish date of the Holidays',
                     value: 'finish_date',
-                    sortable: false
+                    sortable: true
                 },
                 {
                     text: 'Confirmed',
                     value: 'confirmed',
-                    sortable: false
+                    sortable: true
                 },
                 { text: 'Actions', value: 'action', sortable: false }
             ],
@@ -374,7 +381,19 @@ export default {
             } catch (err) {
                 console.error(err);
             }
+        },
+        getColor(confirmed) {
+            if (confirmed === false) {
+                return 'red';
+            }
+            return 'green';
         }
     }
 };
 </script>
+<style scoped>
+.confirmed {
+    width: 50%;
+    cursor: pointer;
+}
+</style>

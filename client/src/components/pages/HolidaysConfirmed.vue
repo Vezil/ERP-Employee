@@ -30,7 +30,6 @@
 </template>
 
 <script>
-import { METHODS } from 'http';
 import HolidaysForUserServices from '../../services/HolidaysForUserService';
 import { store } from '../../store';
 export default {

@@ -14,6 +14,9 @@
                 <template v-slot:item.finish_date="{ item }"
                     >{{ item.finish_date | formatDate }}
                 </template>
+                <template v-slot:item.days_taken="{ item }"
+                    >{{ item.days_taken }}
+                </template>
 
                 <template v-slot:top>
                     <v-toolbar flat dark>
@@ -118,7 +121,6 @@
 </template>
 
 <script>
-import { METHODS } from 'http';
 import EmployeesServices from '../../services/EmployeesService';
 import HolidaysForUserServices from '../../services/HolidaysForUserService';
 import { store } from '../../store';
@@ -133,11 +135,6 @@ export default {
             areAll: true,
             headers: [
                 {
-                    text: 'Days taken',
-                    value: 'days_taken',
-                    sortable: false
-                },
-                {
                     text: 'Start date of the Holidays',
                     value: 'start_date',
                     sortable: false
@@ -145,6 +142,11 @@ export default {
                 {
                     text: 'Finish date of the Holidays',
                     value: 'finish_date',
+                    sortable: false
+                },
+                {
+                    text: 'Days taken',
+                    value: 'days_taken',
                     sortable: false
                 },
 
