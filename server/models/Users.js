@@ -72,5 +72,15 @@ module.exports = (sequelize, DataTypes) => {
         return false;
     };
 
+    Users.prototype.isAdmin = async function() {
+        const role = await this.getRole();
+
+        if (role.name === 'admin') {
+            return true;
+        }
+
+        return false;
+    };
+
     return Users;
 };

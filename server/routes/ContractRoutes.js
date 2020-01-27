@@ -6,18 +6,21 @@ module.exports = app => {
     app.get(
         '/contracts',
         AuthenticationController.verifyToken,
+        AuthenticationController.verifyAdmin,
         ContractsController.show
     );
 
     app.get(
         '/employees/:id/contracts',
         AuthenticationController.verifyToken,
+        AuthenticationController.verifyAdmin,
         ContractsController.showContracts
     );
 
     app.post(
         '/contracts',
         AuthenticationController.verifyToken,
+        AuthenticationController.verifyAdmin,
         ContractValidator,
         ContractsController.create
     );
@@ -25,6 +28,7 @@ module.exports = app => {
     app.put(
         '/contracts/:id',
         AuthenticationController.verifyToken,
+        AuthenticationController.verifyAdmin,
         ContractValidator,
         ContractsController.update
     );
@@ -32,6 +36,7 @@ module.exports = app => {
     app.delete(
         '/contracts/:id',
         AuthenticationController.verifyToken,
+        AuthenticationController.verifyAdmin,
         ContractsController.delete
     );
 };

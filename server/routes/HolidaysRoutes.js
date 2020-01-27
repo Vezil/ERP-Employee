@@ -6,12 +6,14 @@ module.exports = app => {
     app.get(
         '/holidays',
         AuthenticationController.verifyToken,
+        AuthenticationController.verifyAdmin,
         HolidaysController.show
     );
 
     app.post(
         '/holidays',
         AuthenticationController.verifyToken,
+        AuthenticationController.verifyAdmin,
         HolidaysValidator,
         HolidaysController.create
     );
@@ -19,6 +21,7 @@ module.exports = app => {
     app.put(
         '/holidays/:id',
         AuthenticationController.verifyToken,
+        AuthenticationController.verifyAdmin,
         HolidaysValidator,
         HolidaysController.update
     );
@@ -26,6 +29,7 @@ module.exports = app => {
     app.delete(
         '/holidays/:id',
         AuthenticationController.verifyToken,
+        AuthenticationController.verifyAdmin,
         HolidaysController.delete
     );
 };

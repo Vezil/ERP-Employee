@@ -56,17 +56,6 @@ module.exports = {
         }
 
         try {
-            const userLogged = await Users.findByPk(req.loggedUser.id);
-
-            if (
-                (await userLogged.isUser()) &&
-                userLogged.id !== parseInt(req.params.id)
-            ) {
-                return res.status(422).send({
-                    error: 'You cannot update such user '
-                });
-            }
-
             await Users.update(req.body, {
                 where: {
                     id: req.params.id
