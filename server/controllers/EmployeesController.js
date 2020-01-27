@@ -56,14 +56,15 @@ module.exports = {
         }
 
         try {
+            const userLogged = await Users.findByPk(req.loggedUser.id);
+
             if (
-                // !req.loggedUser.isAdmin() ||
-                !req.loggedUser.Role.name === 'admin' ||
-                req.loggedUser.id !== parseInt(req.params.id)
+                (await userLogged.isUser()) &&
+                userLogged.id !== parseInt(req.params.id)
             ) {
-                return res
-                    .status(422)
-                    .send({ error: 'You cannot update such user' });
+                return res.status(422).send({
+                    error: 'You cannot update such user '
+                });
             }
 
             await Users.update(req.body, {

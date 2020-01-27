@@ -62,10 +62,10 @@ module.exports = (sequelize, DataTypes) => {
         return bcrypt.compareAsync(password, this.password);
     };
 
-    Users.prototype.isAdmin = function() {
-        const role = this.getRole();
+    Users.prototype.isUser = async function() {
+        const role = await this.getRole();
 
-        if (role.name === Roles.ROLE_ADMIN) {
+        if (role.name === 'user') {
             return true;
         }
 
