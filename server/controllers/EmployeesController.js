@@ -15,9 +15,7 @@ module.exports = {
 
             return res.send(employees);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with showing this users'
-            });
+            return next(err);
         }
     },
 
@@ -36,7 +34,7 @@ module.exports = {
             const employee = await Users.create(req.body);
 
             await Roles.create({
-                name: 'user',
+                name: Roles.ROLE_USER,
                 user_id: employee.id
             });
 
@@ -58,6 +56,16 @@ module.exports = {
         }
 
         try {
+            if (
+                // !req.loggedUser.isAdmin() ||
+                !req.loggedUser.Role.name === 'admin' ||
+                req.loggedUser.id !== parseInt(req.params.id)
+            ) {
+                return res
+                    .status(422)
+                    .send({ error: 'You cannot update such user' });
+            }
+
             await Users.update(req.body, {
                 where: {
                     id: req.params.id
@@ -66,11 +74,7 @@ module.exports = {
 
             return res.send(req.body);
         } catch (err) {
-            console.error(err);
-
-            return res.status(500).send({
-                error: 'Something went wrong with updating this user '
-            });
+            return next(err);
         }
     },
 
@@ -99,11 +103,7 @@ module.exports = {
 
             return res.sendStatus(204);
         } catch (err) {
-            console.error(err);
-            // return next(err)
-            return res.status(500).send({
-                error: 'Something went wrong with deleting this user'
-            });
+            return next(err);
         }
     },
     async getOne(req, res, next) {
@@ -112,9 +112,7 @@ module.exports = {
 
             return res.send(one);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with id of this user '
-            });
+            return next(err);
         }
     }
 };

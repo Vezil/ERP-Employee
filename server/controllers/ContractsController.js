@@ -10,9 +10,7 @@ module.exports = {
 
             return res.send(contracts);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with getting employees'
-            });
+            return next(err);
         }
     },
 
@@ -26,19 +24,11 @@ module.exports = {
 
             return res.send(contracts);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with getting contracts '
-            });
+            return next(err);
         }
     },
 
     async create(req, res, next) {
-        // validate: contract_length (contract => contract_lenght)
-
-        const holidaysToAdd = Math.ceil(
-            (req.body.holidays_per_year / 12) * req.body.contract
-        );
-
         const validationErrors = validationResult(req);
 
         if (!validationErrors.isEmpty()) {
@@ -49,6 +39,10 @@ module.exports = {
             return res.status(422).json({ errors });
         }
 
+        const holidaysToAdd = Math.ceil(
+            (req.body.holidays_per_year / 12) * req.body.contract
+        );
+
         try {
             const newContract = await Contracts.create(req.body);
 
@@ -58,9 +52,7 @@ module.exports = {
 
             return res.send(newContract);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with adding this contract '
-            });
+            return next(err);
         }
     },
     async update(req, res, next) {
@@ -91,11 +83,7 @@ module.exports = {
 
             return res.send(req.body);
         } catch (err) {
-            console.error(err);
-
-            return res.status(500).send({
-                error: 'Something went wrong with updating this contract'
-            });
+            return next(err);
         }
     },
 
@@ -112,10 +100,7 @@ module.exports = {
             return res.sendStatus(204);
         } catch (err) {
             console.err(err);
-
-            return res.status(500).send({
-                error: 'Something went wrong with deleting this employee'
-            });
+            return next(err);
         }
     }
 };

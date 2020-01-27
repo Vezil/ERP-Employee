@@ -133,7 +133,6 @@ module.exports = {
     },
     async delete(req, res, next) {
         try {
-            console.log(req.body);
             const employee = await Users.findOne({
                 where: {
                     id: req.params.id

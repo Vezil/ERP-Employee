@@ -19,5 +19,8 @@ module.exports = (sequelize, DataTypes) => {
         });
     };
 
+    Roles.ROLE_USER = 'user';
+    Roles.ROLE_ADMIN = 'admin';
+
     return Roles;
 };

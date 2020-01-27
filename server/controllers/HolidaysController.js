@@ -4,19 +4,26 @@ const moment = require('moment');
 
 module.exports = {
     async show(req, res, next) {
-        try {
-            const allHolidays = await Holidays.findAll({
-                include: [{ model: Users, as: 'employee' }]
-            });
+        console.log(req.loggedUser);
 
-            return res.send(allHolidays);
-        } catch (err) {
-            console.error(err);
+        const userLogged = await Users.findByPk(req.loggedUser.id);
 
-            return res.status(500).send({
-                error: 'Something went wrong with getting holidays '
-            });
-        }
+        if (userLogged.isAdmin())
+            try {
+                // const where = {};
+                // if (req.loggedUser.isUser()) {
+                //  where[user_id] = req.loggedUser.id;
+                // }
+
+                const allHolidays = await Holidays.findAll({
+                    include: [{ model: Users, as: 'employee' }]
+                    // where
+                });
+
+                return res.send(allHolidays);
+            } catch (err) {
+                return next(err);
+            }
     },
 
     async create(req, res, next) {
@@ -39,13 +46,6 @@ module.exports = {
 
         const employee = await Users.findByPk(req.body.user_id);
 
-        if (days_taken > employee.days_left) {
-            return res.status(422).send({
-                error:
-                    "This employee doesn't have " + days_taken + '  days left'
-            });
-        }
-
         const new_days_left = employee.days_left - days_taken;
 
         try {
@@ -56,9 +56,7 @@ module.exports = {
 
             return res.send(newHolidays);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with adding this holidays'
-            });
+            return next(err);
         }
     },
 
@@ -111,9 +109,7 @@ module.exports = {
 
             return res.send(req.body);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with updating holidays '
-            });
+            return next(err);
         }
     },
 
@@ -138,9 +134,7 @@ module.exports = {
 
             return res.sendStatus(204);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with deleting this user '
-            });
+            return next(err);
         }
     }
 };

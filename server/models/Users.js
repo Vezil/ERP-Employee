@@ -43,7 +43,9 @@ module.exports = (sequelize, DataTypes) => {
         {
             tableName: 'users',
             underscored: true,
-
+            defaultScope: {
+                attributes: { exclude: ['password'] }
+            },
             hooks: {
                 beforeSave: hashPassword
             }
@@ -58,6 +60,16 @@ module.exports = (sequelize, DataTypes) => {
 
     Users.prototype.comparePassword = function(password) {
         return bcrypt.compareAsync(password, this.password);
+    };
+
+    Users.prototype.isAdmin = function() {
+        const role = this.getRole();
+
+        if (role.name === Roles.ROLE_ADMIN) {
+            return true;
+        }
+
+        return false;
     };
 
     return Users;

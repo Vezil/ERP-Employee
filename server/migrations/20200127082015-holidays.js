@@ -1,0 +1,37 @@
+'use strict';
+
+module.exports = {
+    up: (queryInterface, Sequelize) => {
+        return queryInterface.createTable('holidays', {
+            id: {
+                allowNull: false,
+                autoIncrement: true,
+                primaryKey: true,
+                type: Sequelize.INTEGER
+            },
+            days_taken: {
+                type: Sequelize.INTEGER
+            },
+            start_date: {
+                type: Sequelize.DATE
+            },
+            finish_date: {
+                type: Sequelize.DATE
+            },
+            confirmed: {
+                type: Sequelize.BOOLEAN
+            },
+            created_at: {
+                allowNull: false,
+                type: Sequelize.DATE
+            },
+            updated_at: {
+                allowNull: false,
+                type: Sequelize.DATE
+            }
+        });
+    },
+    down: (queryInterface, Sequelize) => {
+        return queryInterface.dropTable('holidays');
+    }
+};
