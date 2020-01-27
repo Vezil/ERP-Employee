@@ -1,26 +1,28 @@
 const EmployeesController = require('../controllers/EmployeesController');
 const EmployeeValidator = require('../validations/EmployeeValidator');
 const AuthenticationController = require('../controllers/AuthenticationController');
+const isAdmin = require('../middlewares/isAdmin');
+const isUser = require('../middlewares/isUser');
 
 module.exports = app => {
     app.get(
         '/employees',
         AuthenticationController.verifyToken,
-        AuthenticationController.verifyAdmin,
+        isAdmin.verifyAdmin,
         EmployeesController.show
     );
 
     app.get(
         '/employees/:id',
         AuthenticationController.verifyToken,
-        AuthenticationController.verifyAdmin,
+        isUser.verifyUser,
         EmployeesController.getOne
     );
 
     app.post(
         '/employees',
         AuthenticationController.verifyToken,
-        AuthenticationController.verifyAdmin,
+        isAdmin.verifyAdmin,
         EmployeeValidator,
         EmployeesController.create
     );
@@ -28,7 +30,7 @@ module.exports = app => {
     app.put(
         '/employees/:id',
         AuthenticationController.verifyToken,
-        AuthenticationController.verifyAdmin,
+        isAdmin.verifyAdmin,
         EmployeeValidator,
         EmployeesController.update
     );
@@ -36,7 +38,7 @@ module.exports = app => {
     app.delete(
         '/employees/:id',
         AuthenticationController.verifyToken,
-        AuthenticationController.verifyAdmin,
+        isAdmin.verifyAdmin,
         EmployeesController.delete
     );
 };

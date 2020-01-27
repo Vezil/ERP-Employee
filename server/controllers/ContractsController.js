@@ -40,7 +40,7 @@ module.exports = {
         }
 
         const holidaysToAdd = Math.ceil(
-            (req.body.holidays_per_year / 12) * req.body.contract
+            (req.body.holidays_per_year / 12) * req.body.contract_length
         );
 
         try {
@@ -79,9 +79,11 @@ module.exports = {
 
             const employee = await Users.findByPk(req.body.user_id);
 
-            await employee.update({ days_left: holidaysToChange });
+            const contract = await employee.update({
+                days_left: holidaysToChange
+            });
 
-            return res.send(req.body);
+            return res.send(contract);
         } catch (err) {
             return next(err);
         }
@@ -99,7 +101,6 @@ module.exports = {
 
             return res.sendStatus(204);
         } catch (err) {
-            console.err(err);
             return next(err);
         }
     }

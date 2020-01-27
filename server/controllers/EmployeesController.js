@@ -56,13 +56,13 @@ module.exports = {
         }
 
         try {
-            await Users.update(req.body, {
+            const user = await Users.update(req.body, {
                 where: {
                     id: req.params.id
                 }
             });
 
-            return res.send(req.body);
+            return res.send(user);
         } catch (err) {
             return next(err);
         }

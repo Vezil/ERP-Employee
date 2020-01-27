@@ -86,6 +86,16 @@ module.exports = {
                     days_left: 0,
                     created_at: new Date(),
                     updated_at: new Date()
+                },
+                {
+                    name: 'User',
+                    surname: 'User',
+                    email: 'user@wp.pl',
+                    birthdate: '1999-11-11',
+                    password: HashPassword('password'),
+                    days_left: 0,
+                    created_at: new Date(),
+                    updated_at: new Date()
                 }
             ],
             {}
@@ -117,6 +127,9 @@ module.exports = {
             },
             {
                 email: 'admin@wp.pl'
+            },
+            {
+                email: 'user@wp.pl'
             }
         ]);
     }

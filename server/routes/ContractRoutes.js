@@ -1,26 +1,27 @@
 const ContractsController = require('../controllers/ContractsController');
 const ContractValidator = require('../validations/ContractValidator');
 const AuthenticationController = require('../controllers/AuthenticationController');
+const isAdmin = require('../middlewares/isAdmin');
 
 module.exports = app => {
     app.get(
         '/contracts',
         AuthenticationController.verifyToken,
-        AuthenticationController.verifyAdmin,
+        isAdmin.verifyAdmin,
         ContractsController.show
     );
 
     app.get(
         '/employees/:id/contracts',
         AuthenticationController.verifyToken,
-        AuthenticationController.verifyAdmin,
+        isAdmin.verifyAdmin,
         ContractsController.showContracts
     );
 
     app.post(
         '/contracts',
         AuthenticationController.verifyToken,
-        AuthenticationController.verifyAdmin,
+        isAdmin.verifyAdmin,
         ContractValidator,
         ContractsController.create
     );
@@ -28,7 +29,7 @@ module.exports = app => {
     app.put(
         '/contracts/:id',
         AuthenticationController.verifyToken,
-        AuthenticationController.verifyAdmin,
+        isAdmin.verifyAdmin,
         ContractValidator,
         ContractsController.update
     );
@@ -36,7 +37,7 @@ module.exports = app => {
     app.delete(
         '/contracts/:id',
         AuthenticationController.verifyToken,
-        AuthenticationController.verifyAdmin,
+        isAdmin.verifyAdmin,
         ContractsController.delete
     );
 };

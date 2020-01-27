@@ -13,10 +13,10 @@ module.exports = {
                 type: Sequelize.INTEGER
             },
             start_date: {
-                type: Sequelize.DATE
+                type: Sequelize.DATEONLY
             },
             finish_date: {
-                type: Sequelize.DATE
+                type: Sequelize.DATEONLY
             },
             confirmed: {
                 type: Sequelize.BOOLEAN

@@ -9,18 +9,17 @@ module.exports = {
 
             const holidays = await Holidays.findAll({
                 where: {
-                    user_Id: id,
+                    user_id: id,
                     confirmed: 1
                 }
             });
 
             return res.send(holidays);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with getting holidays '
-            });
+            return next(err);
         }
     },
+
     async showRequests(req, res, next) {
         try {
             const holidays = await Holidays.findAll({
@@ -32,11 +31,10 @@ module.exports = {
 
             return res.send(holidays);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with getting holidays '
-            });
+            return next(err);
         }
     },
+
     async create(req, res, next) {
         const validationErrors = validationResult(req);
 
@@ -51,32 +49,21 @@ module.exports = {
         const start = moment(req.body.start_date);
         const finish = moment(req.body.finish_date);
 
-        const days_taken = Math.abs(
-            moment.duration(start.diff(finish)).asDays()
-        );
-
-        const employee = await Users.findByPk(req.body.user_id);
-        const new_days_left = employee.days_left - days_taken;
-
-        if (days_taken > employee.days_left) {
-            return res.status(422).send({
-                error: "You doesn't have " + days_taken + '  days left'
-            });
-        }
+        const holidayDaysTaken =
+            Math.abs(moment.duration(start.diff(finish)).asDays()) + 1;
 
         try {
-            req.body.days_taken = days_taken;
-
-            const newHolidays = await Holidays.create(req.body);
-            await employee.update({ days_left: new_days_left });
-
-            return res.send(newHolidays);
-        } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with adding this holidays'
+            const holiday = await Holidays.create({
+                ...req.body,
+                days_taken: holidayDaysTaken
             });
+
+            return res.send(holiday);
+        } catch (err) {
+            return next(err);
         }
     },
+
     async update(req, res, next) {
         const validationErrors = validationResult(req);
 
@@ -91,46 +78,33 @@ module.exports = {
         const start = moment(req.body.start_date);
         const finish = moment(req.body.finish_date);
 
-        const new_days_taken = Math.abs(
-            moment.duration(start.diff(finish)).asDays()
-        );
+        const holidayDaysTaken =
+            Math.abs(moment.duration(start.diff(finish)).asDays()) + 1;
 
         try {
-            req.body.days_taken = new_days_taken;
+            const holiday = await Holidays.findByPk(req.params.holidayId);
 
-            const employee = await Users.findByPk(req.body.user_id);
-
-            const old_days_taken = await Holidays.findByPk(
-                req.params.holidays_id
-            );
-
-            if (new_days_taken > employee.days_left) {
-                return res.status(422).send({
-                    error: "You doesn't have " + new_days_taken + '  days left'
-                });
+            if (!holiday) {
             }
 
-            const old_days_left = employee.days_left;
-
-            const new_days_left =
-                old_days_left - (new_days_taken - old_days_taken.days_taken);
-
-            await employee.update({ days_left: new_days_left });
-
-            await Holidays.update(req.body, {
-                where: {
-                    user_Id: req.params.id,
-                    id: req.params.holidays_id
+            await Holidays.update(
+                { ...req.body, days_taken: holidayDaysTaken },
+                {
+                    where: {
+                        user_id: req.params.id,
+                        id: req.params.holidayId
+                    }
                 }
-            });
+            );
 
-            return res.send(req.body);
+            const holidayUpdated = await Holidays.findByPk(holiday.id);
+
+            return res.send(holidayUpdated);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with updating holidays '
-            });
+            return next(err);
         }
     },
+
     async delete(req, res, next) {
         try {
             const employee = await Users.findOne({
@@ -143,7 +117,7 @@ module.exports = {
 
             const holidays_to_delete = await Holidays.findOne({
                 where: {
-                    user_Id: req.params.id,
+                    user_id: req.params.id,
                     id: req.params.holidays_id
                 }
             });
@@ -158,9 +132,7 @@ module.exports = {
 
             return res.sendStatus(204);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with deleting this user '
-            });
+            return next(err);
         }
     }
 };

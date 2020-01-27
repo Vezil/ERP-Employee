@@ -1,34 +1,35 @@
 const UserHolidaysController = require('../controllers/UserHolidaysController');
 const HolidaysValidator = require('../validations/HolidaysValidator');
 const AuthenticationController = require('../controllers/AuthenticationController');
+const isUser = require('../middlewares/isUser');
 
 module.exports = app => {
     app.get(
         '/employees/:id/holidays',
         AuthenticationController.verifyToken,
-        AuthenticationController.verifyPerson,
+        isUser.verifyUser,
         UserHolidaysController.showHolidays
     );
 
     app.get(
         '/employees/:id/holidaysRequests',
         AuthenticationController.verifyToken,
-        AuthenticationController.verifyPerson,
+        isUser.verifyUser,
         UserHolidaysController.showRequests
     );
 
     app.post(
         '/employees/:id/holidays',
         AuthenticationController.verifyToken,
-        AuthenticationController.verifyPerson,
+        isUser.verifyUser,
         HolidaysValidator,
         UserHolidaysController.create
     );
 
     app.put(
-        '/employees/:id/holidays/:holidays_id',
+        '/employees/:id/holidays/:holidayId',
         AuthenticationController.verifyToken,
-        AuthenticationController.verifyPerson,
+        isUser.verifyUser,
         HolidaysValidator,
         UserHolidaysController.update
     );
@@ -36,7 +37,7 @@ module.exports = app => {
     app.delete(
         '/employees/:id/holidays/:holidays_id',
         AuthenticationController.verifyToken,
-        AuthenticationController.verifyPerson,
+        isUser.verifyUser,
         UserHolidaysController.delete
     );
 };

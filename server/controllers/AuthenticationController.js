@@ -34,7 +34,7 @@ module.exports = {
             });
 
             if (!userWithPassword) {
-                return res.status(403).send({
+                return res.status(422).send({
                     error: 'The login information was incorrect'
                 });
             }
@@ -44,7 +44,7 @@ module.exports = {
             );
 
             if (!isPasswordValid) {
-                return res.status(403).send({
+                return res.status(422).send({
                     error: 'The login or pass information was incorrect'
                 });
             }
@@ -63,7 +63,7 @@ module.exports = {
                 token: jwtSignEmployee(userJson)
             });
         } catch (err) {
-            next(err);
+            return next(err);
         }
     },
 
@@ -97,38 +97,5 @@ module.exports = {
                 next();
             }
         );
-    },
-    async verifyPerson(req, res, next) {
-        try {
-            const userLogged = await Users.findByPk(req.loggedUser.id);
-
-            if (
-                (await userLogged.isUser()) &&
-                userLogged.id !== parseInt(req.params.id)
-            ) {
-                return res.status(403).send({
-                    error: 'Access only for admin'
-                });
-            }
-
-            next();
-        } catch (err) {
-            return next(err);
-        }
-    },
-    async verifyAdmin(req, res, next) {
-        try {
-            const adminLogged = await Users.findByPk(req.loggedUser.id);
-
-            if (!(await adminLogged.isAdmin())) {
-                return res.status(403).send({
-                    error: 'Access only for admin'
-                });
-            }
-
-            next();
-        } catch (err) {
-            return next(err);
-        }
     }
 };
