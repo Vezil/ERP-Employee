@@ -1,5 +1,6 @@
 const ContractsController = require('../controllers/ContractsController');
 const ContractValidator = require('../validations/ContractValidator');
+const ContractValidatorForUpdate = require('../validations/ContractValidatorForUpdate');
 const AuthenticationController = require('../controllers/AuthenticationController');
 const isAdmin = require('../middlewares/isAdmin');
 
@@ -30,7 +31,7 @@ module.exports = app => {
         '/contracts/:id',
         AuthenticationController.verifyToken,
         isAdmin.verifyAdmin,
-        ContractValidator,
+        ContractValidatorForUpdate,
         ContractsController.update
     );
 

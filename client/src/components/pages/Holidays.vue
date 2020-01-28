@@ -101,15 +101,6 @@
                                                     required
                                                     :rules="[required]"
                                                 ></v-text-field>
-                                                <v-text-field
-                                                    type="confirmed"
-                                                    v-model="
-                                                        editedItem.confirmed
-                                                    "
-                                                    label="confirmed"
-                                                    required
-                                                    :rules="[required]"
-                                                ></v-text-field>
                                             </v-col>
                                         </v-row>
                                         <div class="error" v-if="error">{{
@@ -158,6 +149,8 @@
 </template>
 
 <script>
+import moment from 'moment';
+
 import EmployeesServices from '../../services/EmployeesService';
 import ContractsServices from '../../services/ContractsService';
 import HolidaysServices from '../../services/HolidaysService';
@@ -231,6 +224,19 @@ export default {
         };
     },
 
+    beforeCreate() {
+        if (
+            this.$store.isLoggedInAsAdmin === null ||
+            this.$store.isLoggedInAsAdmin === undefined ||
+            this.$store.token === null ||
+            this.$store.token === undefined
+        ) {
+            this.$router.push({
+                name: 'dashboard'
+            });
+        }
+    },
+
     async mounted() {
         this.fetchHolidays();
     },
@@ -262,6 +268,15 @@ export default {
         editItem(item) {
             this.editedIndex = this.holidays.indexOf(item);
             this.editedItem = Object.assign({}, item);
+
+            this.editedItem.email = item.employee.email;
+            this.editedItem.start_date = moment(item.start_date).format(
+                'DD.MM.YYYY'
+            );
+            this.editedItem.finish_date = moment(item.finish_date).format(
+                'DD.MM.YYYY'
+            );
+
             this.isDialogOpen = true;
         },
 

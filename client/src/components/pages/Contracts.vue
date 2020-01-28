@@ -108,6 +108,10 @@
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
+                                                    v-if="
+                                                        formTitle !==
+                                                            'Edit Contract'
+                                                    "
                                                     type="number"
                                                     v-model="
                                                         editedItem.holidays_per_year
@@ -170,6 +174,7 @@
 </template>
 
 <script>
+import moment from 'moment';
 import EmployeesServices from '../../services/EmployeesService';
 import ContractsServices from '../../services/ContractsService';
 
@@ -230,8 +235,21 @@ export default {
             required: value => !!value || 'Required.'
         };
     },
+    beforeCreate() {
+        if (
+            this.$store.isLoggedInAsAdmin === null ||
+            this.$store.isLoggedInAsAdmin === undefined ||
+            this.$store.token === null ||
+            this.$store.token === undefined
+        ) {
+            this.$router.push({
+                name: 'dashboard'
+            });
+        }
+    },
+
     mounted() {
-        this.fetchContracts();
+        this.fetchContractsAndEmployees();
     },
     computed: {
         formTitle() {
@@ -244,14 +262,15 @@ export default {
             val || this.close();
         }
     },
+
     methods: {
-        async fetchContracts() {
+        async fetchContractsAndEmployees() {
             this.contracts = (await ContractsServices.getAllContracts()).data;
             this.employees = (await EmployeesServices.getAllEmployees()).data;
 
             let i = 0;
-            this.employees.forEach(one => {
-                this.employee[i] = one.email;
+            this.employees.forEach(user => {
+                this.employee[i] = user.email;
                 i++;
             });
         },
@@ -259,6 +278,14 @@ export default {
         editItem(item) {
             this.editedIndex = this.contracts.indexOf(item);
             this.editedItem = Object.assign({}, item);
+            this.editedItem.email = item.employee.email;
+            this.editedItem.start_date = moment(item.start_date).format(
+                'DD.MM.YYYY'
+            );
+            this.editedItem.finish_date = moment(item.finish_date).format(
+                'DD.MM.YYYY'
+            );
+            this.editedItem.user_id = item.employee.id;
             this.isDialogOpen = true;
         },
 
@@ -289,6 +316,7 @@ export default {
                         this.editedItem.surname = employee.surname;
                     }
                 });
+
                 this.createContract(this.editedItem);
             }
         },
@@ -299,7 +327,6 @@ export default {
 
             Object.keys(contract).forEach(value => {
                 if (contract[value] == '' || contract[value] == undefined) {
-                    console.log(contract);
                     this.areAll = false;
                 }
             });
@@ -328,12 +355,14 @@ export default {
             if (!this.error && !this.errors_from_server) {
                 this.close();
             }
-            this.fetchContracts();
+            this.fetchContractsAndEmployees();
         },
 
         async updateContract(contract) {
             this.areAll = true;
             this.errors_from_server = null;
+
+            delete contract.holidays_per_year;
 
             Object.keys(contract).forEach(value => {
                 if (contract[value] == '' || contract[value] == undefined) {
@@ -363,7 +392,7 @@ export default {
                 this.close();
             }
 
-            this.fetchContracts();
+            this.fetchContractsAndEmployees();
         },
         async deleteContract(contract) {
             try {
@@ -372,7 +401,7 @@ export default {
                 console.error(err);
             }
 
-            this.fetchContracts();
+            this.fetchContractsAndEmployees();
         }
     }
 };

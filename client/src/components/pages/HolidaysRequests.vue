@@ -121,9 +121,11 @@
 </template>
 
 <script>
+import moment from 'moment';
 import EmployeesServices from '../../services/EmployeesService';
 import HolidaysForUserServices from '../../services/HolidaysForUserService';
 import { store } from '../../store';
+
 export default {
     name: 'holidaysrequests',
     data() {
@@ -168,9 +170,24 @@ export default {
             error: null
         };
     },
+
+    beforeCreate() {
+        if (
+            this.$store.isLoggedInAsUser === null ||
+            this.$store.isLoggedInAsUser === undefined ||
+            this.$store.token === null ||
+            this.$store.token === undefined
+        ) {
+            this.$router.push({
+                name: 'dashboard'
+            });
+        }
+    },
+
     async mounted() {
         this.fetchHolidays();
     },
+
     computed: {
         formTitle() {
             return this.editedIndex === -1 ? 'New request' : 'Edit request';
@@ -182,6 +199,7 @@ export default {
             val || this.close();
         }
     },
+
     methods: {
         async fetchHolidays() {
             this.holidays_user = await HolidaysForUserServices.getEmployeeRequests(
@@ -190,9 +208,18 @@ export default {
 
             this.holidays_user = this.holidays_user.data;
         },
+
         editItem(item) {
             this.editedIndex = this.holidays_user.indexOf(item);
             this.editedItem = Object.assign({}, item);
+
+            this.editedItem.start_date = moment(item.start_date).format(
+                'DD.MM.YYYY'
+            );
+            this.editedItem.finish_date = moment(item.finish_date).format(
+                'DD.MM.YYYY'
+            );
+
             this.isDialogOpen = true;
         },
 

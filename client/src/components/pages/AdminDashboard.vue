@@ -268,6 +268,7 @@ export default {
             required: value => !!value || 'Required.'
         };
     },
+
     async mounted() {
         this.fetchEmployees();
     },
