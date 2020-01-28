@@ -77,25 +77,19 @@ module.exports = {
             });
         }
 
-        const bearer = bearerHeader.split(' ');
-        const bearerToken = bearer[1];
-        req.token = bearerToken;
+        const token = bearerHeader.split(' ')[1];
 
-        jwt.verify(
-            bearerToken,
-            config.authentication.jwtSecret,
-            (err, authData) => {
-                if (err) {
-                    return res.sendStatus(401).json({
-                        auth: false,
-                        message: 'Failed to authenticate token.'
-                    });
-                }
-
-                req.loggedUser = authData;
-
-                next();
+        jwt.verify(token, config.authentication.jwtSecret, (err, authData) => {
+            if (err) {
+                return res.sendStatus(401).json({
+                    auth: false,
+                    message: 'Failed to authenticate token.'
+                });
             }
-        );
+
+            req.loggedUser = authData;
+
+            next();
+        });
     }
 };

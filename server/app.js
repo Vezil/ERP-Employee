@@ -56,13 +56,8 @@ app.use(function(err, req, res, next) {
     return res.status(500).send('We messed something. Sorry! ');
 });
 
-// app.listen(config.port, config.host, () => {
-//     console.log(`express -> HOST: ${config.host} PORT: ${config.port}`);
-// });
-
-sequelize.sync().then(() => {
-    app.listen(config.port);
-    console.log(`Server started on port ${config.port}`);
+app.listen(config.port, config.host, () => {
+    console.log(`express -> HOST: ${config.host} PORT: ${config.port}`);
 });
 
 module.exports = app;

@@ -265,11 +265,11 @@ export default {
 
     methods: {
         async fetchHolidays() {
-            this.holidaysUser = await HolidaysForUserServices.getEmployeeRequests(
+            const { data } = await HolidaysForUserServices.getEmployeeRequests(
                 this.$store.state.id
             );
 
-            this.holidaysUser = this.holidaysUser.data;
+            this.holidaysUser = data;
         },
 
         editItem(item) {

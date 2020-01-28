@@ -2,23 +2,24 @@
 
 module.exports = {
     up: (queryInterface, Sequelize) => {
-        return queryInterface.createTable('contracts', {
+        return queryInterface.createTable('holidays', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
-            contract_length: {
-                type: Sequelize.STRING
+            days_taken: {
+                type: Sequelize.INTEGER
             },
             start_date: {
-                allowNull: false,
-                type: Sequelize.DATE
+                type: Sequelize.DATEONLY
             },
             finish_date: {
-                allowNull: false,
-                type: Sequelize.DATE
+                type: Sequelize.DATEONLY
+            },
+            confirmed: {
+                type: Sequelize.BOOLEAN
             },
             created_at: {
                 allowNull: false,
@@ -27,11 +28,17 @@ module.exports = {
             updated_at: {
                 allowNull: false,
                 type: Sequelize.DATE
+            },
+            user_id: {
+                type: Sequelize.INTEGER,
+                references: {
+                    model: 'users',
+                    key: 'id'
+                }
             }
         });
     },
-
     down: (queryInterface, Sequelize) => {
-        return queryInterface.dropTable('contracts');
+        return queryInterface.dropTable('holidays');
     }
 };

@@ -78,7 +78,7 @@ module.exports = {
             if (!holiday) {
                 return res
                     .status(404)
-                    .json({ error: 'This item has not been found' });
+                    .json({ error: 'This holiday has not been found' });
             }
 
             if (holiday.confirmed === true) {
@@ -92,13 +92,15 @@ module.exports = {
                 await employee.update({ days_left: newDaysLeft });
             }
 
-            const holidays = await Holidays.update(req.body, {
+            await Holidays.update(req.body, {
                 where: {
                     id: req.params.id
                 }
             });
 
-            return res.send(holidays);
+            const newHoliday = await Holidays.findByPk(req.params.id);
+
+            return res.send(newHoliday);
         } catch (err) {
             return next(err);
         }

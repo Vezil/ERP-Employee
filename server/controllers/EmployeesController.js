@@ -54,13 +54,8 @@ module.exports = {
 
             return res.status(422).json({ errors });
         }
-
         try {
-            const employee = await Users.update(req.body, {
-                where: {
-                    id: req.params.id
-                }
-            });
+            const employee = await Users.findByPk(req.params.id);
 
             if (!employee) {
                 return res
@@ -68,7 +63,15 @@ module.exports = {
                     .json({ error: 'This employee has not been found' });
             }
 
-            return res.send(user);
+            await Users.update(req.body, {
+                where: {
+                    id: req.params.id
+                }
+            });
+
+            const employeeUpdated = await Users.findByPk(req.params.id);
+
+            return res.send(employeeUpdated);
         } catch (err) {
             return next(err);
         }

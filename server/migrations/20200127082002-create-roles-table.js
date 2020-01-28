@@ -2,30 +2,15 @@
 
 module.exports = {
     up: (queryInterface, Sequelize) => {
-        return queryInterface.createTable('holidays', {
+        return queryInterface.createTable('roles', {
             id: {
                 allowNull: false,
                 autoIncrement: true,
                 primaryKey: true,
                 type: Sequelize.INTEGER
             },
-            email: {
-                type: Sequelize.STRING
-            },
             name: {
                 type: Sequelize.STRING
-            },
-            surname: {
-                type: Sequelize.STRING
-            },
-            birthdate: {
-                type: Sequelize.DATE
-            },
-            password: {
-                type: Sequelize.STRING
-            },
-            days_left: {
-                type: Sequelize.INTEGER
             },
             created_at: {
                 allowNull: false,
@@ -34,10 +19,17 @@ module.exports = {
             updated_at: {
                 allowNull: false,
                 type: Sequelize.DATE
+            },
+            user_id: {
+                type: Sequelize.INTEGER,
+                references: {
+                    model: 'users',
+                    key: 'id'
+                }
             }
         });
     },
     down: (queryInterface, Sequelize) => {
-        return queryInterface.dropTable('holidays');
+        return queryInterface.dropTable('roles');
     }
 };

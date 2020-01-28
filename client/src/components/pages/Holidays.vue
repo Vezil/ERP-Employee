@@ -29,7 +29,7 @@
                 <template v-slot:item.confirmed="{ item }"
                     ><v-chip
                         :color="getColor(item.confirmed)"
-                        @click="changeConfirmed(item.id, item.confirmed)"
+                        @click="toggleConfirm(item.id, item.confirmed)"
                         class="confirmed"
                         >{{ item.confirmed }}</v-chip
                     >
@@ -470,7 +470,7 @@ export default {
             }
         },
 
-        async changeConfirmed(id, confirmed) {
+        async toggleConfirm(id, confirmed) {
             const newConfirmedValue = !confirmed;
 
             const newValue = {
