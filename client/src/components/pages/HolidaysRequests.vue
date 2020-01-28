@@ -47,7 +47,6 @@
                                 <v-card-text>
                                     <v-container>
                                         <v-row>
-                                            <
                                             <v-col cols="12" sm="6" md="4">
                                                 <template>
                                                     <v-menu
@@ -278,10 +277,10 @@ export default {
             this.editedItem = Object.assign({}, item);
 
             this.editedItem.start_date = moment(item.start_date).format(
-                'DD.MM.YYYY'
+                'YYYY-MM-DD'
             );
             this.editedItem.finish_date = moment(item.finish_date).format(
-                'DD.MM.YYYY'
+                'YYYY-MM-DD'
             );
 
             this.isDialogOpen = true;

@@ -335,10 +335,10 @@ export default {
             this.editedItem = Object.assign({}, item);
             this.editedItem.email = item.employee.email;
             this.editedItem.start_date = moment(item.start_date).format(
-                'DD.MM.YYYY'
+                'YYYY-MM-DD'
             );
             this.editedItem.finish_date = moment(item.finish_date).format(
-                'DD.MM.YYYY'
+                'YYYY-MM-DD'
             );
             this.editedItem.user_id = item.employee.id;
             this.isDialogOpen = true;

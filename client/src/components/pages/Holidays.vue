@@ -330,10 +330,10 @@ export default {
 
             this.editedItem.email = item.employee.email;
             this.editedItem.start_date = moment(item.start_date).format(
-                'DD.MM.YYYY'
+                'YYYY-MM-DD'
             );
             this.editedItem.finish_date = moment(item.finish_date).format(
-                'DD.MM.YYYY'
+                'YYYY-MM-DD'
             );
 
             this.isDialogOpen = true;
