@@ -8,10 +8,10 @@ module.exports = (sequelize, DataTypes) => {
                 type: DataTypes.INTEGER
             },
             start_date: {
-                type: DataTypes.DATE
+                type: DataTypes.DATEONLY
             },
             finish_date: {
-                type: DataTypes.DATE
+                type: DataTypes.DATEONLY
             },
             confirmed: {
                 type: DataTypes.BOOLEAN
@@ -26,7 +26,7 @@ module.exports = (sequelize, DataTypes) => {
     Holidays.associate = function(models) {
         Holidays.belongsTo(models.Users, {
             as: 'employee',
-            foreignKey: 'userId'
+            foreignKey: 'user_id'
         });
     };
 

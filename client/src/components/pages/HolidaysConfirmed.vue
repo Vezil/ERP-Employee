@@ -7,6 +7,14 @@
                 class="elevation-1 table"
                 dark
             >
+                <template v-slot:item.start_date="{ item }"
+                    >{{ item.start_date | formatDate }}
+                </template>
+
+                <template v-slot:item.finish_date="{ item }"
+                    >{{ item.finish_date | formatDate }}
+                </template>
+
                 <template v-slot:top>
                     <v-toolbar flat dark>
                         <v-toolbar-title class="table_title"
@@ -22,7 +30,6 @@
 </template>
 
 <script>
-import { METHODS } from 'http';
 import HolidaysForUserServices from '../../services/HolidaysForUserService';
 import { store } from '../../store';
 export default {
@@ -49,18 +56,25 @@ export default {
             ]
         };
     },
+
+    beforeCreate() {
+        if (
+            this.$store.state.isLoggedInAsUser === null ||
+            this.$store.state.isLoggedInAsUser === undefined ||
+            this.$store.state.token === null ||
+            this.$store.state.token === undefined
+        ) {
+            this.$router.push({
+                name: 'dashboard'
+            });
+        }
+    },
+
     async mounted() {
-        this.holidays_user = await HolidaysForUserServices.getHolidaysByEmployeeId(
+        this.holidaysUser = await HolidaysForUserServices.getHolidaysByEmployeeId(
             this.$store.state.id
         );
-        this.holidays_user = this.holidays_user.data;
-
-        this.holidays_user = this.holidays_user.map(item => {
-            item.start_date = item.start_date.slice(0, 10);
-            item.finish_date = item.finish_date.slice(0, 10);
-            return item;
-        });
+        this.holidaysUser = this.holidaysUser.data;
     }
 };
 </script>
-<style scoped></style>

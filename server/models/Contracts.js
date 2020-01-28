@@ -4,7 +4,7 @@ module.exports = (sequelize, DataTypes) => {
     const Contracts = sequelize.define(
         'Contracts',
         {
-            contract: DataTypes.INTEGER,
+            contract_length: DataTypes.INTEGER,
             start_date: DataTypes.DATE,
             finish_date: DataTypes.DATE
         },
@@ -17,7 +17,7 @@ module.exports = (sequelize, DataTypes) => {
     Contracts.associate = function(models) {
         Contracts.belongsTo(models.Users, {
             as: 'employee',
-            foreignKey: 'userId'
+            foreignKey: 'user_id'
         });
     };
 

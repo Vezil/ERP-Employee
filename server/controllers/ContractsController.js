@@ -10,9 +10,7 @@ module.exports = {
 
             return res.send(contracts);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with getting employees'
-            });
+            return next(err);
         }
     },
 
@@ -20,25 +18,17 @@ module.exports = {
         try {
             const contracts = await Contracts.findAll({
                 where: {
-                    userId: req.params.id
+                    user_id: req.params.id
                 }
             });
 
             return res.send(contracts);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with getting contracts '
-            });
+            return next(err);
         }
     },
 
     async create(req, res, next) {
-        // validate: contract_length (contract => contract_lenght)
-
-        const holidaysToAdd = Math.ceil(
-            (req.body.holidays_per_year / 12) * req.body.contract
-        );
-
         const validationErrors = validationResult(req);
 
         if (!validationErrors.isEmpty()) {
@@ -49,20 +39,29 @@ module.exports = {
             return res.status(422).json({ errors });
         }
 
+        const holidaysToAdd = Math.ceil(
+            (req.body.holidays_per_year / 12) * req.body.contract_length
+        );
+
         try {
             const newContract = await Contracts.create(req.body);
 
-            const employee = await Users.findByPk(req.body.userId);
+            const employee = await Users.findByPk(req.body.user_id);
+
+            if (!employee) {
+                return res
+                    .status(404)
+                    .json({ error: 'This employee has not been found' });
+            }
 
             await employee.update({ days_left: holidaysToAdd });
 
             return res.send(newContract);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with adding this contract '
-            });
+            return next(err);
         }
     },
+
     async update(req, res, next) {
         const holidaysToChange = Math.ceil(
             (req.body.holidays_per_year / 12) * req.body.contract
@@ -85,37 +84,49 @@ module.exports = {
                 }
             });
 
-            const employee = await Users.findByPk(req.body.userId);
+            const employee = await Users.findByPk(req.body.user_id);
 
-            await employee.update({ days_left: holidaysToChange });
+            if (!employee) {
+                return res
+                    .status(404)
+                    .json({ error: 'This employee has not been found' });
+            }
 
-            return res.send(req.body);
-        } catch (err) {
-            console.error(err);
-
-            return res.status(500).send({
-                error: 'Something went wrong with updating this contract'
+            const contract = await employee.update({
+                days_left: holidaysToChange
             });
+
+            if (!contract) {
+                return res
+                    .status(404)
+                    .json({ error: 'This contract has not been found' });
+            }
+
+            return res.send(contract);
+        } catch (err) {
+            return next(err);
         }
     },
 
     async delete(req, res, next) {
         try {
-            const one = await Contracts.findOne({
+            const contract = await Contracts.findOne({
                 where: {
                     id: req.params.id
                 }
             });
 
-            await one.destroy();
+            if (!contract) {
+                return res
+                    .status(404)
+                    .json({ error: 'This contract has not been found' });
+            }
+
+            await contract.destroy();
 
             return res.sendStatus(204);
         } catch (err) {
-            console.err(err);
-
-            return res.status(500).send({
-                error: 'Something went wrong with deleting this employee'
-            });
+            return next(err);
         }
     }
 };

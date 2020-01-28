@@ -7,6 +7,34 @@
                 class="elevation-1 table"
                 dark
             >
+                <template v-slot:item.name="{ item }"
+                    >{{ item.employee.name }}
+                </template>
+
+                <template v-slot:item.surname="{ item }"
+                    >{{ item.employee.surname }}
+                </template>
+
+                <template v-slot:item.email="{ item }"
+                    >{{ item.employee.email }}
+                </template>
+
+                <template v-slot:item.start_date="{ item }"
+                    >{{ item.start_date | formatDate }}
+                </template>
+
+                <template v-slot:item.finish_date="{ item }"
+                    >{{ item.finish_date | formatDate }}
+                </template>
+                <template v-slot:item.confirmed="{ item }"
+                    ><v-chip
+                        :color="getColor(item.confirmed)"
+                        @click="changeConfirmed(item.id, item.confirmed)"
+                        class="confirmed"
+                        >{{ item.confirmed }}</v-chip
+                    >
+                </template>
+
                 <template v-slot:top>
                     <v-toolbar flat dark>
                         <v-toolbar-title class="table_title"
@@ -49,6 +77,10 @@
                                                     v-model="
                                                         editedItem.start_date
                                                     "
+                                                    :value="
+                                                        editedItem.start_date
+                                                            | formatDate
+                                                    "
                                                     label="Start Day"
                                                     required
                                                     :rules="[required]"
@@ -61,16 +93,11 @@
                                                     v-model="
                                                         editedItem.finish_date
                                                     "
-                                                    label="Finish Day"
-                                                    required
-                                                    :rules="[required]"
-                                                ></v-text-field>
-                                                <v-text-field
-                                                    type="confirmed"
-                                                    v-model="
-                                                        editedItem.confirmed
+                                                    :value="
+                                                        editedItem.finish_date
+                                                            | formatDate
                                                     "
-                                                    label="confirmed"
+                                                    label="Finish Day"
                                                     required
                                                     :rules="[required]"
                                                 ></v-text-field>
@@ -79,6 +106,14 @@
                                         <div class="error" v-if="error">{{
                                             error
                                         }}</div>
+                                        <div
+                                            class="error"
+                                            v-for="(item,
+                                            index) in errorsFromServer"
+                                            :key="index"
+                                        >
+                                            <div>{{ item.message }}</div>
+                                        </div>
                                     </v-container>
                                 </v-card-text>
 
@@ -101,6 +136,7 @@
                         </v-dialog>
                     </v-toolbar>
                 </template>
+
                 <template v-slot:item.action="{ item }">
                     <v-icon small class="mr-2" @click="editItem(item)"
                         >edit</v-icon
@@ -113,10 +149,12 @@
 </template>
 
 <script>
-import { METHODS } from 'http';
+import moment from 'moment';
+
 import EmployeesServices from '../../services/EmployeesService';
 import ContractsServices from '../../services/ContractsService';
 import HolidaysServices from '../../services/HolidaysService';
+
 export default {
     name: 'Holidays',
     data() {
@@ -127,7 +165,6 @@ export default {
             isDialogOpen: false,
             newPass: false,
             days_left: null,
-            error_validation: null,
             areAll: true,
             headers: [
                 {
@@ -153,17 +190,17 @@ export default {
                 {
                     text: 'Start date of the Holidays',
                     value: 'start_date',
-                    sortable: false
+                    sortable: true
                 },
                 {
                     text: 'Finish date of the Holidays',
                     value: 'finish_date',
-                    sortable: false
+                    sortable: true
                 },
                 {
                     text: 'Confirmed',
                     value: 'confirmed',
-                    sortable: false
+                    sortable: true
                 },
                 { text: 'Actions', value: 'action', sortable: false }
             ],
@@ -177,16 +214,33 @@ export default {
                 start_date: '',
                 finish_date: '',
                 confirmed: 1,
-                userId: ''
+                user_id: ''
             },
+            error: null,
+            errorsFromServer: null,
 
             required: value => !!value || 'Required.',
             error: null
         };
     },
+
+    beforeCreate() {
+        if (
+            this.$store.state.isLoggedInAsAdmin === null ||
+            this.$store.state.isLoggedInAsAdmin === undefined ||
+            this.$store.state.token === null ||
+            this.$store.state.token === undefined
+        ) {
+            this.$router.push({
+                name: 'dashboard'
+            });
+        }
+    },
+
     async mounted() {
         this.fetchHolidays();
     },
+
     computed: {
         formTitle() {
             return this.editedIndex === -1 ? 'New Holidays' : 'Edit Holidays';
@@ -198,33 +252,31 @@ export default {
             val || this.close();
         }
     },
+
     methods: {
         async fetchHolidays() {
             this.holidays = (await HolidaysServices.getHolidays()).data;
-            this.employees = (await EmployeesServices.getAllEmployees()).data;
-
-            for (const holiday of this.holidays) {
-                holiday.name = holiday.employee.name;
-                holiday.surname = holiday.employee.surname;
-                holiday.email = holiday.employee.email;
-            }
-
-            this.holidays = this.holidays.map(item => {
-                item.start_date = item.start_date.slice(0, 10);
-                item.finish_date = item.finish_date.slice(0, 10);
-
-                return item;
-            });
+            this.employees = (await EmployeesServices.getEmployees()).data;
 
             let i = 0;
-            this.employees.forEach(one => {
-                this.employee[i] = one.email;
+            this.employees.forEach(user => {
+                this.employee[i] = user.email;
                 i++;
             });
         },
+
         editItem(item) {
             this.editedIndex = this.holidays.indexOf(item);
             this.editedItem = Object.assign({}, item);
+
+            this.editedItem.email = item.employee.email;
+            this.editedItem.start_date = moment(item.start_date).format(
+                'DD.MM.YYYY'
+            );
+            this.editedItem.finish_date = moment(item.finish_date).format(
+                'DD.MM.YYYY'
+            );
+
             this.isDialogOpen = true;
         },
 
@@ -252,25 +304,21 @@ export default {
             } else {
                 this.employees.forEach(employee => {
                     if (this.editedItem.email == employee.email) {
-                        this.editedItem.userId = employee.id;
+                        this.editedItem.user_id = employee.id;
                         this.editedItem.name = employee.name;
                         this.editedItem.surname = employee.surname;
                     }
                 });
 
-                if (this.error_validation == null) {
-                    this.createHolidays(this.editedItem);
-                }
-            }
-            if (!this.error) {
-                this.close();
+                this.createHolidays(this.editedItem);
             }
         },
 
         async createHolidays(holidays) {
             this.areAll = true;
-            delete holidays.days_taken_old;
+            this.errorsFromServer = null;
 
+            delete holidays.days_taken_old;
             delete holidays.days_taken;
 
             Object.keys(holidays).forEach(value => {
@@ -284,15 +332,22 @@ export default {
 
                 return;
             }
+
             if (this.areAll) {
                 this.error = null;
             }
+
             try {
                 await HolidaysServices.addHolidays(holidays);
-                this.fetchHolidays();
             } catch (err) {
+                this.errorsFromServer = err.response.data.errors;
                 console.error(err);
             }
+
+            if (!this.error && !this.errorsFromServer) {
+                this.close();
+            }
+            this.fetchHolidays();
         },
 
         async updateHolidays(holidays) {
@@ -302,7 +357,9 @@ export default {
             delete holidays.surname;
             delete holidays.email;
 
+            this.errorsFromServer = null;
             this.areAll = true;
+
             Object.keys(holidays).forEach(value => {
                 if (holidays[value] === '' || holidays[value] === undefined) {
                     this.areAll = false;
@@ -314,16 +371,24 @@ export default {
 
                 return;
             }
+
             if (this.areAll) {
                 this.error = null;
             }
+
             try {
                 await HolidaysServices.updateHolidays(holidays);
-                this.fetchHolidays();
             } catch (err) {
+                this.errorsFromServer = err.response.data.errors;
                 console.error(err);
             }
+
+            if (!this.error && !this.errorsFromServer) {
+                this.close();
+            }
+            this.fetchHolidays();
         },
+
         async deleteHolidays(holidays) {
             try {
                 delete holidays.days_taken;
@@ -338,8 +403,36 @@ export default {
             } catch (err) {
                 console.error(err);
             }
+        },
+
+        async changeConfirmed(id, confirmed) {
+            const newConfirmedValue = !confirmed;
+
+            const newValue = {
+                confirmed: newConfirmedValue
+            };
+
+            try {
+                await HolidaysServices.updateConfirmedValue(id, newValue);
+
+                this.fetchHolidays();
+            } catch (err) {
+                console.error(err);
+            }
+        },
+
+        getColor(confirmed) {
+            if (confirmed === false) {
+                return '#2a2a2a';
+            }
+            return '#007200';
         }
     }
 };
 </script>
-<style scoped></style>
+<style scoped>
+.confirmed {
+    width: 50%;
+    cursor: pointer;
+}
+</style>

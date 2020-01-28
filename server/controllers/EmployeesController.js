@@ -15,9 +15,7 @@ module.exports = {
 
             return res.send(employees);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with showing this users'
-            });
+            return next(err);
         }
     },
 
@@ -36,15 +34,13 @@ module.exports = {
             const employee = await Users.create(req.body);
 
             await Roles.create({
-                name: 'user',
-                userId: employee.id
+                name: Roles.ROLE_USER,
+                user_id: employee.id
             });
 
             return res.send(employee.toJSON());
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with adding this user '
-            });
+            return next(err);
         }
     },
 
@@ -60,19 +56,21 @@ module.exports = {
         }
 
         try {
-            await Users.update(req.body, {
+            const employee = await Users.update(req.body, {
                 where: {
                     id: req.params.id
                 }
             });
 
-            return res.send(req.body);
-        } catch (err) {
-            console.error(err);
+            if (!employee) {
+                return res
+                    .status(404)
+                    .json({ error: 'This employee has not been found' });
+            }
 
-            return res.status(500).send({
-                error: 'Something went wrong with updating this user '
-            });
+            return res.send(user);
+        } catch (err) {
+            return next(err);
         }
     },
 
@@ -85,38 +83,39 @@ module.exports = {
             });
             await Roles.destroy({
                 where: {
-                    userId: req.params.id
+                    user_id: req.params.id
                 }
             });
             await Holidays.destroy({
                 where: {
-                    userId: req.params.id
+                    user_id: req.params.id
                 }
             });
             await Contracts.destroy({
                 where: {
-                    userId: req.params.id
+                    user_id: req.params.id
                 }
             });
 
             return res.sendStatus(204);
         } catch (err) {
-            console.error(err);
-            // return next(err)
-            return res.status(500).send({
-                error: 'Something went wrong with deleting this user'
-            });
+            return next(err);
         }
     },
+
     async getOne(req, res, next) {
         try {
-            const one = await Users.findByPk(req.params.id);
+            const employee = await Users.findByPk(req.params.id);
 
-            return res.send(one);
+            if (!employee) {
+                return res
+                    .status(404)
+                    .json({ error: 'This employee has not been found' });
+            }
+
+            return res.send(employee);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with id of this user '
-            });
+            return next(err);
         }
     }
 };

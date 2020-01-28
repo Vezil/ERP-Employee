@@ -1,6 +1,13 @@
 const { body } = require('express-validator');
 
 module.exports = [
+    body(['contract_length'])
+        .exists()
+        .isLength({ min: 1, max: 2 })
+        .isInt()
+        .isIn(['1', '3', '6', '12'])
+        .withMessage('Invalid type of contract. It must be number (1/3/6/12)'),
+
     body(['start_date'])
         .exists()
         .isISO8601()

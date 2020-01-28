@@ -9,20 +9,20 @@ export default {
         return Axios.get(`employees/${id}/holidaysRequests`);
     },
 
-    addHolidaysEmployee(holidays) {
-        return Axios.post(`employees/${holidays.userId}/holidays`, holidays);
+    addHolidaysForEmployee(holidays) {
+        return Axios.post(`employees/${holidays.user_id}/holidays`, holidays);
     },
 
-    editHolidaysEmployee(holidays) {
+    editHolidaysForEmployee(holidays) {
         return Axios.put(
-            `employees/${holidays.userId}/holidays/${holidays.id}`,
+            `employees/${holidays.user_id}/holidays/${holidays.id}`,
             holidays
         );
     },
 
-    deleteHolidaysEmployee(holidays) {
+    deleteHolidaysForEmployee(holidays) {
         return Axios.delete(
-            `employees/${holidays.userId}/holidays/${holidays.id}`
+            `employees/${holidays.user_id}/holidays/${holidays.id}`
         );
     }
 };

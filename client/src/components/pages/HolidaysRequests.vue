@@ -3,10 +3,21 @@
         <div class="container">
             <v-data-table
                 :headers="headers"
-                :items="holidays_user"
+                :items="holidaysUser"
                 class="elevation-1 table"
                 dark
             >
+                <template v-slot:item.start_date="{ item }"
+                    >{{ item.start_date | formatDate }}
+                </template>
+
+                <template v-slot:item.finish_date="{ item }"
+                    >{{ item.finish_date | formatDate }}
+                </template>
+                <template v-slot:item.days_taken="{ item }"
+                    >{{ item.days_taken }}
+                </template>
+
                 <template v-slot:top>
                     <v-toolbar flat dark>
                         <v-toolbar-title class="table_title"
@@ -43,6 +54,10 @@
                                                     v-model="
                                                         editedItem.start_date
                                                     "
+                                                    :value="
+                                                        editedItem.start_date
+                                                            | formatDate
+                                                    "
                                                     label="Start Day"
                                                     required
                                                     :rules="[required]"
@@ -64,6 +79,14 @@
                                         <div class="error" v-if="error">{{
                                             error
                                         }}</div>
+                                        <div
+                                            class="error"
+                                            v-for="(item,
+                                            index) in errorsFromServer"
+                                            :key="index"
+                                        >
+                                            <div>{{ item.message }}</div>
+                                        </div>
                                     </v-container>
                                 </v-card-text>
 
@@ -98,26 +121,21 @@
 </template>
 
 <script>
-import { METHODS } from 'http';
+import moment from 'moment';
 import EmployeesServices from '../../services/EmployeesService';
 import HolidaysForUserServices from '../../services/HolidaysForUserService';
 import { store } from '../../store';
+
 export default {
     name: 'holidaysrequests',
     data() {
         return {
-            holidays_user: [],
+            holidaysUser: [],
             isDialogOpen: false,
             newPass: false,
             days_left: null,
-            error_validation: null,
             areAll: true,
             headers: [
-                {
-                    text: 'Days taken',
-                    value: 'days_taken',
-                    sortable: false
-                },
                 {
                     text: 'Start date of the Holidays',
                     value: 'start_date',
@@ -126,6 +144,11 @@ export default {
                 {
                     text: 'Finish date of the Holidays',
                     value: 'finish_date',
+                    sortable: false
+                },
+                {
+                    text: 'Days taken',
+                    value: 'days_taken',
                     sortable: false
                 },
 
@@ -138,16 +161,33 @@ export default {
                 start_date: '',
                 finish_date: '',
                 confirmed: 0,
-                userId: this.$store.state.id
+                user_id: this.$store.state.id
             },
+            error: null,
+            errorsFromServer: null,
 
             required: value => !!value || 'Required.',
             error: null
         };
     },
+
+    beforeCreate() {
+        if (
+            this.$store.state.isLoggedInAsUser === null ||
+            this.$store.state.isLoggedInAsUser === undefined ||
+            this.$store.state.token === null ||
+            this.$store.state.token === undefined
+        ) {
+            this.$router.push({
+                name: 'dashboard'
+            });
+        }
+    },
+
     async mounted() {
         this.fetchHolidays();
     },
+
     computed: {
         formTitle() {
             return this.editedIndex === -1 ? 'New request' : 'Edit request';
@@ -159,39 +199,44 @@ export default {
             val || this.close();
         }
     },
+
     methods: {
         async fetchHolidays() {
-            this.holidays_user = await HolidaysForUserServices.getEmployeeRequests(
+            this.holidaysUser = await HolidaysForUserServices.getEmployeeRequests(
                 this.$store.state.id
             );
 
-            this.holidays_user = this.holidays_user.data;
-
-            this.holidays_user = this.holidays_user.map(item => {
-                item.start_date = item.start_date.slice(0, 10);
-                item.finish_date = item.finish_date.slice(0, 10);
-
-                return item;
-            });
+            this.holidaysUser = this.holidaysUser.data;
         },
+
         editItem(item) {
-            this.editedIndex = this.holidays_user.indexOf(item);
+            this.editedIndex = this.holidaysUser.indexOf(item);
             this.editedItem = Object.assign({}, item);
+
+            this.editedItem.start_date = moment(item.start_date).format(
+                'DD.MM.YYYY'
+            );
+            this.editedItem.finish_date = moment(item.finish_date).format(
+                'DD.MM.YYYY'
+            );
+
             this.isDialogOpen = true;
         },
 
         deleteItem(item) {
-            const index = this.holidays_user.indexOf(item);
-            this.editedIndex = this.holidays_user.indexOf(item);
+            const index = this.holidaysUser.indexOf(item);
+            this.editedIndex = this.holidaysUser.indexOf(item);
             this.editedItem = Object.assign({}, item);
+
             confirm('Are you sure you want to delete this contract?') &&
-                this.holidays_user.splice(index, 1) &&
+                this.holidaysUser.splice(index, 1) &&
                 this.deleteHolidaysRequest(item);
         },
 
         close() {
             this.error = null;
             this.isDialogOpen = false;
+
             setTimeout(() => {
                 this.editedItem = Object.assign({}, this.defaultItem);
                 this.editedIndex = -1;
@@ -201,20 +246,8 @@ export default {
         save() {
             if (this.editedIndex > -1) {
                 this.updateHolidaysRequest(this.editedItem);
-                if (this.areAll) {
-                    Object.assign(
-                        this.holidays_user[this.editedIndex],
-                        this.editedItem
-                    );
-                }
             } else {
-                if (this.error_validation == null) {
-                    this.addHolidaysRequest(this.editedItem);
-                    this.holidays_user.push(this.editedItem);
-                }
-            }
-            if (!this.error) {
-                this.close();
+                this.addHolidaysRequest(this.editedItem);
             }
         },
 
@@ -223,6 +256,7 @@ export default {
             delete holidays.days_taken;
 
             this.areAll = true;
+            this.errorsFromServer = null;
 
             Object.keys(holidays).forEach(value => {
                 if (holidays[value] === '' || holidays[value] === undefined) {
@@ -238,16 +272,26 @@ export default {
             if (this.areAll) {
                 this.error = null;
             }
+
             try {
-                await HolidaysForUserServices.addHolidaysEmployee(holidays);
-                this.fetchHolidays();
+                await HolidaysForUserServices.addHolidaysForEmployee(holidays);
             } catch (err) {
+                this.errorsFromServer = err.response.data.errors;
+
                 console.error(err);
             }
+
+            if (!this.error && !this.errorsFromServer) {
+                this.close();
+            }
+
+            this.fetchHolidays();
         },
 
         async updateHolidaysRequest(holidays) {
             this.areAll = true;
+            this.errorsFromServer = null;
+
             Object.keys(holidays).forEach(value => {
                 if (holidays[value] === '' || holidays[value] === undefined) {
                     this.areAll = false;
@@ -259,28 +303,39 @@ export default {
 
                 return;
             }
+
             if (this.areAll) {
                 this.error = null;
             }
+
             try {
-                await HolidaysForUserServices.editHolidaysEmployee(holidays);
-                this.fetchHolidays();
+                await HolidaysForUserServices.editHolidaysForEmployee(holidays);
             } catch (err) {
+                this.errorsFromServer = err.response.data.errors;
+
                 console.error(err);
             }
+
+            if (!this.error && !this.errorsFromServer) {
+                this.close();
+            }
+
+            this.fetchHolidays();
         },
+
         async deleteHolidaysRequest(holidays) {
             try {
                 delete holidays.days_taken_old;
 
-                await HolidaysForUserServices.deleteHolidaysEmployee(holidays);
-
-                this.fetchHolidays();
+                await HolidaysForUserServices.deleteHolidaysForEmployee(
+                    holidays
+                );
             } catch (err) {
                 console.error(err);
             }
+
+            this.fetchHolidays();
         }
     }
 };
 </script>
-<style scoped></style>

@@ -11,11 +11,7 @@ module.exports = {
 
             return res.send(allHolidays);
         } catch (err) {
-            console.error(err);
-
-            return res.status(500).send({
-                error: 'Something went wrong with getting holidays '
-            });
+            return next(err);
         }
     },
 
@@ -33,24 +29,27 @@ module.exports = {
         const start = moment(req.body.start_date);
         const finish = moment(req.body.finish_date);
 
-        const days_taken = Math.abs(
-            moment.duration(start.diff(finish)).asDays()
-        );
+        const daysTaken =
+            Math.abs(moment.duration(start.diff(finish)).asDays()) + 1;
 
-        const employee = await Users.findByPk(req.body.userId);
-        const new_days_left = employee.days_left - days_taken;
+        const employee = await Users.findByPk(req.body.user_id);
+
+        if (!employee) {
+            return res
+                .status(404)
+                .json({ error: 'This user has not been found' });
+        }
+        const newDaysLeft = employee.days_left - daysTaken;
 
         try {
-            req.body.days_taken = days_taken;
+            req.body.days_taken = daysTaken;
 
             const newHolidays = await Holidays.create(req.body);
-            await employee.update({ days_left: new_days_left });
+            await employee.update({ days_left: newDaysLeft });
 
             return res.send(newHolidays);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with adding this holidays'
-            });
+            return next(err);
         }
     },
 
@@ -68,25 +67,63 @@ module.exports = {
         const start = moment(req.body.start_date);
         const finish = moment(req.body.finish_date);
 
-        const new_days_taken = Math.abs(
-            moment.duration(start.diff(finish)).asDays()
-        );
+        const newDaysTaken =
+            Math.abs(moment.duration(start.diff(finish)).asDays()) + 1;
 
         try {
-            req.body.days_taken = new_days_taken;
+            req.body.days_taken = newDaysTaken;
 
-            const employee = await Users.findByPk(req.body.userId);
+            const holiday = await Holidays.findByPk(req.params.id);
 
-            //cases >0 itd...
+            if (!holiday) {
+                return res
+                    .status(404)
+                    .json({ error: 'This item has not been found' });
+            }
 
-            const old_days_taken = await Holidays.findByPk(req.params.id);
+            if (holiday.confirmed === true) {
+                const employee = await Users.findByPk(req.body.user_id);
 
-            const old_days_left = employee.days_left;
+                const oldDaysLeft = employee.days_left;
 
-            const new_days_left =
-                old_days_left - (new_days_taken - old_days_taken.days_taken);
+                const newDaysLeft =
+                    oldDaysLeft - (newDaysTaken - holiday.days_taken);
 
-            await employee.update({ days_left: new_days_left });
+                await employee.update({ days_left: newDaysLeft });
+            }
+
+            const holidays = await Holidays.update(req.body, {
+                where: {
+                    id: req.params.id
+                }
+            });
+
+            return res.send(holidays);
+        } catch (err) {
+            return next(err);
+        }
+    },
+
+    async confirm(req, res, next) {
+        const validationErrors = validationResult(req);
+
+        if (!validationErrors.isEmpty()) {
+            const errors = validationErrors.array().map(e => {
+                return { message: e.msg, param: e.param };
+            });
+
+            return res.status(422).json({ errors });
+        }
+
+        try {
+            let newDaysLeft;
+            const holiday = await Holidays.findByPk(req.params.id);
+
+            if (!holiday) {
+                return res
+                    .status(404)
+                    .json({ error: 'This holiday has not been found' });
+            }
 
             await Holidays.update(req.body, {
                 where: {
@@ -94,37 +131,59 @@ module.exports = {
                 }
             });
 
-            return res.send(req.body);
+            const employee = await Users.findByPk(holiday.user_id);
+
+            if (!employee) {
+                return res
+                    .status(404)
+                    .json({ error: 'This employee has not been found' });
+            }
+
+            if (req.body.confirmed === true) {
+                newDaysLeft = employee.days_left - holiday.days_taken;
+            } else {
+                newDaysLeft = employee.days_left + holiday.days_taken;
+            }
+
+            await employee.update({ days_left: newDaysLeft });
+
+            return res.send(holiday);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with updating holidays '
-            });
+            return next(err);
         }
     },
 
     async delete(req, res, next) {
         try {
-            const holidays_to_delete = await Holidays.findByPk(req.params.id);
+            const holidayToDelete = await Holidays.findByPk(req.params.id);
 
-            const employee = await Users.findOne({
-                where: {
-                    id: holidays_to_delete.userId
-                }
-            });
-            const old_days_left = employee.days_left;
+            if (!holidayToDelete) {
+                return res
+                    .status(404)
+                    .json({ error: 'This holiday has not been found' });
+            }
 
-            const old_days_taken = holidays_to_delete.days_taken;
+            if (holidayToDelete.confirmed === true) {
+                const employee = await Users.findOne({
+                    where: {
+                        id: holidayToDelete.user_id
+                    }
+                });
 
-            const new_days_left = old_days_taken + old_days_left;
+                const oldDaysLeft = employee.days_left;
 
-            await employee.update({ days_left: new_days_left });
-            await holidays_to_delete.destroy();
+                const oldDaysTaken = holidayToDelete.days_taken;
+
+                const newDaysLeft = old_days_taken + oldDaysLeft;
+
+                await employee.update({ days_left: newDaysLeft });
+            }
+
+            await holidayToDelete.destroy();
 
             return res.sendStatus(204);
         } catch (err) {
-            return res.status(500).send({
-                error: 'Something went wrong with deleting this user '
-            });
+            return next(err);
         }
     }
 };

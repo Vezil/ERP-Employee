@@ -6,7 +6,7 @@ export default {
         return Axios.post('contracts', contract);
     },
 
-    getAllContracts() {
+    getContracts() {
         return Axios.get('contracts');
     },
 

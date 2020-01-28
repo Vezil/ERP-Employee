@@ -6,12 +6,12 @@ module.exports = {
             'contracts',
             [
                 {
-                    contract: 12,
+                    contract_length: 12,
                     start_date: '2019-11-11',
                     finish_date: '2020-11-11',
-                    created_At: new Date(),
-                    updated_At: new Date(),
-                    user_Id: 6
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                    user_id: 6
                 }
             ],
             {}
@@ -21,7 +21,7 @@ module.exports = {
     down: function(queryInterface, Sequelize) {
         return queryInterface.bulkDelete('contracts', [
             {
-                user_Id: 6
+                user_id: 6
             }
         ]);
     }

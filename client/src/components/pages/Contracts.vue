@@ -7,6 +7,26 @@
                 class="elevation-1 table"
                 dark
             >
+                <template v-slot:item.name="{ item }"
+                    >{{ item.employee.name }}
+                </template>
+
+                <template v-slot:item.surname="{ item }"
+                    >{{ item.employee.surname }}
+                </template>
+
+                <template v-slot:item.email="{ item }"
+                    >{{ item.employee.email }}
+                </template>
+
+                <template v-slot:item.start_date="{ item }"
+                    >{{ item.start_date | formatDate }}
+                </template>
+
+                <template v-slot:item.finish_date="{ item }"
+                    >{{ item.finish_date | formatDate }}
+                </template>
+
                 <template v-slot:top>
                     <v-toolbar flat dark>
                         <v-toolbar-title class="table_title"
@@ -44,10 +64,10 @@
                                         <v-row>
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
-                                                    type="text"
+                                                    type="number"
                                                     name="contract"
                                                     v-model="
-                                                        editedItem.contract
+                                                        editedItem.contract_length
                                                     "
                                                     label="Contract (1/3/6/12)"
                                                     required
@@ -61,6 +81,10 @@
                                                     v-model="
                                                         editedItem.start_date
                                                     "
+                                                    :value="
+                                                        editedItem.start_date
+                                                            | formatDate
+                                                    "
                                                     label="Start Day"
                                                     required
                                                     :rules="[required]"
@@ -73,6 +97,10 @@
                                                     v-model="
                                                         editedItem.finish_date
                                                     "
+                                                    :value="
+                                                        editedItem.finish_date
+                                                            | formatDate
+                                                    "
                                                     label="Finish Day"
                                                     required
                                                     :rules="[required]"
@@ -80,6 +108,10 @@
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
+                                                    v-if="
+                                                        formTitle !==
+                                                            'Edit Contract'
+                                                    "
                                                     type="number"
                                                     v-model="
                                                         editedItem.holidays_per_year
@@ -100,6 +132,14 @@
                                         <div class="error" v-if="error">{{
                                             error
                                         }}</div>
+                                        <div
+                                            class="error"
+                                            v-for="(item,
+                                            index) in errorsFromServer"
+                                            :key="index"
+                                        >
+                                            <div>{{ item.message }}</div>
+                                        </div>
                                     </v-container>
                                 </v-card-text>
 
@@ -134,6 +174,7 @@
 </template>
 
 <script>
+import moment from 'moment';
 import EmployeesServices from '../../services/EmployeesService';
 import ContractsServices from '../../services/ContractsService';
 
@@ -165,7 +206,7 @@ export default {
                 },
                 {
                     text: 'Contract for (months)',
-                    value: 'contract',
+                    value: 'contract_length',
                     sortable: false
                 },
                 {
@@ -183,20 +224,35 @@ export default {
             editedIndex: -1,
             editedItem: {
                 email: '',
-                contract: '',
+                contract_length: '',
                 start_date: '',
                 finish_date: '',
-                userId: '',
+                user_id: '',
                 holidays_per_year: ''
             },
-
-            required: value => !!value || 'Required.',
-            error: null
+            error: null,
+            errorsFromServer: null,
+            required: value => !!value || 'Required.'
         };
     },
-    mounted() {
-        this.fetchContracts();
+
+    beforeCreate() {
+        if (
+            this.$store.state.isLoggedInAsAdmin === null ||
+            this.$store.state.isLoggedInAsAdmin === undefined ||
+            this.$store.state.token === null ||
+            this.$store.state.token === undefined
+        ) {
+            this.$router.push({
+                name: 'dashboard'
+            });
+        }
     },
+
+    mounted() {
+        this.fetchContractsAndEmployees();
+    },
+
     computed: {
         formTitle() {
             return this.editedIndex === -1 ? 'New Contract' : 'Edit Contract';
@@ -208,44 +264,30 @@ export default {
             val || this.close();
         }
     },
+
     methods: {
-        async fetchContracts() {
-            this.contracts = (await ContractsServices.getAllContracts()).data;
-            this.employees = (await EmployeesServices.getAllEmployees()).data;
-
-            for (const contract of this.contracts) {
-                contract.name = contract.employee.name;
-                contract.surname = contract.employee.surname;
-                contract.email = contract.employee.email;
-            }
-
-            this.contracts = this.contracts.map(item => {
-                item.start_date = item.start_date.slice(0, 10);
-                item.finish_date = item.finish_date.slice(0, 10);
-                return item;
-            });
+        async fetchContractsAndEmployees() {
+            this.contracts = (await ContractsServices.getContracts()).data;
+            this.employees = (await EmployeesServices.getEmployees()).data;
 
             let i = 0;
-            this.employees.forEach(one => {
-                this.employee[i] = one.email;
+            this.employees.forEach(user => {
+                this.employee[i] = user.email;
                 i++;
             });
-        },
-
-        async getThisEmployee(contract, id) {
-            try {
-                const person = await EmployeeServices.getEmployeeById(id);
-                (contract.name = person.data.name),
-                    (contract.surname = person.data.surname),
-                    (contract.email = person.data.email);
-            } catch (err) {
-                console.error(err);
-            }
         },
 
         editItem(item) {
             this.editedIndex = this.contracts.indexOf(item);
             this.editedItem = Object.assign({}, item);
+            this.editedItem.email = item.employee.email;
+            this.editedItem.start_date = moment(item.start_date).format(
+                'DD.MM.YYYY'
+            );
+            this.editedItem.finish_date = moment(item.finish_date).format(
+                'DD.MM.YYYY'
+            );
+            this.editedItem.user_id = item.employee.id;
             this.isDialogOpen = true;
         },
 
@@ -271,7 +313,7 @@ export default {
             } else {
                 this.employees.forEach(employee => {
                     if (this.editedItem.email === employee.email) {
-                        this.editedItem.userId = employee.id;
+                        this.editedItem.user_id = employee.id;
                         this.editedItem.name = employee.name;
                         this.editedItem.surname = employee.surname;
                     }
@@ -279,13 +321,11 @@ export default {
 
                 this.createContract(this.editedItem);
             }
-            if (!this.error) {
-                this.close();
-            }
         },
 
         async createContract(contract) {
             this.areAll = true;
+            this.errorsFromServer = null;
 
             Object.keys(contract).forEach(value => {
                 if (contract[value] == '' || contract[value] == undefined) {
@@ -309,14 +349,23 @@ export default {
                 delete contract.surname;
 
                 await ContractsServices.addContract(contract);
-                this.fetchHolidays();
             } catch (err) {
+                this.errorsFromServer = err.response.data.errors;
                 console.error(err);
             }
+
+            if (!this.error && !this.errorsFromServer) {
+                this.close();
+            }
+            this.fetchContractsAndEmployees();
         },
 
         async updateContract(contract) {
             this.areAll = true;
+            this.errorsFromServer = null;
+
+            delete contract.holidays_per_year;
+
             Object.keys(contract).forEach(value => {
                 if (contract[value] == '' || contract[value] == undefined) {
                     this.areAll = false;
@@ -337,18 +386,25 @@ export default {
                 delete contract.surname;
 
                 await ContractsServices.updateContract(contract);
-                this.fetchHolidays();
             } catch (err) {
+                this.errorsFromServer = err.response.data.errors;
                 console.error(err);
             }
+            if (!this.error && !this.errorsFromServer) {
+                this.close();
+            }
+
+            this.fetchContractsAndEmployees();
         },
+
         async deleteContract(contract) {
             try {
                 await ContractsServices.deleteContract(contract);
-                this.fetchContracts();
             } catch (err) {
                 console.error(err);
             }
+
+            this.fetchContractsAndEmployees();
         }
     }
 };

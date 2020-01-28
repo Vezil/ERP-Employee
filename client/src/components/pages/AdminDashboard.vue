@@ -8,6 +8,10 @@
                 class="elevation-1 table"
                 dark
             >
+                <template v-slot:item.birthdate="{ item }"
+                    >{{ item.birthdate | formatDate }}
+                </template>
+
                 <template v-slot:top>
                     <v-toolbar flat dark>
                         <v-toolbar-title class="table_title"
@@ -64,6 +68,10 @@
                                                     v-model="
                                                         editedItem.birthdate
                                                     "
+                                                    :value="
+                                                        editedItem.birthdate
+                                                            | formatDate
+                                                    "
                                                     label="Birthdate"
                                                     required
                                                     :rules="[required]"
@@ -92,9 +100,17 @@
                                                 ></v-text-field>
                                             </v-col>
                                         </v-row>
-                                        <div class="error" v-if="error">{{
-                                            error
-                                        }}</div>
+                                        <div class="error" v-if="error">
+                                            <div>{{ error }}</div>
+                                        </div>
+                                        <div
+                                            class="error"
+                                            v-for="(item,
+                                            index) in errorsFromServer"
+                                            :key="index"
+                                        >
+                                            <div>{{ item.message }}</div>
+                                        </div>
                                     </v-container>
                                 </v-card-text>
 
@@ -135,7 +151,10 @@
                                         >
                                         <div>
                                             Date of Birth:
-                                            {{ profileItem.birthdate }}
+                                            {{
+                                                profileItem.birthdate
+                                                    | formatDate
+                                            }}
                                         </div>
                                         <div
                                             >Days off (left):
@@ -154,11 +173,17 @@
                                         >
                                         <div
                                             >Start date of this contract:
-                                            {{ oneContract.start_date }}</div
+                                            {{
+                                                oneContract.start_date
+                                                    | formatDate
+                                            }}</div
                                         >
                                         <div
                                             >Finish date of this contract:
-                                            {{ oneContract.finish_date }}</div
+                                            {{
+                                                oneContract.finish_date
+                                                    | formatDate
+                                            }}</div
                                         >
                                     </div>
                                 </v-card-text>
@@ -190,16 +215,15 @@
 </template>
 
 <script>
+import moment from 'moment';
 import EmployeesServices from '../../services/EmployeesService';
 import ContractsServices from '../../services/ContractsService';
-import HolidaysServices from '../../services/HolidaysService';
 
 export default {
     name: 'admindashboard',
     data() {
         return {
             employees: [],
-            holidays: [],
             contractsEmployee: [],
             isDialogOpen: false,
             isDialogProfileOpen: false,
@@ -239,9 +263,12 @@ export default {
                 contracts: []
             },
             error: null,
+            errorsFromServer: null,
+
             required: value => !!value || 'Required.'
         };
     },
+
     async mounted() {
         this.fetchEmployees();
     },
@@ -259,16 +286,9 @@ export default {
 
     methods: {
         async fetchEmployees() {
-            this.employees = (await EmployeesServices.getAllEmployees()).data;
-            this.holidays = (await HolidaysServices.getHolidays()).data;
-
-            this.employees.forEach(employee => {
-                let newBirthdate = employee.birthdate;
-                newBirthdate = newBirthdate.slice(0, 10);
-
-                employee.birthdate = newBirthdate;
-            });
+            this.employees = (await EmployeesServices.getEmployees()).data;
         },
+
         editItem(item) {
             this.editedIndex = this.employees.indexOf(item);
             this.editedItem = Object.assign({}, item);
@@ -280,12 +300,14 @@ export default {
             confirm('Are you sure you want to delete this employee?') &&
                 this.employees.splice(index, 1) &&
                 this.deleteEmployee(item);
+
             this.fetchEmployees();
         },
 
         close() {
             this.error = null;
             this.isDialogOpen = false;
+
             setTimeout(() => {
                 this.editedItem = Object.assign({}, this.defaultItem);
                 this.editedIndex = -1;
@@ -295,18 +317,8 @@ export default {
         save() {
             if (this.editedIndex > -1) {
                 this.updateEmployee(this.editedItem);
-
-                if (this.areAll) {
-                    Object.assign(
-                        this.employees[this.editedIndex],
-                        this.editedItem
-                    );
-                }
             } else {
                 this.createEmployee(this.editedItem);
-            }
-            if (!this.error) {
-                this.close();
             }
         },
         async profile(user) {
@@ -329,12 +341,6 @@ export default {
                 );
                 this.contractsEmployee = this.contractsEmployee.data;
                 this.profileItem.contracts = this.contractsEmployee;
-
-                this.contractsEmployee = this.contractsEmployee.map(item => {
-                    item.start_date = item.start_date.slice(0, 10);
-                    item.finish_date = item.finish_date.slice(0, 10);
-                    return item;
-                });
             } catch (err) {
                 console.error(err);
             }
@@ -342,6 +348,7 @@ export default {
 
         async createEmployee(employee) {
             this.areAll = true;
+            this.errorsFromServer = null;
 
             Object.keys(employee).forEach(value => {
                 if (employee[value] === '' || employee[value] === undefined) {
@@ -354,19 +361,29 @@ export default {
 
                 return;
             }
+
             if (this.areAll) {
                 this.error = null;
             }
+
             try {
                 await EmployeesServices.create(employee);
-                this.fetchHolidays();
             } catch (err) {
+                this.errorsFromServer = err.response.data.errors;
                 console.error(err);
             }
+
+            if (!this.error && !this.errorsFromServer) {
+                this.close();
+            }
+
+            this.fetchEmployees();
         },
 
         async updateEmployee(employee) {
             this.areAll = true;
+            this.errorsFromServer = null;
+
             Object.keys(employee).forEach(value => {
                 if (employee[value] === '' || employee[value] === undefined) {
                     this.areAll = false;
@@ -377,23 +394,32 @@ export default {
                 this.error = 'All fields are required !';
                 return;
             }
+
             if (this.areAll) {
                 this.error = null;
             }
+
             try {
                 await EmployeesServices.updateEmployee(employee);
-                this.fetchHolidays();
             } catch (err) {
+                this.errorsFromServer = err.response.data.errors;
                 console.error(err);
             }
+
+            if (!this.error && !this.errorsFromServer) {
+                this.close();
+            }
+
+            this.fetchEmployees();
         },
+
         async deleteEmployee(employee) {
             try {
                 await EmployeesServices.deleteEmployee(employee);
-                this.fetchEmployees();
             } catch (err) {
                 console.error(err);
             }
+            this.fetchEmployees();
         }
     }
 };

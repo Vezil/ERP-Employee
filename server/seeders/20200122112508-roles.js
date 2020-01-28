@@ -7,52 +7,52 @@ module.exports = {
             [
                 {
                     name: 'user',
-                    created_At: new Date(),
-                    updated_At: new Date(),
-                    user_Id: 1
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                    user_id: 1
                 },
                 {
                     name: 'user',
-                    created_At: new Date(),
-                    updated_At: new Date(),
-                    user_Id: 2
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                    user_id: 2
                 },
                 {
                     name: 'user',
-                    created_At: new Date(),
-                    updated_At: new Date(),
-                    user_Id: 3
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                    user_id: 3
                 },
                 {
                     name: 'user',
-                    created_At: new Date(),
-                    updated_At: new Date(),
-                    user_Id: 4
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                    user_id: 4
                 },
                 {
                     name: 'user',
-                    created_At: new Date(),
-                    updated_At: new Date(),
-                    user_Id: 5
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                    user_id: 5
                 },
                 {
                     name: 'user',
-                    created_At: new Date(),
-                    updated_At: new Date(),
-                    user_Id: 6
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                    user_id: 6
                 },
                 {
                     name: 'user',
-                    created_At: new Date(),
-                    updated_At: new Date(),
-                    user_Id: 7
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                    user_id: 7
                 },
 
                 {
                     name: 'admin',
-                    created_At: new Date(),
-                    updated_At: new Date(),
-                    user_Id: 8
+                    created_at: new Date(),
+                    updated_at: new Date(),
+                    user_id: 8
                 }
             ],
             {}
@@ -62,28 +62,28 @@ module.exports = {
     down: function(queryInterface, Sequelize) {
         return queryInterface.bulkDelete('roles', [
             {
-                user_Id: 1
+                user_id: 1
             },
             {
-                user_Id: 2
+                user_id: 2
             },
             {
-                user_Id: 3
+                user_id: 3
             },
             {
-                user_Id: 4
+                user_id: 4
             },
             {
-                user_Id: 5
+                user_id: 5
             },
             {
-                user_Id: 6
+                user_id: 6
             },
             {
-                user_Id: 7
+                user_id: 7
             },
             {
-                user_Id: 8
+                user_id: 8
             }
         ]);
     }

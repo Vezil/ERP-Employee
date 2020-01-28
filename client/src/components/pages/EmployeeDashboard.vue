@@ -20,6 +20,7 @@ export default {
     data() {
         return { holidays_user: [] };
     },
+
     async mounted() {
         this.holidays_user = await EmployeesServices.getEmployeeById(
             this.$store.state.id

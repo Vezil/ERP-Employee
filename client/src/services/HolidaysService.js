@@ -19,6 +19,9 @@ export default {
         return Axios.put(`holidays/${holidays.id}`, holidays);
     },
 
+    updateConfirmedValue(id, newValue) {
+        return Axios.put(`/holidays/${id}/confirm`, newValue);
+    },
     deleteHolidays(holidays) {
         return Axios.delete(`holidays/${holidays.id}`);
     }

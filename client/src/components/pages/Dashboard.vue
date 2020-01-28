@@ -42,17 +42,24 @@ export default {
     padding: 10px;
 }
 .table {
-    margin: 10% !important;
+    margin: 2% !important;
+    margin-top: 5% !important;
     letter-spacing: 1px;
+    width: 96%;
+    padding: 2%;
+}
+.table th,
+td {
+    font-size: 20px !important;
 }
 .table_title {
-    font-size: 30px;
+    font-size: 40px;
     color: rgb(84, 199, 245);
 }
 
 h1 {
     font-family: 'Arvo', serif !important;
-    font-size: 60px;
-    margin-top: 7%;
+    font-size: 70px;
+    margin-top: 2%;
 }
 </style>
