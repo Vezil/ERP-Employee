@@ -29,21 +29,23 @@ module.exports = {
         const start = moment(req.body.start_date);
         const finish = moment(req.body.finish_date);
 
-        console.log(req.body.start_date);
-        console.log(req.body.finish_date);
-
-        const days_taken =
+        const daysTaken =
             Math.abs(moment.duration(start.diff(finish)).asDays()) + 1;
 
         const employee = await Users.findByPk(req.body.user_id);
 
-        const new_days_left = employee.days_left - days_taken;
+        if (!employee) {
+            return res
+                .status(404)
+                .json({ error: 'This user has not been found' });
+        }
+        const newDaysLeft = employee.days_left - daysTaken;
 
         try {
-            req.body.days_taken = days_taken;
+            req.body.days_taken = daysTaken;
 
             const newHolidays = await Holidays.create(req.body);
-            await employee.update({ days_left: new_days_left });
+            await employee.update({ days_left: newDaysLeft });
 
             return res.send(newHolidays);
         } catch (err) {
@@ -65,23 +67,29 @@ module.exports = {
         const start = moment(req.body.start_date);
         const finish = moment(req.body.finish_date);
 
-        const new_days_taken =
+        const newDaysTaken =
             Math.abs(moment.duration(start.diff(finish)).asDays()) + 1;
 
         try {
-            req.body.days_taken = new_days_taken;
+            req.body.days_taken = newDaysTaken;
 
             const holiday = await Holidays.findByPk(req.params.id);
+
+            if (!holiday) {
+                return res
+                    .status(404)
+                    .json({ error: 'This item has not been found' });
+            }
 
             if (holiday.confirmed === true) {
                 const employee = await Users.findByPk(req.body.user_id);
 
-                const old_days_left = employee.days_left;
+                const oldDaysLeft = employee.days_left;
 
-                const new_days_left =
-                    old_days_left - (new_days_taken - holiday.days_taken);
+                const newDaysLeft =
+                    oldDaysLeft - (newDaysTaken - holiday.days_taken);
 
-                await employee.update({ days_left: new_days_left });
+                await employee.update({ days_left: newDaysLeft });
             }
 
             const holidays = await Holidays.update(req.body, {
@@ -109,7 +117,13 @@ module.exports = {
 
         try {
             let newDaysLeft;
-            const holidays = await Holidays.findByPk(req.params.id);
+            const holiday = await Holidays.findByPk(req.params.id);
+
+            if (!holiday) {
+                return res
+                    .status(404)
+                    .json({ error: 'This holiday has not been found' });
+            }
 
             await Holidays.update(req.body, {
                 where: {
@@ -117,17 +131,23 @@ module.exports = {
                 }
             });
 
-            const employee = await Users.findByPk(holidays.user_id);
+            const employee = await Users.findByPk(holiday.user_id);
+
+            if (!employee) {
+                return res
+                    .status(404)
+                    .json({ error: 'This employee has not been found' });
+            }
 
             if (req.body.confirmed === true) {
-                newDaysLeft = employee.days_left - holidays.days_taken;
+                newDaysLeft = employee.days_left - holiday.days_taken;
             } else {
-                newDaysLeft = employee.days_left + holidays.days_taken;
+                newDaysLeft = employee.days_left + holiday.days_taken;
             }
 
             await employee.update({ days_left: newDaysLeft });
 
-            return res.send(holidays);
+            return res.send(holiday);
         } catch (err) {
             return next(err);
         }
@@ -135,25 +155,31 @@ module.exports = {
 
     async delete(req, res, next) {
         try {
-            const holidays_to_delete = await Holidays.findByPk(req.params.id);
+            const holidayToDelete = await Holidays.findByPk(req.params.id);
 
-            if (holidays_to_delete.confirmed === true) {
+            if (!holidayToDelete) {
+                return res
+                    .status(404)
+                    .json({ error: 'This holiday has not been found' });
+            }
+
+            if (holidayToDelete.confirmed === true) {
                 const employee = await Users.findOne({
                     where: {
-                        id: holidays_to_delete.user_id
+                        id: holidayToDelete.user_id
                     }
                 });
 
-                const old_days_left = employee.days_left;
+                const oldDaysLeft = employee.days_left;
 
-                const old_days_taken = holidays_to_delete.days_taken;
+                const oldDaysTaken = holidayToDelete.days_taken;
 
-                const new_days_left = old_days_taken + old_days_left;
+                const newDaysLeft = old_days_taken + oldDaysLeft;
 
-                await employee.update({ days_left: new_days_left });
+                await employee.update({ days_left: newDaysLeft });
             }
 
-            await holidays_to_delete.destroy();
+            await holidayToDelete.destroy();
 
             return res.sendStatus(204);
         } catch (err) {

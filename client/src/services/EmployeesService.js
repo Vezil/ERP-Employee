@@ -7,7 +7,7 @@ export default {
         return Axios.post('employees', employee);
     },
 
-    getAllEmployees() {
+    getEmployees() {
         return Axios.get('employees');
     },
 

@@ -75,17 +75,20 @@ module.exports = {
             return res.status(422).json({ errors });
         }
 
-        const start = moment(req.body.start_date);
-        const finish = moment(req.body.finish_date);
-
-        const holidayDaysTaken =
-            Math.abs(moment.duration(start.diff(finish)).asDays()) + 1;
-
         try {
             const holiday = await Holidays.findByPk(req.params.holidayId);
 
             if (!holiday) {
+                return res
+                    .status(404)
+                    .json({ error: 'This holiday has not been found' });
             }
+
+            const start = moment(req.body.start_date);
+            const finish = moment(req.body.finish_date);
+
+            const holidayDaysTaken =
+                Math.abs(moment.duration(start.diff(finish)).asDays()) + 1;
 
             await Holidays.update(
                 { ...req.body, days_taken: holidayDaysTaken },
@@ -107,14 +110,20 @@ module.exports = {
 
     async delete(req, res, next) {
         try {
-            const holidays_to_delete = await Holidays.findOne({
+            const holiday = await Holidays.findOne({
                 where: {
                     user_id: req.params.id,
                     id: req.params.holidays_id
                 }
             });
 
-            await holidays_to_delete.destroy();
+            if (!holiday) {
+                return res
+                    .status(404)
+                    .json({ error: 'This holiday has not been found' });
+            }
+
+            await holiday.destroy();
 
             return res.sendStatus(204);
         } catch (err) {

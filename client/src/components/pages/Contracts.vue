@@ -135,7 +135,7 @@
                                         <div
                                             class="error"
                                             v-for="(item,
-                                            index) in errors_from_server"
+                                            index) in errorsFromServer"
                                             :key="index"
                                         >
                                             <div>{{ item.message }}</div>
@@ -231,10 +231,11 @@ export default {
                 holidays_per_year: ''
             },
             error: null,
-            errors_from_server: null,
+            errorsFromServer: null,
             required: value => !!value || 'Required.'
         };
     },
+
     beforeCreate() {
         if (
             this.$store.isLoggedInAsAdmin === null ||
@@ -251,6 +252,7 @@ export default {
     mounted() {
         this.fetchContractsAndEmployees();
     },
+
     computed: {
         formTitle() {
             return this.editedIndex === -1 ? 'New Contract' : 'Edit Contract';
@@ -265,8 +267,8 @@ export default {
 
     methods: {
         async fetchContractsAndEmployees() {
-            this.contracts = (await ContractsServices.getAllContracts()).data;
-            this.employees = (await EmployeesServices.getAllEmployees()).data;
+            this.contracts = (await ContractsServices.getContracts()).data;
+            this.employees = (await EmployeesServices.getEmployees()).data;
 
             let i = 0;
             this.employees.forEach(user => {
@@ -323,7 +325,7 @@ export default {
 
         async createContract(contract) {
             this.areAll = true;
-            this.errors_from_server = null;
+            this.errorsFromServer = null;
 
             Object.keys(contract).forEach(value => {
                 if (contract[value] == '' || contract[value] == undefined) {
@@ -348,11 +350,11 @@ export default {
 
                 await ContractsServices.addContract(contract);
             } catch (err) {
-                this.errors_from_server = err.response.data.errors;
+                this.errorsFromServer = err.response.data.errors;
                 console.error(err);
             }
 
-            if (!this.error && !this.errors_from_server) {
+            if (!this.error && !this.errorsFromServer) {
                 this.close();
             }
             this.fetchContractsAndEmployees();
@@ -360,7 +362,7 @@ export default {
 
         async updateContract(contract) {
             this.areAll = true;
-            this.errors_from_server = null;
+            this.errorsFromServer = null;
 
             delete contract.holidays_per_year;
 
@@ -385,15 +387,16 @@ export default {
 
                 await ContractsServices.updateContract(contract);
             } catch (err) {
-                this.errors_from_server = err.response.data.errors;
+                this.errorsFromServer = err.response.data.errors;
                 console.error(err);
             }
-            if (!this.error && !this.errors_from_server) {
+            if (!this.error && !this.errorsFromServer) {
                 this.close();
             }
 
             this.fetchContractsAndEmployees();
         },
+
         async deleteContract(contract) {
             try {
                 await ContractsServices.deleteContract(contract);

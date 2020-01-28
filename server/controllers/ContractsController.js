@@ -48,6 +48,12 @@ module.exports = {
 
             const employee = await Users.findByPk(req.body.user_id);
 
+            if (!employee) {
+                return res
+                    .status(404)
+                    .json({ error: 'This employee has not been found' });
+            }
+
             await employee.update({ days_left: holidaysToAdd });
 
             return res.send(newContract);
@@ -55,6 +61,7 @@ module.exports = {
             return next(err);
         }
     },
+
     async update(req, res, next) {
         const holidaysToChange = Math.ceil(
             (req.body.holidays_per_year / 12) * req.body.contract
@@ -79,9 +86,21 @@ module.exports = {
 
             const employee = await Users.findByPk(req.body.user_id);
 
+            if (!employee) {
+                return res
+                    .status(404)
+                    .json({ error: 'This employee has not been found' });
+            }
+
             const contract = await employee.update({
                 days_left: holidaysToChange
             });
+
+            if (!contract) {
+                return res
+                    .status(404)
+                    .json({ error: 'This contract has not been found' });
+            }
 
             return res.send(contract);
         } catch (err) {
@@ -91,13 +110,19 @@ module.exports = {
 
     async delete(req, res, next) {
         try {
-            const one = await Contracts.findOne({
+            const contract = await Contracts.findOne({
                 where: {
                     id: req.params.id
                 }
             });
 
-            await one.destroy();
+            if (!contract) {
+                return res
+                    .status(404)
+                    .json({ error: 'This contract has not been found' });
+            }
+
+            await contract.destroy();
 
             return res.sendStatus(204);
         } catch (err) {

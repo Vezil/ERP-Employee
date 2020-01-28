@@ -56,11 +56,17 @@ module.exports = {
         }
 
         try {
-            const user = await Users.update(req.body, {
+            const employee = await Users.update(req.body, {
                 where: {
                     id: req.params.id
                 }
             });
+
+            if (!employee) {
+                return res
+                    .status(404)
+                    .json({ error: 'This employee has not been found' });
+            }
 
             return res.send(user);
         } catch (err) {
@@ -96,9 +102,16 @@ module.exports = {
             return next(err);
         }
     },
+
     async getOne(req, res, next) {
         try {
-            const one = await Users.findByPk(req.params.id);
+            const employee = await Users.findByPk(req.params.id);
+
+            if (!employee) {
+                return res
+                    .status(404)
+                    .json({ error: 'This employee has not been found' });
+            }
 
             return res.send(one);
         } catch (err) {

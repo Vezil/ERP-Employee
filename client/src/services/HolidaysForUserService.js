@@ -9,18 +9,18 @@ export default {
         return Axios.get(`employees/${id}/holidaysRequests`);
     },
 
-    addHolidaysEmployee(holidays) {
+    addHolidaysForEmployee(holidays) {
         return Axios.post(`employees/${holidays.user_id}/holidays`, holidays);
     },
 
-    editHolidaysEmployee(holidays) {
+    editHolidaysForEmployee(holidays) {
         return Axios.put(
             `employees/${holidays.user_id}/holidays/${holidays.id}`,
             holidays
         );
     },
 
-    deleteHolidaysEmployee(holidays) {
+    deleteHolidaysForEmployee(holidays) {
         return Axios.delete(
             `employees/${holidays.user_id}/holidays/${holidays.id}`
         );

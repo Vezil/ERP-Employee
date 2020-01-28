@@ -109,7 +109,7 @@
                                         <div
                                             class="error"
                                             v-for="(item,
-                                            index) in errors_from_server"
+                                            index) in errorsFromServer"
                                             :key="index"
                                         >
                                             <div>{{ item.message }}</div>
@@ -217,7 +217,7 @@ export default {
                 user_id: ''
             },
             error: null,
-            errors_from_server: null,
+            errorsFromServer: null,
 
             required: value => !!value || 'Required.',
             error: null
@@ -256,7 +256,7 @@ export default {
     methods: {
         async fetchHolidays() {
             this.holidays = (await HolidaysServices.getHolidays()).data;
-            this.employees = (await EmployeesServices.getAllEmployees()).data;
+            this.employees = (await EmployeesServices.getEmployees()).data;
 
             let i = 0;
             this.employees.forEach(one => {
@@ -316,7 +316,7 @@ export default {
 
         async createHolidays(holidays) {
             this.areAll = true;
-            this.errors_from_server = null;
+            this.errorsFromServer = null;
 
             delete holidays.days_taken_old;
             delete holidays.days_taken;
@@ -340,11 +340,11 @@ export default {
             try {
                 await HolidaysServices.addHolidays(holidays);
             } catch (err) {
-                this.errors_from_server = err.response.data.errors;
+                this.errorsFromServer = err.response.data.errors;
                 console.error(err);
             }
 
-            if (!this.error && !this.errors_from_server) {
+            if (!this.error && !this.errorsFromServer) {
                 this.close();
             }
             this.fetchHolidays();
@@ -357,7 +357,7 @@ export default {
             delete holidays.surname;
             delete holidays.email;
 
-            this.errors_from_server = null;
+            this.errorsFromServer = null;
             this.areAll = true;
 
             Object.keys(holidays).forEach(value => {
@@ -379,11 +379,11 @@ export default {
             try {
                 await HolidaysServices.updateHolidays(holidays);
             } catch (err) {
-                this.errors_from_server = err.response.data.errors;
+                this.errorsFromServer = err.response.data.errors;
                 console.error(err);
             }
 
-            if (!this.error && !this.errors_from_server) {
+            if (!this.error && !this.errorsFromServer) {
                 this.close();
             }
             this.fetchHolidays();

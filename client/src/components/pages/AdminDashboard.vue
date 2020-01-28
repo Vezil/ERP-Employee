@@ -106,7 +106,7 @@
                                         <div
                                             class="error"
                                             v-for="(item,
-                                            index) in errors_from_server"
+                                            index) in errorsFromServer"
                                             :key="index"
                                         >
                                             <div>{{ item.message }}</div>
@@ -263,7 +263,7 @@ export default {
                 contracts: []
             },
             error: null,
-            errors_from_server: null,
+            errorsFromServer: null,
 
             required: value => !!value || 'Required.'
         };
@@ -286,8 +286,9 @@ export default {
 
     methods: {
         async fetchEmployees() {
-            this.employees = (await EmployeesServices.getAllEmployees()).data;
+            this.employees = (await EmployeesServices.getEmployees()).data;
         },
+
         editItem(item) {
             this.editedIndex = this.employees.indexOf(item);
             this.editedItem = Object.assign({}, item);
@@ -347,7 +348,7 @@ export default {
 
         async createEmployee(employee) {
             this.areAll = true;
-            this.errors_from_server = null;
+            this.errorsFromServer = null;
 
             Object.keys(employee).forEach(value => {
                 if (employee[value] === '' || employee[value] === undefined) {
@@ -368,11 +369,11 @@ export default {
             try {
                 await EmployeesServices.create(employee);
             } catch (err) {
-                this.errors_from_server = err.response.data.errors;
+                this.errorsFromServer = err.response.data.errors;
                 console.error(err);
             }
 
-            if (!this.error && !this.errors_from_server) {
+            if (!this.error && !this.errorsFromServer) {
                 this.close();
             }
 
@@ -381,7 +382,7 @@ export default {
 
         async updateEmployee(employee) {
             this.areAll = true;
-            this.errors_from_server = null;
+            this.errorsFromServer = null;
 
             Object.keys(employee).forEach(value => {
                 if (employee[value] === '' || employee[value] === undefined) {
@@ -401,16 +402,17 @@ export default {
             try {
                 await EmployeesServices.updateEmployee(employee);
             } catch (err) {
-                this.errors_from_server = err.response.data.errors;
+                this.errorsFromServer = err.response.data.errors;
                 console.error(err);
             }
 
-            if (!this.error && !this.errors_from_server) {
+            if (!this.error && !this.errorsFromServer) {
                 this.close();
             }
 
             this.fetchEmployees();
         },
+
         async deleteEmployee(employee) {
             try {
                 await EmployeesServices.deleteEmployee(employee);
