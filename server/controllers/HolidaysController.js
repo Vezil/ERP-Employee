@@ -105,7 +105,10 @@ module.exports = {
         }
 
         try {
-            const holidays = await Holidays.update(req.body, {
+            let newDaysLeft;
+            const holidays = await Holidays.findByPk(req.params.id);
+
+            await Holidays.update(req.body, {
                 where: {
                     id: req.params.id
                 }
@@ -113,7 +116,11 @@ module.exports = {
 
             const employee = await Users.findByPk(holidays.user_id);
 
-            const newDaysLeft = employee.days_left - holidays.days_taken;
+            if (req.body.confirmed === true) {
+                newDaysLeft = employee.days_left - holidays.days_taken;
+            } else {
+                newDaysLeft = employee.days_left + holidays.days_taken;
+            }
 
             await employee.update({ days_left: newDaysLeft });
 

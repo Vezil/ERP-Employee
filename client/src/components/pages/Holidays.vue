@@ -28,8 +28,9 @@
                 </template>
                 <template v-slot:item.confirmed="{ item }"
                     ><v-chip
-                        class="confirmed"
                         :color="getColor(item.confirmed)"
+                        @click="changeConfirmed(item.id, item.confirmed)"
+                        class="confirmed"
                         >{{ item.confirmed }}</v-chip
                     >
                 </template>
@@ -144,6 +145,7 @@
                         </v-dialog>
                     </v-toolbar>
                 </template>
+
                 <template v-slot:item.action="{ item }">
                     <v-icon small class="mr-2" @click="editItem(item)"
                         >edit</v-icon
@@ -228,9 +230,11 @@ export default {
             error: null
         };
     },
+
     async mounted() {
         this.fetchHolidays();
     },
+
     computed: {
         formTitle() {
             return this.editedIndex === -1 ? 'New Holidays' : 'Edit Holidays';
@@ -242,6 +246,7 @@ export default {
             val || this.close();
         }
     },
+
     methods: {
         async fetchHolidays() {
             this.holidays = (await HolidaysServices.getHolidays()).data;
@@ -253,6 +258,7 @@ export default {
                 i++;
             });
         },
+
         editItem(item) {
             this.editedIndex = this.holidays.indexOf(item);
             this.editedItem = Object.assign({}, item);
@@ -367,6 +373,7 @@ export default {
             }
             this.fetchHolidays();
         },
+
         async deleteHolidays(holidays) {
             try {
                 delete holidays.days_taken;
@@ -382,6 +389,23 @@ export default {
                 console.error(err);
             }
         },
+
+        async changeConfirmed(id, confirmed) {
+            const newConfirmedValue = !confirmed;
+
+            const newValue = {
+                confirmed: newConfirmedValue
+            };
+
+            try {
+                await HolidaysServices.updateConfirmedValue(id, newValue);
+
+                this.fetchHolidays();
+            } catch (err) {
+                console.error(err);
+            }
+        },
+
         getColor(confirmed) {
             if (confirmed === false) {
                 return 'red';
