@@ -107,26 +107,12 @@ module.exports = {
 
     async delete(req, res, next) {
         try {
-            const employee = await Users.findOne({
-                where: {
-                    id: req.params.id
-                }
-            });
-
-            const old_days_left = employee.days_left;
-
             const holidays_to_delete = await Holidays.findOne({
                 where: {
                     user_id: req.params.id,
                     id: req.params.holidays_id
                 }
             });
-
-            const old_days_taken = holidays_to_delete.days_taken;
-
-            const new_days_left = old_days_taken + old_days_left;
-
-            await employee.update({ days_left: new_days_left });
 
             await holidays_to_delete.destroy();
 

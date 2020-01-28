@@ -408,9 +408,9 @@ export default {
 
         getColor(confirmed) {
             if (confirmed === false) {
-                return 'red';
+                return '#2a2a2a';
             }
-            return 'green';
+            return '#007200';
         }
     }
 };

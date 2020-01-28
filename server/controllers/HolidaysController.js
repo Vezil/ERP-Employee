@@ -29,9 +29,11 @@ module.exports = {
         const start = moment(req.body.start_date);
         const finish = moment(req.body.finish_date);
 
-        const days_taken = Math.abs(
-            moment.duration(start.diff(finish)).asDays() + 1
-        );
+        console.log(req.body.start_date);
+        console.log(req.body.finish_date);
+
+        const days_taken =
+            Math.abs(moment.duration(start.diff(finish)).asDays()) + 1;
 
         const employee = await Users.findByPk(req.body.user_id);
 
@@ -63,23 +65,24 @@ module.exports = {
         const start = moment(req.body.start_date);
         const finish = moment(req.body.finish_date);
 
-        const new_days_taken = Math.abs(
-            moment.duration(start.diff(finish)).asDays() + 1
-        );
+        const new_days_taken =
+            Math.abs(moment.duration(start.diff(finish)).asDays()) + 1;
 
         try {
             req.body.days_taken = new_days_taken;
 
-            const employee = await Users.findByPk(req.body.user_id);
+            const holiday = await Holidays.findByPk(req.params.id);
 
-            const old_days_taken = await Holidays.findByPk(req.params.id);
+            if (holiday.confirmed === true) {
+                const employee = await Users.findByPk(req.body.user_id);
 
-            const old_days_left = employee.days_left;
+                const old_days_left = employee.days_left;
 
-            const new_days_left =
-                old_days_left - (new_days_taken - old_days_taken.days_taken);
+                const new_days_left =
+                    old_days_left - (new_days_taken - holiday.days_taken);
 
-            await employee.update({ days_left: new_days_left });
+                await employee.update({ days_left: new_days_left });
+            }
 
             const holidays = await Holidays.update(req.body, {
                 where: {
@@ -134,19 +137,22 @@ module.exports = {
         try {
             const holidays_to_delete = await Holidays.findByPk(req.params.id);
 
-            const employee = await Users.findOne({
-                where: {
-                    id: holidays_to_delete.user_id
-                }
-            });
+            if (holidays_to_delete.confirmed === true) {
+                const employee = await Users.findOne({
+                    where: {
+                        id: holidays_to_delete.user_id
+                    }
+                });
 
-            const old_days_left = employee.days_left;
+                const old_days_left = employee.days_left;
 
-            const old_days_taken = holidays_to_delete.days_taken;
+                const old_days_taken = holidays_to_delete.days_taken;
 
-            const new_days_left = old_days_taken + old_days_left;
+                const new_days_left = old_days_taken + old_days_left;
 
-            await employee.update({ days_left: new_days_left });
+                await employee.update({ days_left: new_days_left });
+            }
+
             await holidays_to_delete.destroy();
 
             return res.sendStatus(204);
