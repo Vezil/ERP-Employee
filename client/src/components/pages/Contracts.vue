@@ -74,37 +74,88 @@
                                                     :rules="[required]"
                                                 ></v-text-field>
                                             </v-col>
+
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field
-                                                    type="text"
-                                                    onfocus="(this.type='date')"
-                                                    v-model="
-                                                        editedItem.start_date
-                                                    "
-                                                    :value="
-                                                        editedItem.start_date
-                                                            | formatDate
-                                                    "
-                                                    label="Start Day"
-                                                    required
-                                                    :rules="[required]"
-                                                ></v-text-field>
+                                                <template>
+                                                    <v-menu
+                                                        ref="menuDatePicker"
+                                                        v-model="menuDatePicker"
+                                                        :close-on-content-click="
+                                                            false
+                                                        "
+                                                        transition="scale-transition"
+                                                        offset-y
+                                                        min-width="290px"
+                                                        dark
+                                                    >
+                                                        <template
+                                                            v-slot:activator="{
+                                                                on
+                                                            }"
+                                                        >
+                                                            <v-text-field
+                                                                v-model="
+                                                                    editedItem.start_date
+                                                                "
+                                                                label="Start Date"
+                                                                prepend-icon="event"
+                                                                readonly
+                                                                v-on="on"
+                                                            ></v-text-field>
+                                                        </template>
+                                                        <v-date-picker
+                                                            ref="picker"
+                                                            v-model="
+                                                                editedItem.start_date
+                                                            "
+                                                            min="2019-01-01"
+                                                            max="2029-12-31"
+                                                            @change="saveDate"
+                                                        ></v-date-picker>
+                                                    </v-menu>
+                                                </template>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field
-                                                    type="text"
-                                                    onfocus="(this.type='date')"
-                                                    v-model="
-                                                        editedItem.finish_date
-                                                    "
-                                                    :value="
-                                                        editedItem.finish_date
-                                                            | formatDate
-                                                    "
-                                                    label="Finish Day"
-                                                    required
-                                                    :rules="[required]"
-                                                ></v-text-field>
+                                                <template>
+                                                    <v-menu
+                                                        ref="menuDatePicker2"
+                                                        v-model="
+                                                            menuDatePicker2
+                                                        "
+                                                        :close-on-content-click="
+                                                            false
+                                                        "
+                                                        transition="scale-transition"
+                                                        offset-y
+                                                        min-width="290px"
+                                                        dark
+                                                    >
+                                                        <template
+                                                            v-slot:activator="{
+                                                                on
+                                                            }"
+                                                        >
+                                                            <v-text-field
+                                                                v-model="
+                                                                    editedItem.finish_date
+                                                                "
+                                                                label="Finish Date"
+                                                                prepend-icon="event"
+                                                                readonly
+                                                                v-on="on"
+                                                            ></v-text-field>
+                                                        </template>
+                                                        <v-date-picker
+                                                            ref="picker"
+                                                            v-model="
+                                                                editedItem.finish_date
+                                                            "
+                                                            min="2019-01-01"
+                                                            max="2029-12-31"
+                                                            @change="saveDate2"
+                                                        ></v-date-picker>
+                                                    </v-menu>
+                                                </template>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
@@ -120,13 +171,6 @@
                                                     required
                                                     :rules="[required]"
                                                 ></v-text-field>
-                                            </v-col>
-                                            <v-col
-                                                cols="12"
-                                                sm="6"
-                                                md="4"
-                                                v-if="editedIndex == -1"
-                                            >
                                             </v-col>
                                         </v-row>
                                         <div class="error" v-if="error">{{
@@ -188,6 +232,9 @@ export default {
             isDialogOpen: false,
             newPass: false,
             areAll: true,
+            menuDatePicker: false,
+            menuDatePicker2: false,
+
             headers: [
                 {
                     text: 'Name',
@@ -262,6 +309,12 @@ export default {
     watch: {
         isDialogOpen(val) {
             val || this.close();
+        },
+        menuDatePicker(val) {
+            val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'));
+        },
+        menuDatePicker2(val) {
+            val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'));
         }
     },
 
@@ -321,6 +374,12 @@ export default {
 
                 this.createContract(this.editedItem);
             }
+        },
+        saveDate(date) {
+            this.$refs.menuDatePicker.save(date);
+        },
+        saveDate2(date) {
+            this.$refs.menuDatePicker2.save(date);
         },
 
         async createContract(contract) {
