@@ -113,7 +113,7 @@ module.exports = {
                     .json({ error: 'This employee has not been found' });
             }
 
-            return res.send(one);
+            return res.send(employee);
         } catch (err) {
             return next(err);
         }

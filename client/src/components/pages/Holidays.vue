@@ -226,10 +226,10 @@ export default {
 
     beforeCreate() {
         if (
-            this.$store.isLoggedInAsAdmin === null ||
-            this.$store.isLoggedInAsAdmin === undefined ||
-            this.$store.token === null ||
-            this.$store.token === undefined
+            this.$store.state.isLoggedInAsAdmin === null ||
+            this.$store.state.isLoggedInAsAdmin === undefined ||
+            this.$store.state.token === null ||
+            this.$store.state.token === undefined
         ) {
             this.$router.push({
                 name: 'dashboard'
@@ -259,8 +259,8 @@ export default {
             this.employees = (await EmployeesServices.getEmployees()).data;
 
             let i = 0;
-            this.employees.forEach(one => {
-                this.employee[i] = one.email;
+            this.employees.forEach(user => {
+                this.employee[i] = user.email;
                 i++;
             });
         },

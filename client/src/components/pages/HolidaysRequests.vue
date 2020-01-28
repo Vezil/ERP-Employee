@@ -173,10 +173,10 @@ export default {
 
     beforeCreate() {
         if (
-            this.$store.isLoggedInAsUser === null ||
-            this.$store.isLoggedInAsUser === undefined ||
-            this.$store.token === null ||
-            this.$store.token === undefined
+            this.$store.state.isLoggedInAsUser === null ||
+            this.$store.state.isLoggedInAsUser === undefined ||
+            this.$store.state.token === null ||
+            this.$store.state.token === undefined
         ) {
             this.$router.push({
                 name: 'dashboard'

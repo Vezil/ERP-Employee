@@ -238,10 +238,10 @@ export default {
 
     beforeCreate() {
         if (
-            this.$store.isLoggedInAsAdmin === null ||
-            this.$store.isLoggedInAsAdmin === undefined ||
-            this.$store.token === null ||
-            this.$store.token === undefined
+            this.$store.state.isLoggedInAsAdmin === null ||
+            this.$store.state.isLoggedInAsAdmin === undefined ||
+            this.$store.state.token === null ||
+            this.$store.state.token === undefined
         ) {
             this.$router.push({
                 name: 'dashboard'
