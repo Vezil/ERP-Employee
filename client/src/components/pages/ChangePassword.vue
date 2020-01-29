@@ -38,7 +38,13 @@
                     ></v-text-field>
                     <br />
                     <br />
-                    <div class="error" v-if="error">{{ this.error }}</div>
+                    <div
+                        class="error"
+                        v-for="(item, index) in errorsFromServer"
+                        :key="index"
+                    >
+                        <div>{{ item }}</div>
+                    </div>
                     <br />
                     <v-btn class="orange darken-3" @click="changePassword"
                         >Change</v-btn
@@ -57,7 +63,7 @@ export default {
 
     data() {
         return {
-            error: null,
+            errorsFromServer: null,
             passwordRules: [v => v.length > 7 || 'Minimum 8 characters'],
             oldPassword: '',
             newPassword: '',
@@ -71,7 +77,13 @@ export default {
                 newPassword: this.newPassword,
                 newPasswordRepeat: this.newPasswordRepeat
             };
-            await ChangePasswordService.changePassword(request);
+
+            try {
+                await ChangePasswordService.changePassword(request);
+            } catch (err) {
+                this.errorsFromServer = err.response.data;
+                console.error(err);
+            }
         }
     }
 };
