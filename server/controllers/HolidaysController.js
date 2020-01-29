@@ -98,9 +98,9 @@ module.exports = {
                 }
             });
 
-            const newHoliday = await Holidays.findByPk(req.params.id);
+            const updatedHoliday = await Holidays.findByPk(req.params.id);
 
-            return res.send(newHoliday);
+            return res.send(updatedHoliday);
         } catch (err) {
             return next(err);
         }

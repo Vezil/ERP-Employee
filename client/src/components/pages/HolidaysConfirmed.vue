@@ -57,19 +57,6 @@ export default {
         };
     },
 
-    beforeCreate() {
-        if (
-            this.$store.state.isLoggedInAsUser === null ||
-            this.$store.state.isLoggedInAsUser === undefined ||
-            this.$store.state.token === null ||
-            this.$store.state.token === undefined
-        ) {
-            this.$router.push({
-                name: 'dashboard'
-            });
-        }
-    },
-
     async mounted() {
         this.holidaysUser = await HolidaysForUserServices.getHolidaysByEmployeeId(
             this.$store.state.id

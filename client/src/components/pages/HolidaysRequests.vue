@@ -50,8 +50,10 @@
                                             <v-col cols="12" sm="6" md="4">
                                                 <template>
                                                     <v-menu
-                                                        ref="menuDatePicker"
-                                                        v-model="menuDatePicker"
+                                                        ref="menuStartDatePicker"
+                                                        v-model="
+                                                            menuStartDatePicker
+                                                        "
                                                         :close-on-content-click="
                                                             false
                                                         "
@@ -82,7 +84,9 @@
                                                             "
                                                             min="2019-01-01"
                                                             max="2029-12-31"
-                                                            @change="saveDate"
+                                                            @change="
+                                                                saveStartDate
+                                                            "
                                                         ></v-date-picker>
                                                     </v-menu>
                                                 </template>
@@ -90,9 +94,9 @@
                                             <v-col cols="12" sm="6" md="4">
                                                 <template>
                                                     <v-menu
-                                                        ref="menuDatePicker2"
+                                                        ref="menuFinishDatePicker"
                                                         v-model="
-                                                            menuDatePicker2
+                                                            menuFinishDatePicker
                                                         "
                                                         :close-on-content-click="
                                                             false
@@ -124,7 +128,9 @@
                                                             "
                                                             min="2019-01-01"
                                                             max="2029-12-31"
-                                                            @change="saveDate2"
+                                                            @change="
+                                                                saveFinishDate
+                                                            "
                                                         ></v-date-picker>
                                                     </v-menu>
                                                 </template>
@@ -176,6 +182,8 @@
 
 <script>
 import moment from 'moment';
+import dateFormat from '../../config/date';
+
 import EmployeesServices from '../../services/EmployeesService';
 import HolidaysForUserServices from '../../services/HolidaysForUserService';
 import { store } from '../../store';
@@ -189,8 +197,8 @@ export default {
             newPass: false,
             days_left: null,
             areAll: true,
-            menuDatePicker: false,
-            menuDatePicker2: false,
+            menuStartDatePicker: false,
+            menuFinishDatePicker: false,
 
             headers: [
                 {
@@ -228,19 +236,6 @@ export default {
         };
     },
 
-    beforeCreate() {
-        if (
-            this.$store.state.isLoggedInAsUser === null ||
-            this.$store.state.isLoggedInAsUser === undefined ||
-            this.$store.state.token === null ||
-            this.$store.state.token === undefined
-        ) {
-            this.$router.push({
-                name: 'dashboard'
-            });
-        }
-    },
-
     async mounted() {
         this.fetchHolidays();
     },
@@ -255,11 +250,11 @@ export default {
         isDialogOpen(val) {
             val || this.close();
         },
-        menuDatePicker(val) {
-            val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'));
+        menuStartDatePicker(val) {
+            val && setTimeout(() => (this.$refs.picker.activePicker = 'DATE'));
         },
-        menuDatePicker2(val) {
-            val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'));
+        menuFinishDatePicker(val) {
+            val && setTimeout(() => (this.$refs.picker.activePicker = 'DATE'));
         }
     },
 
@@ -277,10 +272,10 @@ export default {
             this.editedItem = Object.assign({}, item);
 
             this.editedItem.start_date = moment(item.start_date).format(
-                'YYYY-MM-DD'
+                dateFormat
             );
             this.editedItem.finish_date = moment(item.finish_date).format(
-                'YYYY-MM-DD'
+                dateFormat
             );
 
             this.isDialogOpen = true;
@@ -313,11 +308,11 @@ export default {
                 this.addHolidaysRequest(this.editedItem);
             }
         },
-        saveDate(date) {
-            this.$refs.menuDatePicker.save(date);
+        saveStartDate(date) {
+            this.$refs.menuStartDatePicker.save(date);
         },
-        saveDate2(date) {
-            this.$refs.menuDatePicker2.save(date);
+        saveFinishDate(date) {
+            this.$refs.menuFinishDatePicker.save(date);
         },
 
         async addHolidaysRequest(holidays) {

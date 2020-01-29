@@ -20,6 +20,20 @@ for (let i = 0; i <= 20; i++) {
     holidays.push(holiday);
 }
 
+for (let i = 0; i <= 5; i++) {
+    const holidayForUser = {
+        days_taken: faker.helpers.randomize(randomDays),
+        start_date: faker.date.past(),
+        finish_date: faker.date.future(),
+        confirmed: faker.helpers.randomize(randomConfirmed),
+        user_id: 23,
+        created_at: new Date(),
+        updated_at: new Date()
+    };
+
+    holidays.push(holidayForUser);
+}
+
 module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface.bulkInsert('holidays', holidays);

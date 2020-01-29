@@ -240,6 +240,8 @@
 
 <script>
 import moment from 'moment';
+import dateFormat from '../../config/date';
+
 import EmployeesServices from '../../services/EmployeesService';
 import ContractsServices from '../../services/ContractsService';
 
@@ -309,7 +311,7 @@ export default {
             val || this.close();
         },
         menuDatePicker(val) {
-            val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'));
+            val && setTimeout(() => (this.$refs.picker.activePicker = 'DATE'));
         }
     },
 
@@ -322,7 +324,7 @@ export default {
             this.editedIndex = this.employees.indexOf(item);
             this.editedItem = Object.assign({}, item);
             this.editedItem.birthdate = moment(item.birthdate).format(
-                'YYYY-MM-DD'
+                dateFormat
             );
             this.isDialogOpen = true;
         },

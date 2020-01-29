@@ -17,42 +17,78 @@ const routes = [
         component: Dashboard
     },
     {
-        path: '/Contracts',
+        path: '/contracts',
         component: Contracts,
-        name: 'contracts'
+        name: 'contracts',
+        beforeEnter: (to, from, next) => {
+            if (
+                typeof localStorage.isLoggedInAsAdmin === 'undefined' ||
+                localStorage.isLoggedInAsAdmin === null
+            ) {
+                return next('/login');
+            } else return next();
+        }
     },
     {
-        path: '/Login',
+        path: '/login',
         component: Login,
-        name: 'login'
+        name: 'login',
+        beforeEnter: (to, from, next) => {
+            if (
+                typeof localStorage.token === 'undefined' ||
+                localStorage.token === null
+            ) {
+                return next();
+            } else return next('/');
+        }
     },
     {
-        path: '/Holidays',
+        path: '/holidays',
         component: Holidays,
-        name: 'holidays'
+        name: 'holidays',
+        beforeEnter: (to, from, next) => {
+            if (
+                typeof localStorage.isLoggedInAsAdmin === 'undefined' ||
+                localStorage.isLoggedInAsAdmin === null
+            ) {
+                return next('/login');
+            } else return next();
+        }
     },
     {
-        path: '/HolidaysRequests',
+        path: '/holidaysRequests',
         component: HolidaysRequests,
-        name: 'holidaysrequests'
+        name: 'holidaysrequests',
+        beforeEnter: (to, from, next) => {
+            if (
+                typeof localStorage.isLoggedInAsUser === 'undefined' ||
+                localStorage.isLoggedInAsUser === null
+            ) {
+                return next('/login');
+            } else return next();
+        }
     },
     {
-        path: '/HolidaysConfirmed',
+        path: '/holidaysConfirmed',
         component: HolidaysConfirmed,
-        name: 'holidaysconfirmed'
+        name: 'holidaysconfirmed',
+        beforeEnter: (to, from, next) => {
+            if (
+                typeof localStorage.isLoggedInAsUser === 'undefined' ||
+                localStorage.isLoggedInAsUser === null
+            ) {
+                return next('/Login');
+            } else return next();
+        }
     },
     {
-        path: '/Logout',
+        path: '/logout',
         component: Logout,
         name: 'logout'
     },
-
     {
-        path: '/about',
-        name: 'about',
-        component: function() {
-            return import(/* webpackChunkName: "about" */ '../views/About.vue');
-        }
+        path: '*',
+        redirect: '/login'
     }
 ];
 

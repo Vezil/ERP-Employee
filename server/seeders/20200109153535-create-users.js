@@ -7,7 +7,7 @@ const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'));
 const users = [];
 
 for (let i = 0; i <= 20; i++) {
-    const user = {
+    const employee = {
         name: faker.name.firstName(),
         surname: faker.name.lastName(),
         email: faker.internet.email(),
@@ -19,14 +19,14 @@ for (let i = 0; i <= 20; i++) {
         updated_at: new Date()
     };
 
-    users.push(user);
+    users.push(employee);
 }
 
 const admin = {
-    name: 'admin',
-    surname: 'admin',
-    email: 'admin@wp.pl',
-    birthdate: '1999-11-11',
+    name: faker.name.firstName(),
+    surname: faker.name.lastName(),
+    email: 'admin@erp.test',
+    birthdate: faker.date.past(),
 
     password: bcrypt.hashSync('password'),
     days_left: 0,
@@ -35,6 +35,20 @@ const admin = {
 };
 
 users.push(admin);
+
+const user = {
+    name: faker.name.firstName(),
+    surname: faker.name.lastName(),
+    email: 'user@erp.test',
+    birthdate: faker.date.past(),
+
+    password: bcrypt.hashSync('password'),
+    days_left: 26,
+    created_at: new Date(),
+    updated_at: new Date()
+};
+
+users.push(user);
 
 module.exports = {
     up: (queryInterface, Sequelize) => {

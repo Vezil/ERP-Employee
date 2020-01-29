@@ -13,8 +13,8 @@ module.exports = {
                 (await userLogged.isUser()) &&
                 userLogged.id !== parseInt(req.params.id)
             ) {
-                return res.status(401).send({
-                    error: 'Unauthorized'
+                return res.status(403).send({
+                    error: 'Forbidden'
                 });
             }
 

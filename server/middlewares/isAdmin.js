@@ -10,8 +10,8 @@ module.exports = {
             const adminLogged = await Users.findByPk(req.loggedUser.id);
 
             if (!(await adminLogged.isAdmin())) {
-                return res.status(401).send({
-                    error: 'Unauthorized'
+                return res.status(403).send({
+                    error: 'Forbidden'
                 });
             }
 

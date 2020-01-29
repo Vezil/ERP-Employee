@@ -24,6 +24,15 @@ const adminRole = {
 
 roles.push(adminRole);
 
+const userRole = {
+    name: 'user',
+    user_id: 23,
+    created_at: new Date(),
+    updated_at: new Date()
+};
+
+roles.push(userRole);
+
 module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface.bulkInsert('roles', roles);

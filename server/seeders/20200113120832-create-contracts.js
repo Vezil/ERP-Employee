@@ -18,6 +18,19 @@ for (let i = 0; i <= 20; i++) {
     contracts.push(contract);
 }
 
+for (let i = 0; i <= 5; i++) {
+    const contractForUser = {
+        contract_length: faker.helpers.randomize(randomContractLength),
+        start_date: faker.date.past(),
+        finish_date: faker.date.future(),
+        user_id: 23,
+        created_at: new Date(),
+        updated_at: new Date()
+    };
+
+    contracts.push(contractForUser);
+}
+
 module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface.bulkInsert('contracts', contracts);
