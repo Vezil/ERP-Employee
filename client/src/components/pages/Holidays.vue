@@ -206,7 +206,7 @@
 
 <script>
 import moment from 'moment';
-import dateFormat from '../../config/date';
+import config from '../../config';
 
 import EmployeesServices from '../../services/EmployeesService';
 import ContractsServices from '../../services/ContractsService';
@@ -324,10 +324,10 @@ export default {
 
             this.editedItem.email = item.employee.email;
             this.editedItem.start_date = moment(item.start_date).format(
-                dateFormat
+                config.dateFormat
             );
             this.editedItem.finish_date = moment(item.finish_date).format(
-                dateFormat
+                config.dateFormat
             );
 
             this.isDialogOpen = true;

@@ -240,7 +240,7 @@
 
 <script>
 import moment from 'moment';
-import dateFormat from '../../config/date';
+import config from '../../config';
 
 import EmployeesServices from '../../services/EmployeesService';
 import ContractsServices from '../../services/ContractsService';
@@ -324,7 +324,7 @@ export default {
             this.editedIndex = this.employees.indexOf(item);
             this.editedItem = Object.assign({}, item);
             this.editedItem.birthdate = moment(item.birthdate).format(
-                dateFormat
+                config.dateFormat
             );
             this.isDialogOpen = true;
         },
