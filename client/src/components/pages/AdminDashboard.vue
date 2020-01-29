@@ -62,20 +62,44 @@
                                                 ></v-text-field>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field
-                                                    type="text"
-                                                    onfocus="(this.type='date')"
-                                                    v-model="
-                                                        editedItem.birthdate
-                                                    "
-                                                    :value="
-                                                        editedItem.birthdate
-                                                            | formatDate
-                                                    "
-                                                    label="Birthdate"
-                                                    required
-                                                    :rules="[required]"
-                                                ></v-text-field>
+                                                <template>
+                                                    <v-menu
+                                                        ref="dateMenuPicker"
+                                                        v-model="dateMenuPicker"
+                                                        :close-on-content-click="
+                                                            false
+                                                        "
+                                                        transition="scale-transition"
+                                                        offset-y
+                                                        min-width="290px"
+                                                        dark
+                                                    >
+                                                        <template
+                                                            v-slot:activator="{
+                                                                on
+                                                            }"
+                                                        >
+                                                            <v-text-field
+                                                                v-model="
+                                                                    editedItem.birthdate
+                                                                "
+                                                                label="Birthdate"
+                                                                prepend-icon="event"
+                                                                readonly
+                                                                v-on="on"
+                                                            ></v-text-field>
+                                                        </template>
+                                                        <v-date-picker
+                                                            ref="picker"
+                                                            v-model="
+                                                                editedItem.birthdate
+                                                            "
+                                                            min="1900-01-01"
+                                                            max="2019-12-31"
+                                                            @change="saveDate"
+                                                        ></v-date-picker>
+                                                    </v-menu>
+                                                </template>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
                                                 <v-text-field
@@ -216,6 +240,8 @@
 
 <script>
 import moment from 'moment';
+import config from '../../config';
+
 import EmployeesServices from '../../services/EmployeesService';
 import ContractsServices from '../../services/ContractsService';
 
@@ -229,6 +255,8 @@ export default {
             isDialogProfileOpen: false,
             newPass: false,
             areAll: true,
+            dateMenuPicker: false,
+
             headers: [
                 {
                     text: 'Name',
@@ -281,6 +309,9 @@ export default {
     watch: {
         isDialogOpen(val) {
             val || this.close();
+        },
+        dateMenuPicker(val) {
+            val && setTimeout(() => (this.$refs.picker.activePicker = 'DATE'));
         }
     },
 
@@ -292,6 +323,9 @@ export default {
         editItem(item) {
             this.editedIndex = this.employees.indexOf(item);
             this.editedItem = Object.assign({}, item);
+            this.editedItem.birthdate = moment(item.birthdate).format(
+                config.defaultDateFormat
+            );
             this.isDialogOpen = true;
         },
 
@@ -321,6 +355,10 @@ export default {
                 this.createEmployee(this.editedItem);
             }
         },
+        saveDate(date) {
+            this.$refs.dateMenuPicker.save(date);
+        },
+
         async profile(user) {
             if (this.editedIndex > -1) {
                 this.isDialogProfileOpen = false;
@@ -383,6 +421,8 @@ export default {
         async updateEmployee(employee) {
             this.areAll = true;
             this.errorsFromServer = null;
+
+            delete employee.Role;
 
             Object.keys(employee).forEach(value => {
                 if (employee[value] === '' || employee[value] === undefined) {

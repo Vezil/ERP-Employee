@@ -29,7 +29,7 @@
                 <template v-slot:item.confirmed="{ item }"
                     ><v-chip
                         :color="getColor(item.confirmed)"
-                        @click="changeConfirmed(item.id, item.confirmed)"
+                        @click="toggleConfirm(item.id, item.confirmed)"
                         class="confirmed"
                         >{{ item.confirmed }}</v-chip
                     >
@@ -71,36 +71,92 @@
                                         ></v-select>
                                         <v-row>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field
-                                                    type="text"
-                                                    onfocus="(this.type='date')"
-                                                    v-model="
-                                                        editedItem.start_date
-                                                    "
-                                                    :value="
-                                                        editedItem.start_date
-                                                            | formatDate
-                                                    "
-                                                    label="Start Day"
-                                                    required
-                                                    :rules="[required]"
-                                                ></v-text-field>
+                                                <template>
+                                                    <v-menu
+                                                        ref="startDateMenuPicker"
+                                                        v-model="
+                                                            startDateMenuPicker
+                                                        "
+                                                        :close-on-content-click="
+                                                            false
+                                                        "
+                                                        transition="scale-transition"
+                                                        offset-y
+                                                        min-width="290px"
+                                                        dark
+                                                    >
+                                                        <template
+                                                            v-slot:activator="{
+                                                                on
+                                                            }"
+                                                        >
+                                                            <v-text-field
+                                                                v-model="
+                                                                    editedItem.start_date
+                                                                "
+                                                                label="Start Date"
+                                                                prepend-icon="event"
+                                                                readonly
+                                                                v-on="on"
+                                                            ></v-text-field>
+                                                        </template>
+                                                        <v-date-picker
+                                                            ref="picker"
+                                                            v-model="
+                                                                editedItem.start_date
+                                                            "
+                                                            min="2019-01-01"
+                                                            max="2029-12-31"
+                                                            @change="
+                                                                saveStartDate
+                                                            "
+                                                        ></v-date-picker>
+                                                    </v-menu>
+                                                </template>
                                             </v-col>
                                             <v-col cols="12" sm="6" md="4">
-                                                <v-text-field
-                                                    type="text"
-                                                    onfocus="(this.type='date')"
-                                                    v-model="
-                                                        editedItem.finish_date
-                                                    "
-                                                    :value="
-                                                        editedItem.finish_date
-                                                            | formatDate
-                                                    "
-                                                    label="Finish Day"
-                                                    required
-                                                    :rules="[required]"
-                                                ></v-text-field>
+                                                <template>
+                                                    <v-menu
+                                                        ref="finishDateMenuPicker"
+                                                        v-model="
+                                                            finishDateMenuPicker
+                                                        "
+                                                        :close-on-content-click="
+                                                            false
+                                                        "
+                                                        transition="scale-transition"
+                                                        offset-y
+                                                        min-width="290px"
+                                                        dark
+                                                    >
+                                                        <template
+                                                            v-slot:activator="{
+                                                                on
+                                                            }"
+                                                        >
+                                                            <v-text-field
+                                                                v-model="
+                                                                    editedItem.finish_date
+                                                                "
+                                                                label="Finish Date"
+                                                                prepend-icon="event"
+                                                                readonly
+                                                                v-on="on"
+                                                            ></v-text-field>
+                                                        </template>
+                                                        <v-date-picker
+                                                            ref="picker"
+                                                            v-model="
+                                                                editedItem.finish_date
+                                                            "
+                                                            min="2019-01-01"
+                                                            max="2029-12-31"
+                                                            @change="
+                                                                saveFinishDate
+                                                            "
+                                                        ></v-date-picker>
+                                                    </v-menu>
+                                                </template>
                                             </v-col>
                                         </v-row>
                                         <div class="error" v-if="error">{{
@@ -150,6 +206,7 @@
 
 <script>
 import moment from 'moment';
+import config from '../../config';
 
 import EmployeesServices from '../../services/EmployeesService';
 import ContractsServices from '../../services/ContractsService';
@@ -166,6 +223,9 @@ export default {
             newPass: false,
             days_left: null,
             areAll: true,
+            startDateMenuPicker: false,
+            finishDateMenuPicker: false,
+
             headers: [
                 {
                     text: 'Name',
@@ -224,19 +284,6 @@ export default {
         };
     },
 
-    beforeCreate() {
-        if (
-            this.$store.state.isLoggedInAsAdmin === null ||
-            this.$store.state.isLoggedInAsAdmin === undefined ||
-            this.$store.state.token === null ||
-            this.$store.state.token === undefined
-        ) {
-            this.$router.push({
-                name: 'dashboard'
-            });
-        }
-    },
-
     async mounted() {
         this.fetchHolidays();
     },
@@ -250,6 +297,12 @@ export default {
     watch: {
         isDialogOpen(val) {
             val || this.close();
+        },
+        startDateMenuPicker(val) {
+            val && setTimeout(() => (this.$refs.picker.activePicker = 'DATE'));
+        },
+        finishDateMenuPicker(val) {
+            val && setTimeout(() => (this.$refs.picker.activePicker = 'DATE'));
         }
     },
 
@@ -271,10 +324,10 @@ export default {
 
             this.editedItem.email = item.employee.email;
             this.editedItem.start_date = moment(item.start_date).format(
-                'DD.MM.YYYY'
+                config.defaultDateFormat
             );
             this.editedItem.finish_date = moment(item.finish_date).format(
-                'DD.MM.YYYY'
+                config.defaultDateFormat
             );
 
             this.isDialogOpen = true;
@@ -312,6 +365,12 @@ export default {
 
                 this.createHolidays(this.editedItem);
             }
+        },
+        saveStartDate(date) {
+            this.$refs.startDateMenuPicker.save(date);
+        },
+        saveFinishDate(date) {
+            this.$refs.finishDateMenuPicker.save(date);
         },
 
         async createHolidays(holidays) {
@@ -405,7 +464,7 @@ export default {
             }
         },
 
-        async changeConfirmed(id, confirmed) {
+        async toggleConfirm(id, confirmed) {
             const newConfirmedValue = !confirmed;
 
             const newValue = {

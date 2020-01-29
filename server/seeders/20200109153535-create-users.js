@@ -1,0 +1,61 @@
+'use strict';
+
+const faker = require('faker');
+const Promise = require('bluebird');
+const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'));
+
+const users = [];
+
+for (let i = 0; i <= 20; i++) {
+    const employee = {
+        name: faker.name.firstName(),
+        surname: faker.name.lastName(),
+        email: faker.internet.email(),
+        birthdate: faker.date.past(),
+
+        password: bcrypt.hashSync('password'),
+        days_left: 26,
+        created_at: new Date(),
+        updated_at: new Date()
+    };
+
+    users.push(employee);
+}
+
+const admin = {
+    name: faker.name.firstName(),
+    surname: faker.name.lastName(),
+    email: 'admin@erp.test',
+    birthdate: faker.date.past(),
+
+    password: bcrypt.hashSync('password'),
+    days_left: 0,
+    created_at: new Date(),
+    updated_at: new Date()
+};
+
+users.push(admin);
+
+const user = {
+    name: faker.name.firstName(),
+    surname: faker.name.lastName(),
+    email: 'user@erp.test',
+    birthdate: faker.date.past(),
+
+    password: bcrypt.hashSync('password'),
+    days_left: 26,
+    created_at: new Date(),
+    updated_at: new Date()
+};
+
+users.push(user);
+
+module.exports = {
+    up: (queryInterface, Sequelize) => {
+        return queryInterface.bulkInsert('users', users);
+    },
+
+    down: (queryInterface, Sequelize) => {
+        return queryInterface.bulkDelete('users');
+    }
+};

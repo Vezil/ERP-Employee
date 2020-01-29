@@ -5,8 +5,8 @@ module.exports = (sequelize, DataTypes) => {
         'Contracts',
         {
             contract_length: DataTypes.INTEGER,
-            start_date: DataTypes.DATE,
-            finish_date: DataTypes.DATE
+            start_date: DataTypes.DATEONLY,
+            finish_date: DataTypes.DATEONLY
         },
         {
             tableName: 'contracts',
