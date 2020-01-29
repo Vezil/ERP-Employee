@@ -1,7 +1,12 @@
+const Promise = require('bluebird');
+const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'));
+
 const { Users, Roles } = require('../models');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const { validationResult } = require('express-validator');
+
+const SALT_F = 8;
 
 function jwtSignEmployee(employee) {
     const ONE_DAY = 60 * 60 * 24;
@@ -91,5 +96,69 @@ module.exports = {
 
             next();
         });
+    },
+
+    async changePassword(req, res, next) {
+        try {
+            const oldPassword = req.body.oldPassword;
+            const newPassword = req.body.newPassword;
+            const newPasswordRepeat = req.body.newPasswordRepeat;
+
+            if (newPassword !== newPasswordRepeat) {
+                return res.status(422).json({
+                    error:
+                        "Fields 'New Password' and 'New Password Repeat' doesn't have this same value"
+                });
+            }
+
+            const person = await Users.findOne({
+                attributes: ['password'],
+
+                where: {
+                    id: req.loggedUser.id
+                }
+            });
+
+            if (!person) {
+                return res
+                    .status(404)
+                    .json({ error: 'This employee has not been found' });
+            }
+
+            await bcrypt.compareAsync(
+                oldPassword,
+                person.password,
+                async function(err, result) {
+                    if (err || result === false) {
+                        return res.status(422).json({
+                            error: 'Old password is incorrect'
+                        });
+                    } else {
+                        bcrypt
+                            .genSaltAsync(SALT_F)
+                            .then(salt =>
+                                bcrypt.hashAsync(newPassword, salt, null)
+                            )
+                            .then(hash => {
+                                newPassword = hash;
+                            });
+
+                        const thisPerson = await Users.findByPk(
+                            req.loggedUser.id
+                        );
+
+                        await thisPerson.update({ password: newPassword });
+
+                        const updatedPassword = await Users.findByPk(
+                            req.loggedUser.id
+                        );
+
+                        return res.send(updatedPassword);
+                    }
+                }
+            );
+        } catch (err) {
+            return next(err);
+        }
     }
 };

@@ -41,10 +41,10 @@
 
 <script>
 import AuthenticationService from '../../services/AuthenticationService';
-import Axios from 'axios';
 import { store } from '../../store';
+
 export default {
-    name: 'NewEmployee',
+    name: 'Login',
     data() {
         return {
             emailRules: [

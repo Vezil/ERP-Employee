@@ -7,6 +7,7 @@ import Holidays from '../components/pages/Holidays.vue';
 import HolidaysRequests from '../components/pages/HolidaysRequests.vue';
 import HolidaysConfirmed from '../components/pages/HolidaysConfirmed.vue';
 import Logout from '../components/pages/Logout.vue';
+import ChangePassword from '../components/pages/ChangePassword.vue';
 
 Vue.use(VueRouter);
 
@@ -76,6 +77,19 @@ const routes = [
             if (
                 typeof localStorage.isLoggedInAsUser === 'undefined' ||
                 localStorage.isLoggedInAsUser === null
+            ) {
+                return next('/Login');
+            } else return next();
+        }
+    },
+    {
+        path: '/changePassword',
+        component: ChangePassword,
+        name: 'changePassword',
+        beforeEnter: (to, from, next) => {
+            if (
+                typeof localStorage.token === 'undefined' ||
+                localStorage.token === null
             ) {
                 return next('/Login');
             } else return next();

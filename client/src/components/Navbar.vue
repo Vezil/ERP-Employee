@@ -102,6 +102,27 @@
                         $store.state.isLoggedInAsUser ||
                             $store.state.isLoggedInAsAdmin
                     "
+                    to="ChangePassword"
+                >
+                    <v-list-item class="menu_el">
+                        <v-list-item-action>
+                            <i class="material-icons">
+                                edit
+                            </i>
+                        </v-list-item-action>
+
+                        <v-list-item-content>
+                            <v-list-item-title class="tile"
+                                >ChangePassword</v-list-item-title
+                            >
+                        </v-list-item-content>
+                    </v-list-item>
+                </router-link>
+                <router-link
+                    v-if="
+                        $store.state.isLoggedInAsUser ||
+                            $store.state.isLoggedInAsAdmin
+                    "
                     to="Logout"
                 >
                     <v-list-item class="menu_el">
