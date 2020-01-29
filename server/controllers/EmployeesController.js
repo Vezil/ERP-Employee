@@ -1,5 +1,9 @@
 const { Users, Roles, Holidays, Contracts } = require('../models');
 const { validationResult } = require('express-validator');
+const Promise = require('bluebird');
+const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'));
+
+const SALT_F = 8;
 
 module.exports = {
     async show(req, res, next) {
@@ -63,15 +67,36 @@ module.exports = {
                     .json({ error: 'This employee has not been found' });
             }
 
-            await Users.update(req.body, {
-                where: {
-                    id: req.params.id
-                }
-            });
+            if (req.body.password) {
+                bcrypt
+                    .genSaltAsync(SALT_F)
+                    .then(salt =>
+                        bcrypt.hashAsync(req.body.password, salt, null)
+                    )
+                    .then(hash => {
+                        req.body.password = hash;
 
-            const employeeUpdated = await Users.findByPk(req.params.id);
+                        Users.update(req.body, {
+                            where: {
+                                id: req.params.id
+                            }
+                        });
 
-            return res.send(employeeUpdated);
+                        const employeeUpdated = Users.findByPk(req.params.id);
+
+                        return res.send(employeeUpdated);
+                    });
+            } else {
+                await Users.update(req.body, {
+                    where: {
+                        id: req.params.id
+                    }
+                });
+
+                const employeeUpdated = await Users.findByPk(req.params.id);
+
+                return res.send(employeeUpdated);
+            }
         } catch (err) {
             return next(err);
         }
