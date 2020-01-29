@@ -1,3 +1,3 @@
 module.exports = {
-    dateFormat: 'YYYY-MM-DD'
+    defaultDateFormat: 'YYYY-MM-DD'
 };

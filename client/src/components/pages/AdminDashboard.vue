@@ -64,8 +64,8 @@
                                             <v-col cols="12" sm="6" md="4">
                                                 <template>
                                                     <v-menu
-                                                        ref="menuDatePicker"
-                                                        v-model="menuDatePicker"
+                                                        ref="dateMenuPicker"
+                                                        v-model="dateMenuPicker"
                                                         :close-on-content-click="
                                                             false
                                                         "
@@ -255,7 +255,7 @@ export default {
             isDialogProfileOpen: false,
             newPass: false,
             areAll: true,
-            menuDatePicker: false,
+            dateMenuPicker: false,
 
             headers: [
                 {
@@ -310,7 +310,7 @@ export default {
         isDialogOpen(val) {
             val || this.close();
         },
-        menuDatePicker(val) {
+        dateMenuPicker(val) {
             val && setTimeout(() => (this.$refs.picker.activePicker = 'DATE'));
         }
     },
@@ -324,7 +324,7 @@ export default {
             this.editedIndex = this.employees.indexOf(item);
             this.editedItem = Object.assign({}, item);
             this.editedItem.birthdate = moment(item.birthdate).format(
-                config.dateFormat
+                config.defaultDateFormat
             );
             this.isDialogOpen = true;
         },
@@ -356,7 +356,7 @@ export default {
             }
         },
         saveDate(date) {
-            this.$refs.menuDatePicker.save(date);
+            this.$refs.dateMenuPicker.save(date);
         },
 
         async profile(user) {

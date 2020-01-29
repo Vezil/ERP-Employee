@@ -3,7 +3,7 @@ import config from '../config';
 
 const formatDate = function(value) {
     if (value) {
-        return moment(value).format(config.dateFormat);
+        return moment(value).format(config.defaultDateFormat);
     }
 };
 

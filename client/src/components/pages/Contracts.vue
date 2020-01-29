@@ -78,9 +78,9 @@
                                             <v-col cols="12" sm="6" md="4">
                                                 <template>
                                                     <v-menu
-                                                        ref="menuStartDatePicker"
+                                                        ref="startDateMenuPicker"
                                                         v-model="
-                                                            menuStartDatePicker
+                                                            startDateMenuPicker
                                                         "
                                                         :close-on-content-click="
                                                             false
@@ -122,9 +122,9 @@
                                             <v-col cols="12" sm="6" md="4">
                                                 <template>
                                                     <v-menu
-                                                        ref="menuFinishDatePicker"
+                                                        ref="finishDateMenuPicker"
                                                         v-model="
-                                                            menuFinishDatePicker
+                                                            finishDateMenuPicker
                                                         "
                                                         :close-on-content-click="
                                                             false
@@ -240,8 +240,8 @@ export default {
             isDialogOpen: false,
             newPass: false,
             areAll: true,
-            menuStartDatePicker: false,
-            menuFinishDatePicker: false,
+            startDateMenuPicker: false,
+            finishDateMenuPicker: false,
 
             headers: [
                 {
@@ -305,11 +305,11 @@ export default {
         isDialogOpen(val) {
             val || this.close();
         },
-        menuStartDatePicker(val) {
+        startDateMenuPicker(val) {
             val && setTimeout(() => (this.$refs.picker.activePicker = 'DATE'));
             console.log(this.$refs);
         },
-        menuFinishDatePicker(val) {
+        finishDateMenuPicker(val) {
             val && setTimeout(() => (this.$refs.picker.activePicker = 'DATE'));
         }
     },
@@ -331,10 +331,10 @@ export default {
             this.editedItem = Object.assign({}, item);
             this.editedItem.email = item.employee.email;
             this.editedItem.start_date = moment(item.start_date).format(
-                config.dateFormat
+                config.defaultDateFormat
             );
             this.editedItem.finish_date = moment(item.finish_date).format(
-                config.dateFormat
+                config.defaultDateFormat
             );
             this.editedItem.user_id = item.employee.id;
             this.isDialogOpen = true;
@@ -372,10 +372,10 @@ export default {
             }
         },
         saveStartDate(date) {
-            this.$refs.menuStartDatePicker.save(date);
+            this.$refs.startDateMenuPicker.save(date);
         },
         saveFinishDate(date) {
-            this.$refs.menuFinishDatePicker.save(date);
+            this.$refs.finishDateMenuPicker.save(date);
         },
 
         async createContract(contract) {
