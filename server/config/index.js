@@ -17,6 +17,10 @@ module.exports = {
             port: process.env.DB_PORT
         }
     },
+    mailer: {
+        user: process.env.MAILER_USER,
+        password: process.env.MAILER_PASSWORD
+    },
 
     authentication: {
         jwtSecret: process.env.JWT_SECRET || 'secret'
