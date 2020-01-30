@@ -30,8 +30,11 @@
                 </template>
                 <template v-slot:item.confirmed="{ item }"
                     ><v-chip
-                        :color="getColor(item.confirmed)"
-                        @click="toggleConfirm(item.id, item.confirmed)"
+                        :color="item.confirmed ? '#007200' : '#520000'"
+                        @click="
+                            toggleConfirm(item.id, item.confirmed);
+                            item.confirmed = !item.confirmed;
+                        "
                         class="confirmed"
                         >{{ item.confirmed }}</v-chip
                     >
@@ -475,18 +478,9 @@ export default {
 
             try {
                 await HolidaysServices.updateConfirmedValue(id, newValue);
-
-                this.fetchHolidays();
             } catch (err) {
                 console.error(err);
             }
-        },
-
-        getColor(confirmed) {
-            if (confirmed === false) {
-                return '#2a2a2a';
-            }
-            return '#007200';
         }
     }
 };
