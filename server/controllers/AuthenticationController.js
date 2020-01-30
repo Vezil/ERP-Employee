@@ -6,6 +6,9 @@ const jwt = require('jsonwebtoken');
 const config = require('../config');
 const { validationResult } = require('express-validator');
 
+const Mail = require('../services/Mail');
+const changePasswordMail = require('../emails/ChangePassword');
+
 const SALT_F = 8;
 
 function jwtSignEmployee(employee) {
@@ -149,11 +152,24 @@ module.exports = {
 
                         await thisPerson.update({ password: newPassword });
 
-                        const updatedPassword = await Users.findByPk(
+                        const updatedUser = await Users.findByPk(
                             req.loggedUser.id
                         );
 
-                        return res.send(updatedPassword);
+                        try {
+                            await new Mail().send(
+                                changePasswordMail({
+                                    email: updatedUser.email,
+                                    name: updatedUser.name,
+                                    surname: updatedUser.surname
+                                })
+                            );
+                        } catch (err) {
+                            console.log(err);
+                            return next(err);
+                        }
+
+                        return res.send(updatedUser);
                     }
                 }
             );
