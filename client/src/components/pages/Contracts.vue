@@ -4,6 +4,8 @@
             <v-data-table
                 :headers="headers"
                 :items="contracts"
+                :sort-by="['id']"
+                :sort-desc="['id']"
                 class="elevation-1 table"
                 dark
             >

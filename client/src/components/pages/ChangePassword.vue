@@ -45,6 +45,11 @@
                     >
                         <div>{{ item }}</div>
                     </div>
+                    <div class="success" v-if="succes">
+                        <v-alert type="success">
+                            Password has changed correctly
+                        </v-alert>
+                    </div>
                     <br />
                     <v-btn class="orange darken-3" @click="changePassword"
                         >Change</v-btn
@@ -64,6 +69,7 @@ export default {
     data() {
         return {
             errorsFromServer: null,
+            succes: null,
             passwordRules: [v => v.length > 7 || 'Minimum 8 characters'],
             oldPassword: '',
             newPassword: '',
@@ -80,7 +86,10 @@ export default {
 
             try {
                 await ChangePasswordService.changePassword(request);
+                this.errorsFromServer = null;
+                this.succes = true;
             } catch (err) {
+                this.succes = null;
                 this.errorsFromServer = err.response.data;
                 console.error(err);
             }
@@ -97,5 +106,7 @@ export default {
     padding: 20px;
     background-color: rgb(62, 122, 87);
     color: black;
+}
+.success {
 }
 </style>

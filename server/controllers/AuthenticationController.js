@@ -141,16 +141,15 @@ module.exports = {
                             .genSaltAsync(SALT_F)
                             .then(salt =>
                                 bcrypt.hashAsync(newPassword, salt, null)
-                            )
-                            .then(hash => {
-                                newPassword = hash;
-                            });
+                            );
 
                         const thisPerson = await Users.findByPk(
                             req.loggedUser.id
                         );
 
-                        await thisPerson.update({ password: newPassword });
+                        await thisPerson.update({
+                            password: newPassword
+                        });
 
                         const updatedUser = await Users.findByPk(
                             req.loggedUser.id

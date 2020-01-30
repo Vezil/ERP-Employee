@@ -14,5 +14,7 @@ module.exports = [
     body(['newPasswordRepeat'])
         .exists()
         .isLength({ min: 8 })
-        .withMessage('New password is required and min length is 8 chars')
+        .withMessage(
+            'New password repeat is required and min length is 8 chars'
+        )
 ];

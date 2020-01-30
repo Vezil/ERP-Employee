@@ -4,6 +4,8 @@
             <v-data-table
                 :headers="headers"
                 :items="employees"
+                :sort-by="['id']"
+                :sort-desc="['id']"
                 @click:row="profile"
                 class="elevation-1 table"
                 dark
@@ -331,7 +333,7 @@ export default {
             val || this.close();
         },
         dateMenuPicker(val) {
-            val && setTimeout(() => (this.$refs.picker.activePicker = 'DATE'));
+            val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'));
         }
     },
 
