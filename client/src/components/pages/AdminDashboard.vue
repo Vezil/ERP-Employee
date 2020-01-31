@@ -4,6 +4,8 @@
             <v-data-table
                 :headers="headers"
                 :items="employees"
+                :sort-by="['id']"
+                :sort-desc="['id']"
                 @click:row="profile"
                 class="elevation-1 table"
                 dark
@@ -111,7 +113,12 @@
                                                     :rules="[required]"
                                                 ></v-text-field>
                                             </v-col>
-                                            <v-col cols="12" sm="6" md="4">
+                                            <v-col
+                                                v-if="editedIndex < 0"
+                                                cols="12"
+                                                sm="6"
+                                                md="4"
+                                            >
                                                 <v-text-field
                                                     type="password"
                                                     name="password"
@@ -121,6 +128,21 @@
                                                     label="Password"
                                                     required
                                                     :rules="[required]"
+                                                ></v-text-field>
+                                            </v-col>
+                                            <v-col
+                                                v-else
+                                                cols="12"
+                                                sm="6"
+                                                md="4"
+                                            >
+                                                <v-text-field
+                                                    type="password"
+                                                    name="password"
+                                                    v-model="
+                                                        editedItem.password
+                                                    "
+                                                    label="Password (not required)"
                                                 ></v-text-field>
                                             </v-col>
                                         </v-row>
@@ -311,7 +333,7 @@ export default {
             val || this.close();
         },
         dateMenuPicker(val) {
-            val && setTimeout(() => (this.$refs.picker.activePicker = 'DATE'));
+            val && setTimeout(() => (this.$refs.picker.activePicker = 'YEAR'));
         }
     },
 

@@ -1,5 +1,8 @@
 const { Users, Roles, Holidays, Contracts } = require('../models');
 const { validationResult } = require('express-validator');
+const bcrypt = require('bcrypt');
+
+const saltRounds = 10;
 
 module.exports = {
     async show(req, res, next) {
@@ -63,15 +66,31 @@ module.exports = {
                     .json({ error: 'This employee has not been found' });
             }
 
-            await Users.update(req.body, {
-                where: {
-                    id: req.params.id
-                }
-            });
+            if (req.body.password) {
+                const salt = await bcrypt.genSalt(saltRounds);
 
-            const employeeUpdated = await Users.findByPk(req.params.id);
+                req.body.password = await bcrypt.hash(req.body.password, salt);
 
-            return res.send(employeeUpdated);
+                Users.update(req.body, {
+                    where: {
+                        id: req.params.id
+                    }
+                });
+
+                const employeeUpdated = Users.findByPk(req.params.id);
+
+                return res.send(employeeUpdated);
+            } else {
+                await Users.update(req.body, {
+                    where: {
+                        id: req.params.id
+                    }
+                });
+
+                const employeeUpdated = await Users.findByPk(req.params.id);
+
+                return res.send(employeeUpdated);
+            }
         } catch (err) {
             return next(err);
         }

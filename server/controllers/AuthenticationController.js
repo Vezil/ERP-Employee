@@ -1,7 +1,14 @@
+const bcrypt = require('bcrypt');
+
 const { Users, Roles } = require('../models');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const { validationResult } = require('express-validator');
+
+const Mail = require('../services/Mail');
+const changePasswordMail = require('../emails/ChangePassword');
+
+const saltRounds = 10;
 
 function jwtSignEmployee(employee) {
     const ONE_DAY = 60 * 60 * 24;
@@ -91,5 +98,69 @@ module.exports = {
 
             next();
         });
+    },
+
+    async changePassword(req, res, next) {
+        try {
+            const oldPassword = req.body.oldPassword;
+            const newPassword = req.body.newPassword;
+            const newPasswordRepeat = req.body.newPasswordRepeat;
+
+            if (newPassword !== newPasswordRepeat) {
+                return res.status(422).json({
+                    error:
+                        "Fields 'New Password' and 'New Password Repeat' doesn't have this same value"
+                });
+            }
+
+            const person = await Users.findOne({
+                attributes: ['password'],
+
+                where: {
+                    id: req.loggedUser.id
+                }
+            });
+
+            if (!person) {
+                return res
+                    .status(404)
+                    .json({ error: 'This employee has not been found' });
+            }
+
+            const oldPasswordHash = person.password;
+            const compare = await bcrypt.compare(oldPassword, oldPasswordHash);
+
+            if (compare === false) {
+                return res.status(422).json({
+                    error: 'Old password is incorrect'
+                });
+            }
+
+            const salt = await bcrypt.genSalt(saltRounds);
+            const thisPerson = await Users.findByPk(req.loggedUser.id);
+
+            await thisPerson.update({
+                password: newPassword
+            });
+
+            const updatedUser = await Users.findByPk(req.loggedUser.id);
+
+            try {
+                await new Mail().send(
+                    changePasswordMail({
+                        email: updatedUser.email,
+                        name: updatedUser.name,
+                        surname: updatedUser.surname
+                    })
+                );
+            } catch (err) {
+                console.log(err);
+                return next(err);
+            }
+
+            return res.send(updatedUser);
+        } catch (err) {
+            return next(err);
+        }
     }
 };

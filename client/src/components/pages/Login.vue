@@ -2,7 +2,10 @@
     <v-app class="grey page">
         <v-layout column>
             <v-flex xs6>
-                <div class="container elevation-3 form">
+                <div
+                    class="container elevation-3 form"
+                    v-on:keyup.enter="login"
+                >
                     <br />
                     <h2>Login</h2>
                     <br />
@@ -41,10 +44,10 @@
 
 <script>
 import AuthenticationService from '../../services/AuthenticationService';
-import Axios from 'axios';
 import { store } from '../../store';
+
 export default {
-    name: 'NewEmployee',
+    name: 'Login',
     data() {
         return {
             emailRules: [

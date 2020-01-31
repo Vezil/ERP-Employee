@@ -1,5 +1,6 @@
 const EmployeesController = require('../controllers/EmployeesController');
 const EmployeeValidator = require('../validations/EmployeeValidator');
+const EmployeeValidatorForUpdate = require('../validations/EmployeeValidatorForUpdate');
 const AuthenticationController = require('../controllers/AuthenticationController');
 const isAdmin = require('../middlewares/isAdmin');
 const isUser = require('../middlewares/isUser');
@@ -31,7 +32,7 @@ module.exports = app => {
         '/employees/:id',
         AuthenticationController.verifyToken,
         isAdmin.verifyAdmin,
-        EmployeeValidator,
+        EmployeeValidatorForUpdate,
         EmployeesController.update
     );
 

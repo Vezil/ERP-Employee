@@ -23,11 +23,6 @@ module.exports = [
             'Invalid surname format. Min length is 3 chars. Max length is 30 chars'
         ),
 
-    body(['password'])
-        .exists()
-        .isLength({ min: 8 })
-        .withMessage('Password is required and min length is 8 chars'),
-
     body(['birthdate'])
         .exists()
         .isISO8601()

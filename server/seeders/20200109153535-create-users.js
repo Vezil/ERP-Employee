@@ -1,8 +1,9 @@
 'use strict';
 
 const faker = require('faker');
-const Promise = require('bluebird');
-const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'));
+
+const bcrypt = require('bcrypt');
+const saltRounds = 10;
 
 const users = [];
 
@@ -13,7 +14,7 @@ for (let i = 0; i <= 20; i++) {
         email: faker.internet.email(),
         birthdate: faker.date.past(),
 
-        password: bcrypt.hashSync('password'),
+        password: bcrypt.hashSync('password', saltRounds),
         days_left: 26,
         created_at: new Date(),
         updated_at: new Date()
@@ -28,7 +29,7 @@ const admin = {
     email: 'admin@erp.test',
     birthdate: faker.date.past(),
 
-    password: bcrypt.hashSync('password'),
+    password: bcrypt.hashSync('password', saltRounds),
     days_left: 0,
     created_at: new Date(),
     updated_at: new Date()
@@ -42,7 +43,7 @@ const user = {
     email: 'user@erp.test',
     birthdate: faker.date.past(),
 
-    password: bcrypt.hashSync('password'),
+    password: bcrypt.hashSync('password', saltRounds),
     days_left: 26,
     created_at: new Date(),
     updated_at: new Date()
