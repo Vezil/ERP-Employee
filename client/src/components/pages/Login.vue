@@ -2,7 +2,10 @@
     <v-app class="grey page">
         <v-layout column>
             <v-flex xs6>
-                <div class="container elevation-3 form">
+                <div
+                    class="container elevation-3 form"
+                    v-on:keyup.enter="login"
+                >
                     <br />
                     <h2>Login</h2>
                     <br />

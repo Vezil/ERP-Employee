@@ -2,7 +2,10 @@
     <v-app class="grey page">
         <v-layout column>
             <v-flex xs6>
-                <div class="container elevation-3 form">
+                <div
+                    class="container elevation-3 form"
+                    v-on:keyup.enter="changePassword"
+                >
                     <br />
                     <h2>Change your password</h2>
                     <br />
@@ -106,7 +109,5 @@ export default {
     padding: 20px;
     background-color: rgb(62, 122, 87);
     color: black;
-}
-.success {
 }
 </style>
