@@ -358,6 +358,7 @@ export default {
                 this.deleteEmployee(item);
 
             this.fetchEmployees();
+            this.editedIndex = 1;
         },
 
         close() {
@@ -385,6 +386,7 @@ export default {
             if (this.editedIndex > -1) {
                 this.isDialogProfileOpen = false;
             } else {
+                console.log(this.editedIndex);
                 this.isDialogProfileOpen = true;
             }
 
