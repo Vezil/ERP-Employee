@@ -40,7 +40,7 @@ module.exports = {
                 name: Roles.ROLE_USER,
                 user_id: employee.id
             });
-
+            console.log(employee);
             return res.send(employee.toJSON());
         } catch (err) {
             return next(err);
