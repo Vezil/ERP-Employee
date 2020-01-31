@@ -1,5 +1,4 @@
-const Promise = require('bluebird');
-const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'));
+const bcrypt = require('bcrypt');
 
 const { Users, Roles } = require('../models');
 const jwt = require('jsonwebtoken');
@@ -9,7 +8,7 @@ const { validationResult } = require('express-validator');
 const Mail = require('../services/Mail');
 const changePasswordMail = require('../emails/ChangePassword');
 
-const SALT_F = 8;
+const saltRounds = 10;
 
 function jwtSignEmployee(employee) {
     const ONE_DAY = 60 * 60 * 24;
@@ -128,50 +127,38 @@ module.exports = {
                     .json({ error: 'This employee has not been found' });
             }
 
-            await bcrypt.compareAsync(
-                oldPassword,
-                person.password,
-                async function(err, result) {
-                    if (err || result === false) {
-                        return res.status(422).json({
-                            error: 'Old password is incorrect'
-                        });
-                    } else {
-                        bcrypt
-                            .genSaltAsync(SALT_F)
-                            .then(salt =>
-                                bcrypt.hashAsync(newPassword, salt, null)
-                            );
+            const oldPasswordHash = person.password;
+            const compare = await bcrypt.compare(oldPassword, oldPasswordHash);
 
-                        const thisPerson = await Users.findByPk(
-                            req.loggedUser.id
-                        );
+            if (compare === false) {
+                return res.status(422).json({
+                    error: 'Old password is incorrect'
+                });
+            }
 
-                        await thisPerson.update({
-                            password: newPassword
-                        });
+            const salt = await bcrypt.genSalt(saltRounds);
+            const thisPerson = await Users.findByPk(req.loggedUser.id);
 
-                        const updatedUser = await Users.findByPk(
-                            req.loggedUser.id
-                        );
+            await thisPerson.update({
+                password: newPassword
+            });
 
-                        try {
-                            await new Mail().send(
-                                changePasswordMail({
-                                    email: updatedUser.email,
-                                    name: updatedUser.name,
-                                    surname: updatedUser.surname
-                                })
-                            );
-                        } catch (err) {
-                            console.log(err);
-                            return next(err);
-                        }
+            const updatedUser = await Users.findByPk(req.loggedUser.id);
 
-                        return res.send(updatedUser);
-                    }
-                }
-            );
+            try {
+                await new Mail().send(
+                    changePasswordMail({
+                        email: updatedUser.email,
+                        name: updatedUser.name,
+                        surname: updatedUser.surname
+                    })
+                );
+            } catch (err) {
+                console.log(err);
+                return next(err);
+            }
+
+            return res.send(updatedUser);
         } catch (err) {
             return next(err);
         }

@@ -1,9 +1,8 @@
 const { Users, Roles, Holidays, Contracts } = require('../models');
 const { validationResult } = require('express-validator');
-const Promise = require('bluebird');
-const bcrypt = Promise.promisifyAll(require('bcrypt-nodejs'));
+const bcrypt = require('bcrypt');
 
-const SALT_F = 8;
+const saltRounds = 10;
 
 module.exports = {
     async show(req, res, next) {
@@ -68,24 +67,19 @@ module.exports = {
             }
 
             if (req.body.password) {
-                bcrypt
-                    .genSaltAsync(SALT_F)
-                    .then(salt =>
-                        bcrypt.hashAsync(req.body.password, salt, null)
-                    )
-                    .then(hash => {
-                        req.body.password = hash;
+                const salt = await bcrypt.genSalt(saltRounds);
 
-                        Users.update(req.body, {
-                            where: {
-                                id: req.params.id
-                            }
-                        });
+                req.body.password = await bcrypt.hash(req.body.password, salt);
 
-                        const employeeUpdated = Users.findByPk(req.params.id);
+                Users.update(req.body, {
+                    where: {
+                        id: req.params.id
+                    }
+                });
 
-                        return res.send(employeeUpdated);
-                    });
+                const employeeUpdated = Users.findByPk(req.params.id);
+
+                return res.send(employeeUpdated);
             } else {
                 await Users.update(req.body, {
                     where: {
