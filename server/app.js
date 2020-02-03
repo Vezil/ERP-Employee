@@ -53,7 +53,7 @@ app.use(function(err, req, res, next) {
     }
 
     console.error(err);
-    return res.status(500).send('We messed something. Sorry! ');
+    return res.status(500).send('We messed something. Sorry! ' + err);
 });
 
 app.listen(config.port, config.host, () => {

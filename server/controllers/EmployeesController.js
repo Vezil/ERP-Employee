@@ -43,8 +43,8 @@ module.exports = {
             if (isEmail) {
                 const errors = [
                     {
-                        message: 'This email is already in use',
-                        param: req.body.email
+                        param: 'email',
+                        message: 'This email is already in use'
                     }
                 ];
                 return res.status(422).json({ errors });
@@ -114,24 +114,59 @@ module.exports = {
 
     async delete(req, res, next) {
         try {
+            const user = await Users.findByPk(req.params.id);
+
+            if (!user) {
+                return res
+                    .status(404)
+                    .json({ error: 'This employee has not been found' });
+            }
+
+            const role = await Roles.findOne({
+                where: {
+                    user_id: req.params.id
+                }
+            });
+
+            const contracts = await Contracts.findOne({
+                where: {
+                    user_id: req.params.id
+                }
+            });
+
+            const holidays = await Holidays.findOne({
+                where: {
+                    user_id: req.params.id
+                }
+            });
+
+            if (role) {
+                await Roles.destroy({
+                    where: {
+                        user_id: req.params.id
+                    }
+                });
+            }
+
+            if (contracts) {
+                await Contracts.destroy({
+                    where: {
+                        user_id: req.params.id
+                    }
+                });
+            }
+
+            if (holidays) {
+                await Holidays.destroy({
+                    where: {
+                        user_id: req.params.id
+                    }
+                });
+            }
+
             await Users.destroy({
                 where: {
                     id: req.params.id
-                }
-            });
-            await Roles.destroy({
-                where: {
-                    user_id: req.params.id
-                }
-            });
-            await Holidays.destroy({
-                where: {
-                    user_id: req.params.id
-                }
-            });
-            await Contracts.destroy({
-                where: {
-                    user_id: req.params.id
                 }
             });
 
