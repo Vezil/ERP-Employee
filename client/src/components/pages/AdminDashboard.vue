@@ -410,6 +410,7 @@ export default {
         async createEmployee(employee) {
             this.areAll = true;
             this.errorsFromServer = null;
+            employee.days_left = 0;
 
             Object.keys(employee).forEach(value => {
                 if (employee[value] === '' || employee[value] === undefined) {
@@ -444,6 +445,7 @@ export default {
         async updateEmployee(employee) {
             this.areAll = true;
             this.errorsFromServer = null;
+            employee.days_left = 0;
 
             delete employee.Role;
 

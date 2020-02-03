@@ -34,13 +34,29 @@ module.exports = {
         }
 
         try {
+            const isEmail = await Users.findOne({
+                where: {
+                    email: req.body.email
+                }
+            });
+
+            if (isEmail) {
+                const errors = [
+                    {
+                        message: 'This email is already in use',
+                        param: req.body.email
+                    }
+                ];
+                return res.status(422).json({ errors });
+            }
+
             const employee = await Users.create(req.body);
 
             await Roles.create({
                 name: Roles.ROLE_USER,
                 user_id: employee.id
             });
-            console.log(employee);
+
             return res.send(employee.toJSON());
         } catch (err) {
             return next(err);
