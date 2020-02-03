@@ -7,6 +7,9 @@ const saltRounds = 10;
 let loggedAdminToken;
 let userId;
 
+const loggedUserBadToken =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsImVtYWlsIjoiS2VuZGFsbC5TdHJvc2luQGhvdG1haWwuY29tIiwibmFtZSI6IklkZWxsYSIsInN1cm5hbWUiOiJDYXJ0ZXIiLCJiaXJ0aGRhdGUiOiIyMDE5LTA4LTAzIiwiZGF5c19sZWZ0IjoyNiwiY3JlYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1Ny4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1Ny4wMDBaIiwiUm9sZSI6eyJpZCI6MTcsIm5hbWUiOiJ1c2VyIiwiY3JlYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1OC4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1OC4wMDBaIiwidXNlcl9pZCI6MTcsIlVzZXJJZCI6MTd9LCJpYXQiOjE1ODA3Mjc1NDYsImV4cCI6MTU4MDgxMzk0Nn0.2Xmsj3nGaIuAfzw6Q1tAvEj2ZAGGWWtDzJGnnlpKtwo';
+
 describe('employees', async () => {
     it('login when passing valid data', async () => {
         let adminData = {
@@ -328,7 +331,7 @@ describe('employees', async () => {
             });
         });
 
-        it("returns 404 if holiday hasn't been found", async () => {
+        it("returns 404 if employee hasn't been found", async () => {
             let updateEmployee = {
                 email: 'testEmployee@test.erp',
                 name: 'test123',
@@ -338,8 +341,8 @@ describe('employees', async () => {
             };
 
             let response = await request
-                .patch(`/employees/9999999`)
-                .set('Authorization', 'Bearer ' + userId)
+                .put(`/employees/9999999`)
+                .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(updateEmployee);
 
             expect(response.statusCode).to.equal(404);
@@ -356,9 +359,6 @@ describe('employees', async () => {
         });
 
         it('returns 403 when trying to delete somone else', async () => {
-            loggedUserBadToken =
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsImVtYWlsIjoiS2VuZGFsbC5TdHJvc2luQGhvdG1haWwuY29tIiwibmFtZSI6IklkZWxsYSIsInN1cm5hbWUiOiJDYXJ0ZXIiLCJiaXJ0aGRhdGUiOiIyMDE5LTA4LTAzIiwiZGF5c19sZWZ0IjoyNiwiY3JlYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1Ny4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1Ny4wMDBaIiwiUm9sZSI6eyJpZCI6MTcsIm5hbWUiOiJ1c2VyIiwiY3JlYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1OC4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1OC4wMDBaIiwidXNlcl9pZCI6MTcsIlVzZXJJZCI6MTd9LCJpYXQiOjE1ODA3Mjc1NDYsImV4cCI6MTU4MDgxMzk0Nn0.2Xmsj3nGaIuAfzw6Q1tAvEj2ZAGGWWtDzJGnnlpKtwo';
-
             let response = await request
                 .delete(`/employees/${userId}`)
                 .set('Authorization', 'Bearer ' + loggedUserBadToken);

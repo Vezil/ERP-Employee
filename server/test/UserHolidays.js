@@ -5,6 +5,9 @@ let loggedUserId;
 let loggedUserToken;
 let holidaysId;
 
+const loggedUserBadToken =
+    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsImVtYWlsIjoiS2VuZGFsbC5TdHJvc2luQGhvdG1haWwuY29tIiwibmFtZSI6IklkZWxsYSIsInN1cm5hbWUiOiJDYXJ0ZXIiLCJiaXJ0aGRhdGUiOiIyMDE5LTA4LTAzIiwiZGF5c19sZWZ0IjoyNiwiY3JlYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1Ny4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1Ny4wMDBaIiwiUm9sZSI6eyJpZCI6MTcsIm5hbWUiOiJ1c2VyIiwiY3JlYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1OC4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1OC4wMDBaIiwidXNlcl9pZCI6MTcsIlVzZXJJZCI6MTd9LCJpYXQiOjE1ODA3Mjc1NDYsImV4cCI6MTU4MDgxMzk0Nn0.2Xmsj3nGaIuAfzw6Q1tAvEj2ZAGGWWtDzJGnnlpKtwo';
+
 describe('userHolidays', () => {
     describe('POST /login', () => {
         it('login when passing valid data', async () => {
@@ -71,9 +74,16 @@ describe('userHolidays', () => {
 
             expect(response.body);
         });
+        it('returns 403 when trying to get somone else', async () => {
+            let response = await request
+                .get(`/employees/${loggedUserId}/holidays`)
+                .set('Authorization', 'Bearer ' + loggedUserBadToken);
+
+            expect(response.statusCode).to.equal(403);
+        });
     });
 
-    describe('POST /employeeHolidays', async () => {
+    describe('POST /userHolidays', async () => {
         it('sending request for holidays to admin', async () => {
             let userHolidays = {
                 start_date: '2019-01-12',
@@ -141,9 +151,24 @@ describe('userHolidays', () => {
                 message: 'Id required'
             });
         });
+
+        it('returns 403 when trying to post somone else', async () => {
+            let userHolidays = {
+                start_date: '2019-01-12',
+                finish_date: '2019-01-13',
+                user_id: loggedUserId
+            };
+
+            let response = await request
+                .post(`/employees/${loggedUserId}/holidays/`)
+                .set('Authorization', 'Bearer ' + loggedUserBadToken)
+                .send(userHolidays);
+
+            expect(response.statusCode).to.equal(403);
+        });
     });
 
-    describe('PUT /employeeHolidays', async () => {
+    describe('PUT /userHolidays', async () => {
         it('sending request for holidays to admin', async () => {
             let userHolidays = {
                 start_date: '2019-01-12',
@@ -210,6 +235,14 @@ describe('userHolidays', () => {
             });
         });
 
+        it('returns 403 when trying to update somone else', async () => {
+            let response = await request
+                .put(`/employees/${loggedUserId}/holidays/${holidaysId}`)
+                .set('Authorization', 'Bearer ' + loggedUserBadToken);
+
+            expect(response.statusCode).to.equal(403);
+        });
+
         it("returns 404 if holiday hasn't been found", async () => {
             let userHolidays = {
                 start_date: '2019-01-12',
@@ -218,7 +251,7 @@ describe('userHolidays', () => {
             };
 
             let response = await request
-                .patch(`/employees/${loggedUserId}/holidays/99999999`)
+                .put(`/employees/${loggedUserId}/holidays/99999999`)
                 .set('Authorization', 'Bearer ' + loggedUserToken)
                 .send(userHolidays);
 
@@ -226,7 +259,7 @@ describe('userHolidays', () => {
         });
     });
 
-    describe('DELETE /employeeHolidays', async () => {
+    describe('DELETE /userHolidays', async () => {
         it('deletes a holidays request', async () => {
             let response = await request
                 .delete(`/employees/${loggedUserId}/holidays/${holidaysId}`)
@@ -236,9 +269,6 @@ describe('userHolidays', () => {
         });
 
         it('returns 403 when trying to delete somone else', async () => {
-            loggedUserBadToken =
-                'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsImVtYWlsIjoiS2VuZGFsbC5TdHJvc2luQGhvdG1haWwuY29tIiwibmFtZSI6IklkZWxsYSIsInN1cm5hbWUiOiJDYXJ0ZXIiLCJiaXJ0aGRhdGUiOiIyMDE5LTA4LTAzIiwiZGF5c19sZWZ0IjoyNiwiY3JlYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1Ny4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1Ny4wMDBaIiwiUm9sZSI6eyJpZCI6MTcsIm5hbWUiOiJ1c2VyIiwiY3JlYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1OC4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1OC4wMDBaIiwidXNlcl9pZCI6MTcsIlVzZXJJZCI6MTd9LCJpYXQiOjE1ODA3Mjc1NDYsImV4cCI6MTU4MDgxMzk0Nn0.2Xmsj3nGaIuAfzw6Q1tAvEj2ZAGGWWtDzJGnnlpKtwo';
-
             let response = await request
                 .delete(`/employees/${loggedUserId}/holidays/${holidaysId}`)
                 .set('Authorization', 'Bearer ' + loggedUserBadToken);
