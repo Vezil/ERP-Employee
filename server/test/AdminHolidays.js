@@ -5,18 +5,18 @@ let loggedAdminToken;
 let holidaysId;
 let userId = 1;
 
-const loggedUserBadToken =
+const loggedAdminBadToken =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsImVtYWlsIjoiS2VuZGFsbC5TdHJvc2luQGhvdG1haWwuY29tIiwibmFtZSI6IklkZWxsYSIsInN1cm5hbWUiOiJDYXJ0ZXIiLCJiaXJ0aGRhdGUiOiIyMDE5LTA4LTAzIiwiZGF5c19sZWZ0IjoyNiwiY3JlYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1Ny4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1Ny4wMDBaIiwiUm9sZSI6eyJpZCI6MTcsIm5hbWUiOiJ1c2VyIiwiY3JlYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1OC4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1OC4wMDBaIiwidXNlcl9pZCI6MTcsIlVzZXJJZCI6MTd9LCJpYXQiOjE1ODA3Mjc1NDYsImV4cCI6MTU4MDgxMzk0Nn0.2Xmsj3nGaIuAfzw6Q1tAvEj2ZAGGWWtDzJGnnlpKtwo';
 
 describe('adminHolidays', () => {
     describe('POST /login', () => {
         it('login when passing valid data', async () => {
-            let adminData = {
+            const adminData = {
                 email: 'admin@erp.test',
                 password: 'password'
             };
 
-            let response = await request.post(`/login`).send(adminData);
+            const response = await request.post(`/login`).send(adminData);
 
             expect(response.body).to.have.property('token');
 
@@ -25,11 +25,11 @@ describe('adminHolidays', () => {
         });
 
         it('returns an error if email is blank', async () => {
-            let adminData = {
+            const adminData = {
                 email: null
             };
 
-            let response = await request.post(`/login`).send(adminData);
+            const response = await request.post(`/login`).send(adminData);
 
             expect(response.body).to.have.property('errors');
             expect(response.body.errors).to.deep.include({
@@ -39,11 +39,11 @@ describe('adminHolidays', () => {
         });
 
         it('returns an error if password is blank', async () => {
-            let adminData = {
+            const adminData = {
                 password: null
             };
 
-            let response = await request.post(`/login`).send(adminData);
+            const response = await request.post(`/login`).send(adminData);
 
             expect(response.body).to.have.property('errors');
             expect(response.body.errors).to.deep.include({
@@ -56,7 +56,7 @@ describe('adminHolidays', () => {
             const adminData = {
                 password: 12345
             };
-            let response = await request.post(`/login`).send(adminData);
+            const response = await request.post(`/login`).send(adminData);
 
             expect(response.body).to.have.property('errors');
             expect(response.body.errors).to.deep.include({
@@ -68,23 +68,30 @@ describe('adminHolidays', () => {
 
     describe('GET /holidays', () => {
         it('getting all holidays data', async () => {
-            let response = await request
+            const response = await request
                 .get(`/holidays`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken);
 
             expect(response.body);
         });
+        it('returns 403 when trying to get holidays somone else', async () => {
+            const response = await request
+                .get(`/holidays`)
+                .set('Authorization', 'Bearer ' + loggedAdminBadToken);
+
+            expect(response.statusCode).to.equal(403);
+        });
     });
 
     describe('POST /holidays', async () => {
         it('adding new holidays for user', async () => {
-            let newHolidays = {
+            const newHolidays = {
                 start_date: '2019-01-12',
                 finish_date: '2019-01-13',
                 user_id: userId
             };
 
-            let response = await request
+            const response = await request
                 .post(`/holidays`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(newHolidays);
@@ -95,11 +102,11 @@ describe('adminHolidays', () => {
         });
 
         it('returns an error if start_date is blank', async () => {
-            let userHolidays = {
+            const userHolidays = {
                 start_date: null
             };
 
-            let response = await request
+            const response = await request
                 .post(`/holidays`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(userHolidays);
@@ -112,11 +119,11 @@ describe('adminHolidays', () => {
         });
 
         it('returns an error if finish_date is blank', async () => {
-            let userHolidays = {
+            const userHolidays = {
                 finish_date: null
             };
 
-            let response = await request
+            const response = await request
                 .post(`/holidays`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(userHolidays);
@@ -129,11 +136,11 @@ describe('adminHolidays', () => {
         });
 
         it('returns an error if user_id is undefined', async () => {
-            let userHolidays = {
+            const userHolidays = {
                 user_id: undefined
             };
 
-            let response = await request
+            const response = await request
                 .post(`/holidays`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(userHolidays);
@@ -144,17 +151,32 @@ describe('adminHolidays', () => {
                 message: 'Id required'
             });
         });
-    });
 
-    describe('PUT /holidays', async () => {
-        it('editing holiday of user', async () => {
-            let userHolidays = {
+        it('returns 403 when trying to add holidays somone else', async () => {
+            const newHolidays = {
                 start_date: '2019-01-12',
                 finish_date: '2019-01-13',
                 user_id: userId
             };
 
-            let response = await request
+            const response = await request
+                .put(`/holidays/${holidaysId}`)
+                .set('Authorization', 'Bearer ' + loggedAdminBadToken)
+                .send(newHolidays);
+
+            expect(response.statusCode).to.equal(403);
+        });
+    });
+
+    describe('PUT /holidays', async () => {
+        it('editing holiday of user', async () => {
+            const userHolidays = {
+                start_date: '2019-01-12',
+                finish_date: '2019-01-13',
+                user_id: userId
+            };
+
+            const response = await request
                 .put(`/holidays/${holidaysId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(userHolidays);
@@ -163,11 +185,11 @@ describe('adminHolidays', () => {
         });
 
         it('returns an error if start_date is blank', async () => {
-            let userHolidays = {
+            const userHolidays = {
                 start_date: null
             };
 
-            let response = await request
+            const response = await request
                 .put(`/holidays/${holidaysId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(userHolidays);
@@ -180,11 +202,11 @@ describe('adminHolidays', () => {
         });
 
         it('returns an error if finish_date is blank', async () => {
-            let userHolidays = {
+            const userHolidays = {
                 finish_date: null
             };
 
-            let response = await request
+            const response = await request
                 .put(`/holidays/${holidaysId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(userHolidays);
@@ -197,11 +219,11 @@ describe('adminHolidays', () => {
         });
 
         it('returns an error if user_id is undefined', async () => {
-            let userHolidays = {
+            const userHolidays = {
                 user_id: undefined
             };
 
-            let response = await request
+            const response = await request
                 .put(`/holidays/${holidaysId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(userHolidays);
@@ -213,14 +235,29 @@ describe('adminHolidays', () => {
             });
         });
 
-        it("returns 404 if holiday hasn't been found", async () => {
-            let userHolidays = {
+        it('returns 403 when trying to change holidays somone else', async () => {
+            const userHolidays = {
                 start_date: '2019-01-12',
                 finish_date: '2019-01-13',
                 user_id: userId
             };
 
-            let response = await request
+            const response = await request
+                .put(`/holidays/${holidaysId}`)
+                .set('Authorization', 'Bearer ' + loggedAdminBadToken)
+                .send(userHolidays);
+
+            expect(response.statusCode).to.equal(403);
+        });
+
+        it("returns 404 if holiday hasn't been found", async () => {
+            const userHolidays = {
+                start_date: '2019-01-12',
+                finish_date: '2019-01-13',
+                user_id: userId
+            };
+
+            const response = await request
                 .put(`/holidays/99999999`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(userHolidays);
@@ -231,11 +268,11 @@ describe('adminHolidays', () => {
 
     describe('PUT /holidays/:id/confirm', async () => {
         it('returns confirmed of holiday', async () => {
-            let dataConfirmed = {
+            const dataConfirmed = {
                 confirmed: true
             };
 
-            let response = await request
+            const response = await request
                 .put(`/holidays/${holidaysId}/confirm`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(dataConfirmed);
@@ -244,11 +281,11 @@ describe('adminHolidays', () => {
         });
 
         it('returns an error if confirmed is blank', async () => {
-            let dataConfirmed = {
+            const dataConfirmed = {
                 confirmed: null
             };
 
-            let response = await request
+            const response = await request
                 .put(`/holidays/${holidaysId}/confirm`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(dataConfirmed);
@@ -261,20 +298,20 @@ describe('adminHolidays', () => {
         });
 
         it('returns 403 when trying to confirm somone else', async () => {
-            let dataConfirmed = {
+            const dataConfirmed = {
                 confirmed: true
             };
 
-            let response = await request
+            const response = await request
                 .put(`/holidays/${holidaysId}/confirm`)
-                .set('Authorization', 'Bearer ' + loggedUserBadToken)
+                .set('Authorization', 'Bearer ' + loggedAdminBadToken)
                 .send(dataConfirmed);
 
             expect(response.statusCode).to.equal(403);
         });
 
         it("returns 404 if holiday hasn't been found", async () => {
-            let response = await request
+            const response = await request
                 .delete(`/holidays/99999999`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken);
 
@@ -284,7 +321,7 @@ describe('adminHolidays', () => {
 
     describe('DELETE /holidays', async () => {
         it('deletes a holiday', async () => {
-            let response = await request
+            const response = await request
                 .delete(`/holidays/${holidaysId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken);
 
@@ -292,15 +329,15 @@ describe('adminHolidays', () => {
         });
 
         it('returns 403 when trying to delete somone else', async () => {
-            let response = await request
+            const response = await request
                 .delete(`/holidays/${holidaysId}`)
-                .set('Authorization', 'Bearer ' + loggedUserBadToken);
+                .set('Authorization', 'Bearer ' + loggedAdminBadToken);
 
             expect(response.statusCode).to.equal(403);
         });
 
         it("returns 404 if holiday hasn't been found", async () => {
-            let response = await request
+            const response = await request
                 .delete(`/holidays/99999999`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken);
 

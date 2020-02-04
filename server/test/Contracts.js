@@ -12,12 +12,12 @@ const loggedUserBadToken =
 
 describe('contracts', async () => {
     it('login when passing valid data', async () => {
-        let adminData = {
+        const adminData = {
             email: 'admin@erp.test',
             password: 'password'
         };
 
-        let response = await request.post(`/login`).send(adminData);
+        const response = await request.post(`/login`).send(adminData);
 
         expect(response.body).to.have.property('token');
 
@@ -26,11 +26,11 @@ describe('contracts', async () => {
     });
 
     it('returns an error if email is blank', async () => {
-        let adminData = {
+        const adminData = {
             email: null
         };
 
-        let response = await request.post(`/login`).send(adminData);
+        const response = await request.post(`/login`).send(adminData);
 
         expect(response.body).to.have.property('errors');
         expect(response.body.errors).to.deep.include({
@@ -40,11 +40,11 @@ describe('contracts', async () => {
     });
 
     it('returns an error if password is blank', async () => {
-        let adminData = {
+        const adminData = {
             password: null
         };
 
-        let response = await request.post(`/login`).send(adminData);
+        const response = await request.post(`/login`).send(adminData);
 
         expect(response.body).to.have.property('errors');
         expect(response.body.errors).to.deep.include({
@@ -57,7 +57,7 @@ describe('contracts', async () => {
         const adminData = {
             password: 12345
         };
-        let response = await request.post(`/login`).send(adminData);
+        const response = await request.post(`/login`).send(adminData);
 
         expect(response.body).to.have.property('errors');
         expect(response.body.errors).to.deep.include({
@@ -68,7 +68,7 @@ describe('contracts', async () => {
 
     describe('GET /contracts', () => {
         it('getting all contracts', async () => {
-            let response = await request
+            const response = await request
                 .get(`/contracts`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken);
 
@@ -76,7 +76,7 @@ describe('contracts', async () => {
         });
 
         it('returns 403 when trying to get somone else', async () => {
-            let response = await request
+            const response = await request
                 .get(`/contracts`)
                 .set('Authorization', 'Bearer ' + loggedUserBadToken);
 
@@ -86,7 +86,7 @@ describe('contracts', async () => {
 
     describe('POST /contracts', async () => {
         it('adding a new contract', async () => {
-            let newContract = {
+            const newContract = {
                 contract_length: 12,
                 start_date: '2019-12-12',
                 finish_date: '2020-12-12',
@@ -94,7 +94,7 @@ describe('contracts', async () => {
                 holidays_per_year: 20
             };
 
-            let response = await request
+            const response = await request
                 .post(`/contracts`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(newContract);
@@ -105,11 +105,11 @@ describe('contracts', async () => {
         });
 
         it('returns an error if contract_length is blank', async () => {
-            let newContract = {
+            const newContract = {
                 contract_length: null
             };
 
-            let response = await request
+            const response = await request
                 .post(`/contracts`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(newContract);
@@ -122,11 +122,11 @@ describe('contracts', async () => {
             });
         });
         it('returns an error if start_date is blank', async () => {
-            let newContract = {
+            const newContract = {
                 start_date: null
             };
 
-            let response = await request
+            const response = await request
                 .post(`/contracts`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(newContract);
@@ -139,11 +139,11 @@ describe('contracts', async () => {
         });
 
         it('returns an error if finish_date is blank', async () => {
-            let newContract = {
+            const newContract = {
                 finish_date: null
             };
 
-            let response = await request
+            const response = await request
                 .post(`/contracts`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(newContract);
@@ -156,11 +156,11 @@ describe('contracts', async () => {
         });
 
         it('returns an error if user_id is blank', async () => {
-            let newContract = {
+            const newContract = {
                 user_id: null
             };
 
-            let response = await request
+            const response = await request
                 .post(`/contracts`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(newContract);
@@ -173,11 +173,11 @@ describe('contracts', async () => {
         });
 
         it('returns an error if holidays_per_year is blank', async () => {
-            let newContract = {
+            const newContract = {
                 holidays_per_year: null
             };
 
-            let response = await request
+            const response = await request
                 .post(`/contracts`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(newContract);
@@ -190,7 +190,7 @@ describe('contracts', async () => {
         });
 
         it('returns 403 when trying to edit somone else', async () => {
-            let newContract = {
+            const newContract = {
                 contract_length: 12,
                 start_date: '2019-12-12',
                 finish_date: '2020-12-12',
@@ -198,7 +198,7 @@ describe('contracts', async () => {
                 holidays_per_year: 20
             };
 
-            let response = await request
+            const response = await request
                 .post(`/contracts/`)
                 .set('Authorization', 'Bearer ' + loggedUserBadToken)
                 .send(newContract);
@@ -210,14 +210,14 @@ describe('contracts', async () => {
     });
     describe('PUT /contracts', async () => {
         it('editing contract', async () => {
-            let updateContract = {
+            const updateContract = {
                 contract_length: 12,
                 start_date: '2019-12-12',
                 finish_date: '2020-12-12',
                 user_id: userId
             };
 
-            let response = await request
+            const response = await request
                 .put(`/contracts/${contractId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(updateContract);
@@ -226,11 +226,11 @@ describe('contracts', async () => {
         });
 
         it('returns an error if contract_length is blank', async () => {
-            let updateContract = {
+            const updateContract = {
                 contract_length: null
             };
 
-            let response = await request
+            const response = await request
                 .put(`/contracts/${contractId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(updateContract);
@@ -243,11 +243,11 @@ describe('contracts', async () => {
             });
         });
         it('returns an error if start_date is blank', async () => {
-            let updateContract = {
+            const updateContract = {
                 start_date: null
             };
 
-            let response = await request
+            const response = await request
                 .put(`/contracts/${contractId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(updateContract);
@@ -260,11 +260,11 @@ describe('contracts', async () => {
         });
 
         it('returns an error if finish_date is blank', async () => {
-            let updateContract = {
+            const updateContract = {
                 finish_date: null
             };
 
-            let response = await request
+            const response = await request
                 .put(`/contracts/${contractId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(updateContract);
@@ -277,11 +277,11 @@ describe('contracts', async () => {
         });
 
         it('returns an error if user_id is blank', async () => {
-            let updateContract = {
+            const updateContract = {
                 user_id: null
             };
 
-            let response = await request
+            const response = await request
                 .put(`/contracts/${contractId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(updateContract);
@@ -294,13 +294,13 @@ describe('contracts', async () => {
         });
 
         it('returns 403 when trying to edit somone else', async () => {
-            let updateContract = {
+            const updateContract = {
                 contract_length: 12,
                 start_date: '2019-12-12',
                 finish_date: '2020-12-12',
                 user_id: userId
             };
-            let response = await request
+            const response = await request
                 .put(`/contracts/${contractIdBad}`)
                 .set('Authorization', 'Bearer ' + loggedUserBadToken)
                 .send(updateContract);
@@ -309,14 +309,14 @@ describe('contracts', async () => {
         });
 
         it("returns 404 if contract hasn't been found", async () => {
-            let updateContract = {
+            const updateContract = {
                 contract_length: 12,
                 start_date: '2019-12-12',
                 finish_date: '2020-12-12',
                 user_id: userId
             };
 
-            let response = await request
+            const response = await request
                 .put(`/contracts/99999999`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(updateContract);
@@ -327,7 +327,7 @@ describe('contracts', async () => {
 
     describe('DELETE /contracts', async () => {
         it('deletes a contract', async () => {
-            let response = await request
+            const response = await request
                 .delete(`/contracts/${contractId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken);
 
@@ -335,7 +335,7 @@ describe('contracts', async () => {
         });
 
         it('returns 403 when trying to delete somone else', async () => {
-            let response = await request
+            const response = await request
                 .delete(`/contracts/${contractId}`)
                 .set('Authorization', 'Bearer ' + loggedUserBadToken);
 
@@ -343,7 +343,7 @@ describe('contracts', async () => {
         });
 
         it("returns 404 if contract hasn't been found", async () => {
-            let response = await request
+            const response = await request
                 .delete(`/contracts/9999999`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken);
 

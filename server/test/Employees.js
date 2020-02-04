@@ -7,30 +7,29 @@ const saltRounds = 10;
 let loggedAdminToken;
 let userId;
 
-const loggedUserBadToken =
+const loggedAdminBadToken =
     'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsImVtYWlsIjoiS2VuZGFsbC5TdHJvc2luQGhvdG1haWwuY29tIiwibmFtZSI6IklkZWxsYSIsInN1cm5hbWUiOiJDYXJ0ZXIiLCJiaXJ0aGRhdGUiOiIyMDE5LTA4LTAzIiwiZGF5c19sZWZ0IjoyNiwiY3JlYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1Ny4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1Ny4wMDBaIiwiUm9sZSI6eyJpZCI6MTcsIm5hbWUiOiJ1c2VyIiwiY3JlYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1OC4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1OC4wMDBaIiwidXNlcl9pZCI6MTcsIlVzZXJJZCI6MTd9LCJpYXQiOjE1ODA3Mjc1NDYsImV4cCI6MTU4MDgxMzk0Nn0.2Xmsj3nGaIuAfzw6Q1tAvEj2ZAGGWWtDzJGnnlpKtwo';
 
 describe('employees', async () => {
     it('login when passing valid data', async () => {
-        let adminData = {
+        const adminData = {
             email: 'admin@erp.test',
             password: 'password'
         };
 
-        let response = await request.post(`/login`).send(adminData);
+        const response = await request.post(`/login`).send(adminData);
 
         expect(response.body).to.have.property('token');
 
         loggedAdminToken = response.body.token;
-        loggedAdminId = response.body.user.id;
     });
 
     it('returns an error if email is blank', async () => {
-        let adminData = {
+        const adminData = {
             email: null
         };
 
-        let response = await request.post(`/login`).send(adminData);
+        const response = await request.post(`/login`).send(adminData);
 
         expect(response.body).to.have.property('errors');
         expect(response.body.errors).to.deep.include({
@@ -40,11 +39,11 @@ describe('employees', async () => {
     });
 
     it('returns an error if password is blank', async () => {
-        let adminData = {
+        const adminData = {
             password: null
         };
 
-        let response = await request.post(`/login`).send(adminData);
+        const response = await request.post(`/login`).send(adminData);
 
         expect(response.body).to.have.property('errors');
         expect(response.body.errors).to.deep.include({
@@ -57,7 +56,7 @@ describe('employees', async () => {
         const adminData = {
             password: 12345
         };
-        let response = await request.post(`/login`).send(adminData);
+        const response = await request.post(`/login`).send(adminData);
 
         expect(response.body).to.have.property('errors');
         expect(response.body.errors).to.deep.include({
@@ -68,11 +67,19 @@ describe('employees', async () => {
 
     describe('GET /employees', () => {
         it('getting all employees data', async () => {
-            let response = await request
+            const response = await request
                 .get(`/employees`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken);
 
             expect(response.body);
+
+            it('returns 403 when trying to get employee somone else', async () => {
+                const response = await request
+                    .get(`/employees`)
+                    .set('Authorization', 'Bearer ' + loggedAdminToken);
+
+                expect(response.statusCode).to.equal(403);
+            });
         });
     });
 
@@ -80,7 +87,7 @@ describe('employees', async () => {
         it('adding a new employee', async () => {
             const salt = await bcrypt.genSalt(saltRounds);
 
-            let newEmployee = {
+            const newEmployee = {
                 email: 'testEmployee@test.erp',
                 name: 'test',
                 surname: 'surtest',
@@ -89,7 +96,7 @@ describe('employees', async () => {
                 days_left: 0
             };
 
-            let response = await request
+            const response = await request
                 .post(`/employees`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(newEmployee);
@@ -100,11 +107,11 @@ describe('employees', async () => {
         });
 
         it('returns an error if email is blank', async () => {
-            let newEmployee = {
+            const newEmployee = {
                 email: null
             };
 
-            let response = await request
+            const response = await request
                 .post(`/employees`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(newEmployee);
@@ -116,11 +123,11 @@ describe('employees', async () => {
             });
         });
         it('returns an error if name is blank', async () => {
-            let newEmployee = {
+            const newEmployee = {
                 name: null
             };
 
-            let response = await request
+            const response = await request
                 .post(`/employees`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(newEmployee);
@@ -134,11 +141,11 @@ describe('employees', async () => {
         });
 
         it('returns an error if surname is blank', async () => {
-            let newEmployee = {
+            const newEmployee = {
                 surname: null
             };
 
-            let response = await request
+            const response = await request
                 .post(`/employees`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(newEmployee);
@@ -152,11 +159,11 @@ describe('employees', async () => {
         });
 
         it('returns an error if password is blank', async () => {
-            let newEmployee = {
+            const newEmployee = {
                 password: null
             };
 
-            let response = await request
+            const response = await request
                 .post(`/employees`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(newEmployee);
@@ -169,11 +176,11 @@ describe('employees', async () => {
         });
 
         it('returns an error if birthdate is blank', async () => {
-            let newEmployee = {
+            const newEmployee = {
                 birthdate: null
             };
 
-            let response = await request
+            const response = await request
                 .post(`/employees`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(newEmployee);
@@ -186,11 +193,11 @@ describe('employees', async () => {
         });
 
         it('returns an error if days_left is blank', async () => {
-            let newEmployee = {
+            const newEmployee = {
                 days_left: null
             };
 
-            let response = await request
+            const response = await request
                 .post(`/employees`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(newEmployee);
@@ -205,7 +212,7 @@ describe('employees', async () => {
         it('returns an error if email is already in use', async () => {
             const salt = await bcrypt.genSalt(saltRounds);
 
-            let newEmployee = {
+            const newEmployee = {
                 email: 'testEmployee@test.erp',
                 name: 'test',
                 surname: 'surtest',
@@ -214,7 +221,7 @@ describe('employees', async () => {
                 days_left: 0
             };
 
-            let response = await request
+            const response = await request
                 .post(`/employees`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(newEmployee);
@@ -225,11 +232,31 @@ describe('employees', async () => {
                 message: 'This email is already in use'
             });
         });
+
+        it('returns 403 when trying to add employee somone else', async () => {
+            const salt = await bcrypt.genSalt(saltRounds);
+
+            const newEmployee = {
+                email: 'testEmployee@test.erp',
+                name: 'test',
+                surname: 'surtest',
+                password: await bcrypt.hash('password', salt),
+                birthdate: '1997-11-11',
+                days_left: 0
+            };
+
+            const response = await request
+                .post(`/employees`)
+                .set('Authorization', 'Bearer ' + loggedAdminBadToken)
+                .send(newEmployee);
+
+            expect(response.statusCode).to.equal(403);
+        });
     });
 
     describe('PUT /employees', async () => {
         it('updating employee', async () => {
-            let updateEmployee = {
+            const updateEmployee = {
                 email: 'testEmployee@test.erp',
                 name: 'test123',
                 surname: 'surtest123',
@@ -237,7 +264,7 @@ describe('employees', async () => {
                 days_left: 0
             };
 
-            let response = await request
+            const response = await request
                 .put(`/employees/${userId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(updateEmployee);
@@ -246,11 +273,11 @@ describe('employees', async () => {
         });
 
         it('returns an error if email is blank', async () => {
-            let updateEmployee = {
+            const updateEmployee = {
                 email: null
             };
 
-            let response = await request
+            const response = await request
                 .put(`/employees/${userId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(updateEmployee);
@@ -262,11 +289,11 @@ describe('employees', async () => {
             });
         });
         it('returns an error if name is blank', async () => {
-            let updateEmployee = {
+            const updateEmployee = {
                 name: null
             };
 
-            let response = await request
+            const response = await request
                 .put(`/employees/${userId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(updateEmployee);
@@ -280,11 +307,11 @@ describe('employees', async () => {
         });
 
         it('returns an error if surname is blank', async () => {
-            let updateEmployee = {
+            const updateEmployee = {
                 surname: null
             };
 
-            let response = await request
+            const response = await request
                 .put(`/employees/${userId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(updateEmployee);
@@ -298,11 +325,11 @@ describe('employees', async () => {
         });
 
         it('returns an error if birthdate is blank', async () => {
-            let updateEmployee = {
+            const updateEmployee = {
                 birthdate: null
             };
 
-            let response = await request
+            const response = await request
                 .put(`/employees/${userId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(updateEmployee);
@@ -315,11 +342,11 @@ describe('employees', async () => {
         });
 
         it('returns an error if days_left is blank', async () => {
-            let updateEmployee = {
+            const updateEmployee = {
                 days_left: null
             };
 
-            let response = await request
+            const response = await request
                 .put(`/employees/${userId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(updateEmployee);
@@ -331,8 +358,8 @@ describe('employees', async () => {
             });
         });
 
-        it("returns 404 if employee hasn't been found", async () => {
-            let updateEmployee = {
+        it('returns 403 if trying to update employee somone else', async () => {
+            const updateEmployee = {
                 email: 'testEmployee@test.erp',
                 name: 'test123',
                 surname: 'surtest123',
@@ -340,8 +367,25 @@ describe('employees', async () => {
                 days_left: 0
             };
 
-            let response = await request
-                .put(`/employees/9999999`)
+            const response = await request
+                .put(`/employees/${userId}`)
+                .set('Authorization', 'Bearer ' + loggedAdminBadToken)
+                .send(updateEmployee);
+
+            expect(response.statusCode).to.equal(403);
+        });
+
+        it("returns 404 if employee hasn't been found", async () => {
+            const updateEmployee = {
+                email: 'testEmployee@test.erp',
+                name: 'test123',
+                surname: 'surtest123',
+                birthdate: '1997-11-11',
+                days_left: 0
+            };
+
+            const response = await request
+                .put(`/employees/9999999999`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken)
                 .send(updateEmployee);
 
@@ -351,7 +395,7 @@ describe('employees', async () => {
 
     describe('DELETE /employees', async () => {
         it('deletes a employee', async () => {
-            let response = await request
+            const response = await request
                 .delete(`/employees/${userId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken);
 
@@ -359,15 +403,15 @@ describe('employees', async () => {
         });
 
         it('returns 403 when trying to delete somone else', async () => {
-            let response = await request
+            const response = await request
                 .delete(`/employees/${userId}`)
-                .set('Authorization', 'Bearer ' + loggedUserBadToken);
+                .set('Authorization', 'Bearer ' + loggedAdminBadToken);
 
             expect(response.statusCode).to.equal(403);
         });
 
         it("returns 404 if employee hasn't been found", async () => {
-            let response = await request
+            const response = await request
                 .delete(`/employees/${userId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken);
 

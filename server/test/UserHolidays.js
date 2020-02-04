@@ -11,12 +11,12 @@ const loggedUserBadToken =
 describe('userHolidays', () => {
     describe('POST /login', () => {
         it('login when passing valid data', async () => {
-            let userData = {
+            const userData = {
                 email: 'user@erp.test',
                 password: 'password'
             };
 
-            let response = await request.post(`/login`).send(userData);
+            const response = await request.post(`/login`).send(userData);
 
             expect(response.body).to.have.property('token');
 
@@ -25,11 +25,11 @@ describe('userHolidays', () => {
         });
 
         it('returns an error if email is blank', async () => {
-            let userData = {
+            const userData = {
                 email: null
             };
 
-            let response = await request.post(`/login`).send(userData);
+            const response = await request.post(`/login`).send(userData);
 
             expect(response.body).to.have.property('errors');
             expect(response.body.errors).to.deep.include({
@@ -39,11 +39,11 @@ describe('userHolidays', () => {
         });
 
         it('returns an error if password is blank', async () => {
-            let userData = {
+            const userData = {
                 password: null
             };
 
-            let response = await request.post(`/login`).send(userData);
+            const response = await request.post(`/login`).send(userData);
 
             expect(response.body).to.have.property('errors');
             expect(response.body.errors).to.deep.include({
@@ -56,7 +56,7 @@ describe('userHolidays', () => {
             const userData = {
                 password: 12345
             };
-            let response = await request.post(`/login`).send(userData);
+            const response = await request.post(`/login`).send(userData);
 
             expect(response.body).to.have.property('errors');
             expect(response.body.errors).to.deep.include({
@@ -68,14 +68,14 @@ describe('userHolidays', () => {
 
     describe('GET /userHolidays', () => {
         it('getting data of this user', async () => {
-            let response = await request
+            const response = await request
                 .get(`/employees/${loggedUserId}/holidays`)
                 .set('Authorization', 'Bearer ' + loggedUserToken);
 
             expect(response.body);
         });
         it('returns 403 when trying to get somone else', async () => {
-            let response = await request
+            const response = await request
                 .get(`/employees/${loggedUserId}/holidays`)
                 .set('Authorization', 'Bearer ' + loggedUserBadToken);
 
@@ -85,13 +85,13 @@ describe('userHolidays', () => {
 
     describe('POST /userHolidays', async () => {
         it('sending request for holidays to admin', async () => {
-            let userHolidays = {
+            const userHolidays = {
                 start_date: '2019-01-12',
                 finish_date: '2019-01-13',
                 user_id: loggedUserId
             };
 
-            let response = await request
+            const response = await request
                 .post(`/employees/${loggedUserId}/holidays`)
                 .set('Authorization', 'Bearer ' + loggedUserToken)
                 .send(userHolidays);
@@ -102,11 +102,11 @@ describe('userHolidays', () => {
         });
 
         it('returns an error if start_date is blank', async () => {
-            let userHolidays = {
+            const userHolidays = {
                 start_date: null
             };
 
-            let response = await request
+            const response = await request
                 .post(`/employees/${loggedUserId}/holidays`)
                 .set('Authorization', 'Bearer ' + loggedUserToken)
                 .send(userHolidays);
@@ -119,11 +119,11 @@ describe('userHolidays', () => {
         });
 
         it('returns an error if finish_date is blank', async () => {
-            let userHolidays = {
+            const userHolidays = {
                 finish_date: null
             };
 
-            let response = await request
+            const response = await request
                 .post(`/employees/${loggedUserId}/holidays`)
                 .set('Authorization', 'Bearer ' + loggedUserToken)
                 .send(userHolidays);
@@ -136,11 +136,11 @@ describe('userHolidays', () => {
         });
 
         it('returns an error if user_id is undefined', async () => {
-            let userHolidays = {
+            const userHolidays = {
                 user_id: undefined
             };
 
-            let response = await request
+            const response = await request
                 .post(`/employees/${loggedUserId}/holidays`)
                 .set('Authorization', 'Bearer ' + loggedUserToken)
                 .send(userHolidays);
@@ -153,13 +153,13 @@ describe('userHolidays', () => {
         });
 
         it('returns 403 when trying to post somone else', async () => {
-            let userHolidays = {
+            const userHolidays = {
                 start_date: '2019-01-12',
                 finish_date: '2019-01-13',
                 user_id: loggedUserId
             };
 
-            let response = await request
+            const response = await request
                 .post(`/employees/${loggedUserId}/holidays/`)
                 .set('Authorization', 'Bearer ' + loggedUserBadToken)
                 .send(userHolidays);
@@ -170,13 +170,13 @@ describe('userHolidays', () => {
 
     describe('PUT /userHolidays', async () => {
         it('sending request for holidays to admin', async () => {
-            let userHolidays = {
+            const userHolidays = {
                 start_date: '2019-01-12',
                 finish_date: '2019-01-13',
                 user_id: loggedUserId
             };
 
-            let response = await request
+            const response = await request
                 .put(`/employees/${loggedUserId}/holidays/${holidaysId}`)
                 .set('Authorization', 'Bearer ' + loggedUserToken)
                 .send(userHolidays);
@@ -185,11 +185,11 @@ describe('userHolidays', () => {
         });
 
         it('returns an error if start_date is blank', async () => {
-            let userHolidays = {
+            const userHolidays = {
                 start_date: null
             };
 
-            let response = await request
+            const response = await request
                 .put(`/employees/${loggedUserId}/holidays/${holidaysId}`)
                 .set('Authorization', 'Bearer ' + loggedUserToken)
                 .send(userHolidays);
@@ -202,11 +202,11 @@ describe('userHolidays', () => {
         });
 
         it('returns an error if finish_date is blank', async () => {
-            let userHolidays = {
+            const userHolidays = {
                 finish_date: null
             };
 
-            let response = await request
+            const response = await request
                 .put(`/employees/${loggedUserId}/holidays/${holidaysId}`)
                 .set('Authorization', 'Bearer ' + loggedUserToken)
                 .send(userHolidays);
@@ -219,11 +219,11 @@ describe('userHolidays', () => {
         });
 
         it('returns an error if user_id is undefined', async () => {
-            let userHolidays = {
+            const userHolidays = {
                 user_id: undefined
             };
 
-            let response = await request
+            const response = await request
                 .put(`/employees/${loggedUserId}/holidays/${holidaysId}`)
                 .set('Authorization', 'Bearer ' + loggedUserToken)
                 .send(userHolidays);
@@ -236,7 +236,7 @@ describe('userHolidays', () => {
         });
 
         it('returns 403 when trying to update somone else', async () => {
-            let response = await request
+            const response = await request
                 .put(`/employees/${loggedUserId}/holidays/${holidaysId}`)
                 .set('Authorization', 'Bearer ' + loggedUserBadToken);
 
@@ -244,13 +244,13 @@ describe('userHolidays', () => {
         });
 
         it("returns 404 if holiday hasn't been found", async () => {
-            let userHolidays = {
+            const userHolidays = {
                 start_date: '2019-01-12',
                 finish_date: '2019-01-13',
                 user_id: loggedUserId
             };
 
-            let response = await request
+            const response = await request
                 .put(`/employees/${loggedUserId}/holidays/99999999`)
                 .set('Authorization', 'Bearer ' + loggedUserToken)
                 .send(userHolidays);
@@ -261,7 +261,7 @@ describe('userHolidays', () => {
 
     describe('DELETE /userHolidays', async () => {
         it('deletes a holidays request', async () => {
-            let response = await request
+            const response = await request
                 .delete(`/employees/${loggedUserId}/holidays/${holidaysId}`)
                 .set('Authorization', 'Bearer ' + loggedUserToken);
 
@@ -269,7 +269,7 @@ describe('userHolidays', () => {
         });
 
         it('returns 403 when trying to delete somone else', async () => {
-            let response = await request
+            const response = await request
                 .delete(`/employees/${loggedUserId}/holidays/${holidaysId}`)
                 .set('Authorization', 'Bearer ' + loggedUserBadToken);
 
@@ -277,7 +277,7 @@ describe('userHolidays', () => {
         });
 
         it("returns 404 if holiday hasn't been found", async () => {
-            let response = await request
+            const response = await request
                 .delete(`/employees/${loggedUserId}/holidays/99999999`)
                 .set('Authorization', 'Bearer ' + loggedUserToken);
 
