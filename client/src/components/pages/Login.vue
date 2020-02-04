@@ -19,7 +19,7 @@
                         outlined
                         solo-inverted
                         :rules="emailRules"
-                    ></v-text-field>
+                    />
                     <br />
                     <v-text-field
                         class="login"
@@ -30,7 +30,8 @@
                         outlined
                         solo-inverted
                         :rules="passwordRules"
-                    ></v-text-field>
+                     />
+
                     <br />
                     <br />
                     <div class="error" v-if="error">{{ this.error }}</div>
