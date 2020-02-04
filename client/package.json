@@ -5,9 +5,10 @@
     "scripts": {
         "serve": "vue-cli-service serve",
         "build": "vue-cli-service build",
-        "test": "jest --watch"
+        "test": "jest"
     },
     "dependencies": {
+        "@vue/babel-preset-app": "^4.1.2",
         "@vue/cli-plugin-unit-jest": "^4.1.2",
         "axios": "^0.19.0",
         "date-fns": "^2.9.0",
@@ -22,8 +23,12 @@
     },
     "devDependencies": {
         "@babel/plugin-transform-modules-commonjs": "^7.8.3",
+        "@babel/plugin-transform-react-jsx": "^7.8.3",
+        "@babel/runtime": "^7.1.5",
+        "@vue/babel-preset-app": "^4.1.2",
         "@vue/cli-service": "^4.1.0",
         "@vue/test-utils": "^1.0.0-beta.31",
+        "babel-core": "7.0.0-bridge.0",
         "babel-jest": "^25.1.0",
         "eslint": "^6.8.0",
         "eslint-plugin-vue": "^6.1.2",
@@ -41,11 +46,14 @@
         "last 2 versions"
     ],
     "jest": {
+        "moduleFileExtensions": [
+            "js",
+            "json",
+            "vue"
+        ],
         "transform": {
-            "^.+\\.jsx?$": "babel-jest"
-        },
-        "plugins": [
-            "@babel/plugin-transform-modules-commonjs"
-        ]
+            "^.+\\.js$": "babel-jest",
+            "^.+\\.vue$": "vue-jest"
+        }
     }
 }

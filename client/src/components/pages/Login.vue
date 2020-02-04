@@ -30,7 +30,7 @@
                         outlined
                         solo-inverted
                         :rules="passwordRules"
-                     />
+                    />
 
                     <br />
                     <br />
