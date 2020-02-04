@@ -34,19 +34,20 @@ module.exports = {
         }
 
         try {
-            const isEmail = await Users.findOne({
+            const user = await Users.findOne({
                 where: {
                     email: req.body.email
                 }
             });
 
-            if (isEmail) {
+            if (user) {
                 const errors = [
                     {
                         param: 'email',
                         message: 'This email is already in use'
                     }
                 ];
+
                 return res.status(422).json({ errors });
             }
 
@@ -128,13 +129,13 @@ module.exports = {
                 }
             });
 
-            const contracts = await Contracts.findOne({
+            const contracts = await Contracts.findAll({
                 where: {
                     user_id: req.params.id
                 }
             });
 
-            const holidays = await Holidays.findOne({
+            const holidays = await Holidays.findAll({
                 where: {
                     user_id: req.params.id
                 }

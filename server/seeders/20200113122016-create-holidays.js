@@ -34,6 +34,20 @@ for (let i = 0; i <= 5; i++) {
     holidays.push(holidayForUser);
 }
 
+for (let i = 0; i <= 5; i++) {
+    const holidayForUser2 = {
+        days_taken: faker.helpers.randomize(randomDays),
+        start_date: faker.date.past(),
+        finish_date: faker.date.future(),
+        confirmed: faker.helpers.randomize(randomConfirmed),
+        user_id: 24,
+        created_at: new Date(),
+        updated_at: new Date()
+    };
+
+    holidays.push(holidayForUser2);
+}
+
 module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface.bulkInsert('holidays', holidays);

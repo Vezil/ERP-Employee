@@ -48,6 +48,19 @@ const user = {
 
 users.push(user);
 
+const user2 = {
+    name: faker.name.firstName(),
+    surname: faker.name.lastName(),
+    email: 'user2@erp.test',
+    birthdate: faker.date.past(),
+    password: bcrypt.hashSync('password', saltRounds),
+    days_left: 26,
+    created_at: new Date(),
+    updated_at: new Date()
+};
+
+users.push(user2);
+
 module.exports = {
     up: (queryInterface, Sequelize) => {
         return queryInterface.bulkInsert('users', users);

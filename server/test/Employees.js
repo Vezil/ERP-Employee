@@ -6,9 +6,20 @@ const saltRounds = 10;
 
 let loggedAdminToken;
 let userId;
+let badToken;
 
-const loggedAdminBadToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsImVtYWlsIjoiS2VuZGFsbC5TdHJvc2luQGhvdG1haWwuY29tIiwibmFtZSI6IklkZWxsYSIsInN1cm5hbWUiOiJDYXJ0ZXIiLCJiaXJ0aGRhdGUiOiIyMDE5LTA4LTAzIiwiZGF5c19sZWZ0IjoyNiwiY3JlYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1Ny4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1Ny4wMDBaIiwiUm9sZSI6eyJpZCI6MTcsIm5hbWUiOiJ1c2VyIiwiY3JlYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1OC4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1OC4wMDBaIiwidXNlcl9pZCI6MTcsIlVzZXJJZCI6MTd9LCJpYXQiOjE1ODA3Mjc1NDYsImV4cCI6MTU4MDgxMzk0Nn0.2Xmsj3nGaIuAfzw6Q1tAvEj2ZAGGWWtDzJGnnlpKtwo';
+async function loginOtherPerson() {
+    const personData = {
+        email: 'user@erp.test',
+        password: 'password'
+    };
+
+    const response = await request.post(`/login`).send(personData);
+
+    badToken = response.body.token;
+}
+
+loginOtherPerson();
 
 describe('employees', async () => {
     it('login when passing valid data', async () => {
@@ -76,7 +87,7 @@ describe('employees', async () => {
             it('returns 403 when trying to get employee somone else', async () => {
                 const response = await request
                     .get(`/employees`)
-                    .set('Authorization', 'Bearer ' + loggedAdminToken);
+                    .set('Authorization', 'Bearer ' + badToken);
 
                 expect(response.statusCode).to.equal(403);
             });
@@ -247,7 +258,7 @@ describe('employees', async () => {
 
             const response = await request
                 .post(`/employees`)
-                .set('Authorization', 'Bearer ' + loggedAdminBadToken)
+                .set('Authorization', 'Bearer ' + badToken)
                 .send(newEmployee);
 
             expect(response.statusCode).to.equal(403);
@@ -288,6 +299,7 @@ describe('employees', async () => {
                 message: 'Email is required and min length is 5 chars'
             });
         });
+
         it('returns an error if name is blank', async () => {
             const updateEmployee = {
                 name: null
@@ -369,7 +381,7 @@ describe('employees', async () => {
 
             const response = await request
                 .put(`/employees/${userId}`)
-                .set('Authorization', 'Bearer ' + loggedAdminBadToken)
+                .set('Authorization', 'Bearer ' + badToken)
                 .send(updateEmployee);
 
             expect(response.statusCode).to.equal(403);
@@ -405,7 +417,7 @@ describe('employees', async () => {
         it('returns 403 when trying to delete somone else', async () => {
             const response = await request
                 .delete(`/employees/${userId}`)
-                .set('Authorization', 'Bearer ' + loggedAdminBadToken);
+                .set('Authorization', 'Bearer ' + badToken);
 
             expect(response.statusCode).to.equal(403);
         });

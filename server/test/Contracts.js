@@ -4,11 +4,22 @@ const expect = require('chai').expect;
 
 let loggedAdminToken;
 let contractId;
-let contractIdBad;
+let contractBadId;
+let badToken;
 let userId = 1;
 
-const loggedUserBadToken =
-    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MTcsImVtYWlsIjoiS2VuZGFsbC5TdHJvc2luQGhvdG1haWwuY29tIiwibmFtZSI6IklkZWxsYSIsInN1cm5hbWUiOiJDYXJ0ZXIiLCJiaXJ0aGRhdGUiOiIyMDE5LTA4LTAzIiwiZGF5c19sZWZ0IjoyNiwiY3JlYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1Ny4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1Ny4wMDBaIiwiUm9sZSI6eyJpZCI6MTcsIm5hbWUiOiJ1c2VyIiwiY3JlYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1OC4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMC0wMS0zMVQxNjowNDo1OC4wMDBaIiwidXNlcl9pZCI6MTcsIlVzZXJJZCI6MTd9LCJpYXQiOjE1ODA3Mjc1NDYsImV4cCI6MTU4MDgxMzk0Nn0.2Xmsj3nGaIuAfzw6Q1tAvEj2ZAGGWWtDzJGnnlpKtwo';
+async function loginOtherPerson() {
+    const personData = {
+        email: 'user@erp.test',
+        password: 'password'
+    };
+
+    const response = await request.post(`/login`).send(personData);
+
+    badToken = response.body.token;
+}
+
+loginOtherPerson();
 
 describe('contracts', async () => {
     it('login when passing valid data', async () => {
@@ -78,7 +89,7 @@ describe('contracts', async () => {
         it('returns 403 when trying to get somone else', async () => {
             const response = await request
                 .get(`/contracts`)
-                .set('Authorization', 'Bearer ' + loggedUserBadToken);
+                .set('Authorization', 'Bearer ' + badToken);
 
             expect(response.statusCode).to.equal(403);
         });
@@ -121,6 +132,7 @@ describe('contracts', async () => {
                     'Invalid type of contract. It must be number (1/3/6/12)'
             });
         });
+
         it('returns an error if start_date is blank', async () => {
             const newContract = {
                 start_date: null
@@ -200,14 +212,15 @@ describe('contracts', async () => {
 
             const response = await request
                 .post(`/contracts/`)
-                .set('Authorization', 'Bearer ' + loggedUserBadToken)
+                .set('Authorization', 'Bearer ' + badToken)
                 .send(newContract);
 
-            contractIdBad = response.body.id;
+            contractBadId = response.body.id;
 
             expect(response.statusCode).to.equal(403);
         });
     });
+
     describe('PUT /contracts', async () => {
         it('editing contract', async () => {
             const updateContract = {
@@ -242,6 +255,7 @@ describe('contracts', async () => {
                     'Invalid type of contract. It must be number (1/3/6/12)'
             });
         });
+
         it('returns an error if start_date is blank', async () => {
             const updateContract = {
                 start_date: null
@@ -301,8 +315,8 @@ describe('contracts', async () => {
                 user_id: userId
             };
             const response = await request
-                .put(`/contracts/${contractIdBad}`)
-                .set('Authorization', 'Bearer ' + loggedUserBadToken)
+                .put(`/contracts/${contractBadId}`)
+                .set('Authorization', 'Bearer ' + badToken)
                 .send(updateContract);
 
             expect(response.statusCode).to.equal(403);
@@ -337,7 +351,7 @@ describe('contracts', async () => {
         it('returns 403 when trying to delete somone else', async () => {
             const response = await request
                 .delete(`/contracts/${contractId}`)
-                .set('Authorization', 'Bearer ' + loggedUserBadToken);
+                .set('Authorization', 'Bearer ' + badToken);
 
             expect(response.statusCode).to.equal(403);
         });

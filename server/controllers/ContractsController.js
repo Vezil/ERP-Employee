@@ -78,13 +78,14 @@ module.exports = {
         }
 
         try {
-            const isContract = await Contracts.findByPk(req.params.id);
+            const contract = await Contracts.findByPk(req.params.id);
 
-            if (!isContract) {
+            if (!contract) {
                 return res
                     .status(404)
                     .json({ error: 'This contract has not been found' });
             }
+
             await Contracts.update(req.body, {
                 where: {
                     id: req.params.id
@@ -109,9 +110,9 @@ module.exports = {
                     .json({ error: 'This contract has not been found' });
             }
 
-            const contract = await Contracts.findByPk(req.params.id);
+            const contractUpdate = await Contracts.findByPk(req.params.id);
 
-            return res.send(contract);
+            return res.send(contractUpdate);
         } catch (err) {
             return next(err);
         }
