@@ -110,9 +110,9 @@ module.exports = {
                     .json({ error: 'This contract has not been found' });
             }
 
-            const contractUpdate = await Contracts.findByPk(req.params.id);
+            const contractUpdated = await Contracts.findByPk(req.params.id);
 
-            return res.send(contractUpdate);
+            return res.send(contractUpdated);
         } catch (err) {
             return next(err);
         }

@@ -1,11 +1,12 @@
 const app = require('../app');
 const request = require('supertest')(app);
 const expect = require('chai').expect;
+const helpers = require('./Helpers');
 
 let loggedAdminToken;
 let contractId;
 let contractBadId;
-let badToken;
+let loggedUserToken;
 let userId = 1;
 
 async function loginOtherPerson() {
@@ -16,69 +17,28 @@ async function loginOtherPerson() {
 
     const response = await request.post(`/login`).send(personData);
 
-    badToken = response.body.token;
+    loggedUserToken = response.body.token;
 }
 
 loginOtherPerson();
 
 describe('contracts', async () => {
-    it('login when passing valid data', async () => {
-        const adminData = {
-            email: 'admin@erp.test',
-            password: 'password'
-        };
+    describe('POST /login', () => {
+        it('login when passing valid data', async () => {
+            const email = 'admin@erp.test';
+            const password = 'password';
 
-        const response = await request.post(`/login`).send(adminData);
+            const credentials = await helpers.login(email, password);
 
-        expect(response.body).to.have.property('token');
+            loggedAdminToken = credentials.token;
+            loggedUserId = credentials.user.id;
 
-        loggedAdminToken = response.body.token;
-        loggedAdminId = response.body.user.id;
-    });
-
-    it('returns an error if email is blank', async () => {
-        const adminData = {
-            email: null
-        };
-
-        const response = await request.post(`/login`).send(adminData);
-
-        expect(response.body).to.have.property('errors');
-        expect(response.body.errors).to.deep.include({
-            param: 'email',
-            message: 'Email is required and min length is 5 chars'
-        });
-    });
-
-    it('returns an error if password is blank', async () => {
-        const adminData = {
-            password: null
-        };
-
-        const response = await request.post(`/login`).send(adminData);
-
-        expect(response.body).to.have.property('errors');
-        expect(response.body.errors).to.deep.include({
-            param: 'password',
-            message: 'Password is required and min length is 8 chars'
-        });
-    });
-
-    it('returns an error if password contains less than 8 character', async () => {
-        const adminData = {
-            password: 12345
-        };
-        const response = await request.post(`/login`).send(adminData);
-
-        expect(response.body).to.have.property('errors');
-        expect(response.body.errors).to.deep.include({
-            param: 'password',
-            message: 'Password is required and min length is 8 chars'
+            expect(credentials).to.have.property('token');
         });
     });
 
     describe('GET /contracts', () => {
-        it('getting all contracts', async () => {
+        it('returns 200 when trying to get contracts as admin', async () => {
             const response = await request
                 .get(`/contracts`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken);
@@ -86,17 +46,17 @@ describe('contracts', async () => {
             expect(response.body);
         });
 
-        it('returns 403 when trying to get somone else', async () => {
+        it('returns 403 when trying to get all contracts by user', async () => {
             const response = await request
                 .get(`/contracts`)
-                .set('Authorization', 'Bearer ' + badToken);
+                .set('Authorization', 'Bearer ' + loggedUserToken);
 
             expect(response.statusCode).to.equal(403);
         });
     });
 
     describe('POST /contracts', async () => {
-        it('adding a new contract', async () => {
+        it('return 201 when trying to create new contract by admin', async () => {
             const newContract = {
                 contract_length: 12,
                 start_date: '2019-12-12',
@@ -115,9 +75,13 @@ describe('contracts', async () => {
             expect(response.body).to.have.property('contract_length');
         });
 
-        it('returns an error if contract_length is blank', async () => {
+        it('returns an error when trying to add contract if some required field in this object is blank', async () => {
             const newContract = {
-                contract_length: null
+                contract_length: null,
+                start_date: null,
+                finish_date: null,
+                user_id: null,
+                holidays_per_year: null
             };
 
             const response = await request
@@ -129,79 +93,19 @@ describe('contracts', async () => {
             expect(response.body.errors).to.deep.include({
                 param: 'contract_length',
                 message:
-                    'Invalid type of contract. It must be number (1/3/6/12)'
-            });
-        });
-
-        it('returns an error if start_date is blank', async () => {
-            const newContract = {
-                start_date: null
-            };
-
-            const response = await request
-                .post(`/contracts`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(newContract);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
+                    'Invalid type of contract. It must be number (1/3/6/12)',
                 param: 'start_date',
-                message: 'Invalid date format'
-            });
-        });
-
-        it('returns an error if finish_date is blank', async () => {
-            const newContract = {
-                finish_date: null
-            };
-
-            const response = await request
-                .post(`/contracts`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(newContract);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
+                message: 'Invalid date format',
                 param: 'finish_date',
-                message: 'Invalid date format'
-            });
-        });
-
-        it('returns an error if user_id is blank', async () => {
-            const newContract = {
-                user_id: null
-            };
-
-            const response = await request
-                .post(`/contracts`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(newContract);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
+                message: 'Invalid date format',
                 param: 'user_id',
-                message: 'Id required'
-            });
-        });
-
-        it('returns an error if holidays_per_year is blank', async () => {
-            const newContract = {
-                holidays_per_year: null
-            };
-
-            const response = await request
-                .post(`/contracts`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(newContract);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
+                message: 'Id required',
                 param: 'holidays_per_year',
                 message: 'Invalid type of holidays. It must be number (20/26)'
             });
         });
 
-        it('returns 403 when trying to edit somone else', async () => {
+        it('returns 403 when trying to create new contract as user', async () => {
             const newContract = {
                 contract_length: 12,
                 start_date: '2019-12-12',
@@ -212,7 +116,7 @@ describe('contracts', async () => {
 
             const response = await request
                 .post(`/contracts/`)
-                .set('Authorization', 'Bearer ' + badToken)
+                .set('Authorization', 'Bearer ' + loggedUserToken)
                 .send(newContract);
 
             contractBadId = response.body.id;
@@ -222,7 +126,7 @@ describe('contracts', async () => {
     });
 
     describe('PUT /contracts', async () => {
-        it('editing contract', async () => {
+        it('returns 200 when trying to edit contract as admin', async () => {
             const updateContract = {
                 contract_length: 12,
                 start_date: '2019-12-12',
@@ -238,9 +142,12 @@ describe('contracts', async () => {
             expect(response.body).to.have.property('contract_length');
         });
 
-        it('returns an error if contract_length is blank', async () => {
+        it('returns an error when trying to edit contract if some required field in this object is blank', async () => {
             const updateContract = {
-                contract_length: null
+                contract_length: null,
+                start_date: null,
+                finish_date: null,
+                user_id: null
             };
 
             const response = await request
@@ -252,62 +159,17 @@ describe('contracts', async () => {
             expect(response.body.errors).to.deep.include({
                 param: 'contract_length',
                 message:
-                    'Invalid type of contract. It must be number (1/3/6/12)'
-            });
-        });
-
-        it('returns an error if start_date is blank', async () => {
-            const updateContract = {
-                start_date: null
-            };
-
-            const response = await request
-                .put(`/contracts/${contractId}`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(updateContract);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
+                    'Invalid type of contract. It must be number (1/3/6/12)',
                 param: 'start_date',
-                message: 'Invalid date format'
-            });
-        });
-
-        it('returns an error if finish_date is blank', async () => {
-            const updateContract = {
-                finish_date: null
-            };
-
-            const response = await request
-                .put(`/contracts/${contractId}`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(updateContract);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
+                message: 'Invalid date format',
                 param: 'finish_date',
-                message: 'Invalid date format'
-            });
-        });
-
-        it('returns an error if user_id is blank', async () => {
-            const updateContract = {
-                user_id: null
-            };
-
-            const response = await request
-                .put(`/contracts/${contractId}`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(updateContract);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
+                message: 'Invalid date format',
                 param: 'user_id',
                 message: 'Id required'
             });
         });
 
-        it('returns 403 when trying to edit somone else', async () => {
+        it('returns 403 when trying to edit as normal user', async () => {
             const updateContract = {
                 contract_length: 12,
                 start_date: '2019-12-12',
@@ -316,7 +178,7 @@ describe('contracts', async () => {
             };
             const response = await request
                 .put(`/contracts/${contractBadId}`)
-                .set('Authorization', 'Bearer ' + badToken)
+                .set('Authorization', 'Bearer ' + loggedUserToken)
                 .send(updateContract);
 
             expect(response.statusCode).to.equal(403);
@@ -340,7 +202,7 @@ describe('contracts', async () => {
     });
 
     describe('DELETE /contracts', async () => {
-        it('deletes a contract', async () => {
+        it('returns 204 when trying to delete contract as admin', async () => {
             const response = await request
                 .delete(`/contracts/${contractId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken);
@@ -348,10 +210,10 @@ describe('contracts', async () => {
             expect(response.statusCode).to.equal(204);
         });
 
-        it('returns 403 when trying to delete somone else', async () => {
+        it('returns 403 when trying to delete as normal user', async () => {
             const response = await request
                 .delete(`/contracts/${contractId}`)
-                .set('Authorization', 'Bearer ' + badToken);
+                .set('Authorization', 'Bearer ' + loggedUserToken);
 
             expect(response.statusCode).to.equal(403);
         });

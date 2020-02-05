@@ -1,9 +1,10 @@
 const app = require('../app');
 const request = require('supertest')(app);
 const expect = require('chai').expect;
-let loggedAdminToken;
-let badToken;
-let holidaysId;
+const helpers = require('./Helpers');
+
+let loggedUserToken = require('./Authentication');
+let holidaysId = require('./Authentication');
 let userId = 1;
 
 async function loginOtherPerson() {
@@ -14,7 +15,7 @@ async function loginOtherPerson() {
 
     const response = await request.post(`/login`).send(personData);
 
-    badToken = response.body.token;
+    loggedUserToken = response.body.token;
 }
 
 loginOtherPerson();
@@ -22,80 +23,38 @@ loginOtherPerson();
 describe('adminHolidays', () => {
     describe('POST /login', () => {
         it('login when passing valid data', async () => {
-            const adminData = {
-                email: 'admin@erp.test',
-                password: 'password'
-            };
+            const email = 'admin@erp.test';
+            const password = 'password';
 
-            const response = await request.post(`/login`).send(adminData);
+            const credentials = await helpers.login(email, password);
 
-            expect(response.body).to.have.property('token');
+            loggedAdminToken = credentials.token;
+            loggedUserId = credentials.user.id;
 
-            loggedAdminToken = response.body.token;
-            loggedAdminId = response.body.user.id;
-        });
-
-        it('returns an error if email is blank', async () => {
-            const adminData = {
-                email: null
-            };
-
-            const response = await request.post(`/login`).send(adminData);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
-                param: 'email',
-                message: 'Email is required and min length is 5 chars'
-            });
-        });
-
-        it('returns an error if password is blank', async () => {
-            const adminData = {
-                password: null
-            };
-
-            const response = await request.post(`/login`).send(adminData);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
-                param: 'password',
-                message: 'Password is required and min length is 8 chars'
-            });
-        });
-
-        it('returns an error if password contains less than 8 character', async () => {
-            const adminData = {
-                password: 12345
-            };
-            const response = await request.post(`/login`).send(adminData);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
-                param: 'password',
-                message: 'Password is required and min length is 8 chars'
-            });
+            expect(credentials).to.have.property('token');
         });
     });
 
     describe('GET /holidays', () => {
-        it('getting all holidays data', async () => {
+        it('returns 200 when trying to get all holidays as admin', async () => {
             const response = await request
                 .get(`/holidays`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken);
 
             expect(response.body);
         });
-        it('returns 403 when trying to get holidays somone else', async () => {
+
+        it('returns 403 when trying to get holidays as normal user', async () => {
             const response = await request
                 .get(`/holidays`)
-                .set('Authorization', 'Bearer ' + badToken);
+                .set('Authorization', 'Bearer ' + loggedUserToken);
 
             expect(response.statusCode).to.equal(403);
         });
     });
 
     describe('POST /holidays', async () => {
-        it('adding new holidays for user', async () => {
+        it('returns 201 when trying to create new holiday as admin', async () => {
             const newHolidays = {
                 start_date: '2019-01-12',
                 finish_date: '2019-01-13',
@@ -112,9 +71,11 @@ describe('adminHolidays', () => {
             expect(response.body).to.have.property('days_taken');
         });
 
-        it('returns an error if start_date is blank', async () => {
+        it('returns an error when trying to add holidays request if some required field in this object is blank', async () => {
             const userHolidays = {
-                start_date: null
+                start_date: null,
+                finish_date: null,
+                user_id: null
             };
 
             const response = await request
@@ -125,45 +86,15 @@ describe('adminHolidays', () => {
             expect(response.body).to.have.property('errors');
             expect(response.body.errors).to.deep.include({
                 param: 'start_date',
-                message: 'Invalid date format'
-            });
-        });
-
-        it('returns an error if finish_date is blank', async () => {
-            const userHolidays = {
-                finish_date: null
-            };
-
-            const response = await request
-                .post(`/holidays`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(userHolidays);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
+                message: 'Invalid date format',
                 param: 'finish_date',
-                message: 'Invalid date format'
-            });
-        });
-
-        it('returns an error if user_id is undefined', async () => {
-            const userHolidays = {
-                user_id: undefined
-            };
-
-            const response = await request
-                .post(`/holidays`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(userHolidays);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
+                message: 'Invalid date format',
                 param: 'user_id',
                 message: 'Id required'
             });
         });
 
-        it('returns 403 when trying to add holidays somone else', async () => {
+        it('returns 403 when trying to add holidays as normal user', async () => {
             const newHolidays = {
                 start_date: '2019-01-12',
                 finish_date: '2019-01-13',
@@ -172,7 +103,7 @@ describe('adminHolidays', () => {
 
             const response = await request
                 .put(`/holidays/${holidaysId}`)
-                .set('Authorization', 'Bearer ' + badToken)
+                .set('Authorization', 'Bearer ' + loggedUserToken)
                 .send(newHolidays);
 
             expect(response.statusCode).to.equal(403);
@@ -180,7 +111,7 @@ describe('adminHolidays', () => {
     });
 
     describe('PUT /holidays', async () => {
-        it('editing holiday of user', async () => {
+        it('returns 200 when holidays has been updated as admin', async () => {
             const userHolidays = {
                 start_date: '2019-01-12',
                 finish_date: '2019-01-13',
@@ -195,9 +126,11 @@ describe('adminHolidays', () => {
             expect(response.body).to.have.property('days_taken');
         });
 
-        it('returns an error if start_date is blank', async () => {
+        it('returns an error when trying to add holidays request if some required field in this object is blank', async () => {
             const userHolidays = {
-                start_date: null
+                start_date: null,
+                finish_date: null,
+                user_id: null
             };
 
             const response = await request
@@ -208,45 +141,15 @@ describe('adminHolidays', () => {
             expect(response.body).to.have.property('errors');
             expect(response.body.errors).to.deep.include({
                 param: 'start_date',
-                message: 'Invalid date format'
-            });
-        });
-
-        it('returns an error if finish_date is blank', async () => {
-            const userHolidays = {
-                finish_date: null
-            };
-
-            const response = await request
-                .put(`/holidays/${holidaysId}`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(userHolidays);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
+                message: 'Invalid date format',
                 param: 'finish_date',
-                message: 'Invalid date format'
-            });
-        });
-
-        it('returns an error if user_id is undefined', async () => {
-            const userHolidays = {
-                user_id: undefined
-            };
-
-            const response = await request
-                .put(`/holidays/${holidaysId}`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(userHolidays);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
+                message: 'Invalid date format',
                 param: 'user_id',
                 message: 'Id required'
             });
         });
 
-        it('returns 403 when trying to change holidays somone else', async () => {
+        it('returns 403 when trying to change holidays as normal user', async () => {
             const userHolidays = {
                 start_date: '2019-01-12',
                 finish_date: '2019-01-13',
@@ -255,7 +158,7 @@ describe('adminHolidays', () => {
 
             const response = await request
                 .put(`/holidays/${holidaysId}`)
-                .set('Authorization', 'Bearer ' + badToken)
+                .set('Authorization', 'Bearer ' + loggedUserToken)
                 .send(userHolidays);
 
             expect(response.statusCode).to.equal(403);
@@ -278,7 +181,7 @@ describe('adminHolidays', () => {
     });
 
     describe('PUT /holidays/:id/confirm', async () => {
-        it('returns confirmed of holiday', async () => {
+        it('returns 200 when admin toggle confirm of holidays', async () => {
             const dataConfirmed = {
                 confirmed: true
             };
@@ -308,14 +211,14 @@ describe('adminHolidays', () => {
             });
         });
 
-        it('returns 403 when trying to confirm somone else', async () => {
+        it('returns 403 when trying to confirm as normal user', async () => {
             const dataConfirmed = {
                 confirmed: true
             };
 
             const response = await request
                 .put(`/holidays/${holidaysId}/confirm`)
-                .set('Authorization', 'Bearer ' + badToken)
+                .set('Authorization', 'Bearer ' + loggedUserToken)
                 .send(dataConfirmed);
 
             expect(response.statusCode).to.equal(403);
@@ -331,7 +234,7 @@ describe('adminHolidays', () => {
     });
 
     describe('DELETE /holidays', async () => {
-        it('deletes a holiday', async () => {
+        it('returns 204 when holidays was been removed as admin', async () => {
             const response = await request
                 .delete(`/holidays/${holidaysId}`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken);
@@ -339,10 +242,10 @@ describe('adminHolidays', () => {
             expect(response.statusCode).to.equal(204);
         });
 
-        it('returns 403 when trying to delete somone else', async () => {
+        it('returns 403 when trying to delete as normal user', async () => {
             const response = await request
                 .delete(`/holidays/${holidaysId}`)
-                .set('Authorization', 'Bearer ' + badToken);
+                .set('Authorization', 'Bearer ' + loggedUserToken);
 
             expect(response.statusCode).to.equal(403);
         });

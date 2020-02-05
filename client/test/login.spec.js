@@ -17,11 +17,21 @@ describe('Login.vue', () => {
     beforeEach(() => {
         wrapper = mount(Login, {
             localVue,
-            vuetify
+            vuetify,
+            propsData: {
+                email: 'admin@erp.test',
+                password: 'password'
+            }
         });
     });
 
     it('have two v-text-field ', () => {
         expect(wrapper.findAll('.v-text-field').length).toBe(2);
+    });
+    it('Goes through login correctly', () => {
+        const button = wraper.findOne('.v-btn');
+        button.at(1).trigger('click');
+
+        // expect(wrapper.emitted('login'));
     });
 });

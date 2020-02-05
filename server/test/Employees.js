@@ -3,10 +3,11 @@ const request = require('supertest')(app);
 const expect = require('chai').expect;
 const bcrypt = require('bcrypt');
 const saltRounds = 10;
+const helpers = require('./Helpers');
 
 let loggedAdminToken;
 let userId;
-let badToken;
+let loggedUserToken;
 
 async function loginOtherPerson() {
     const personData = {
@@ -16,78 +17,38 @@ async function loginOtherPerson() {
 
     const response = await request.post(`/login`).send(personData);
 
-    badToken = response.body.token;
+    loggedUserToken = response.body.token;
 }
 
 loginOtherPerson();
 
 describe('employees', async () => {
-    it('login when passing valid data', async () => {
-        const adminData = {
-            email: 'admin@erp.test',
-            password: 'password'
-        };
+    describe('POST /login', () => {
+        it('login when passing valid data', async () => {
+            const email = 'admin@erp.test';
+            const password = 'password';
 
-        const response = await request.post(`/login`).send(adminData);
+            const credentials = await helpers.login(email, password);
 
-        expect(response.body).to.have.property('token');
+            loggedAdminToken = credentials.token;
+            loggedUserId = credentials.user.id;
 
-        loggedAdminToken = response.body.token;
-    });
-
-    it('returns an error if email is blank', async () => {
-        const adminData = {
-            email: null
-        };
-
-        const response = await request.post(`/login`).send(adminData);
-
-        expect(response.body).to.have.property('errors');
-        expect(response.body.errors).to.deep.include({
-            param: 'email',
-            message: 'Email is required and min length is 5 chars'
-        });
-    });
-
-    it('returns an error if password is blank', async () => {
-        const adminData = {
-            password: null
-        };
-
-        const response = await request.post(`/login`).send(adminData);
-
-        expect(response.body).to.have.property('errors');
-        expect(response.body.errors).to.deep.include({
-            param: 'password',
-            message: 'Password is required and min length is 8 chars'
-        });
-    });
-
-    it('returns an error if password contains less than 8 character', async () => {
-        const adminData = {
-            password: 12345
-        };
-        const response = await request.post(`/login`).send(adminData);
-
-        expect(response.body).to.have.property('errors');
-        expect(response.body.errors).to.deep.include({
-            param: 'password',
-            message: 'Password is required and min length is 8 chars'
+            expect(credentials).to.have.property('token');
         });
     });
 
     describe('GET /employees', () => {
-        it('getting all employees data', async () => {
+        it('returns 200 when trying to get all employees by admin', async () => {
             const response = await request
                 .get(`/employees`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken);
 
             expect(response.body);
 
-            it('returns 403 when trying to get employee somone else', async () => {
+            it('returns 403 when trying to get employee as normal user', async () => {
                 const response = await request
                     .get(`/employees`)
-                    .set('Authorization', 'Bearer ' + badToken);
+                    .set('Authorization', 'Bearer ' + loggedUserToken);
 
                 expect(response.statusCode).to.equal(403);
             });
@@ -95,7 +56,7 @@ describe('employees', async () => {
     });
 
     describe('POST /employees', async () => {
-        it('adding a new employee', async () => {
+        it('returns 201 when trying to create new employee by admin', async () => {
             const salt = await bcrypt.genSalt(saltRounds);
 
             const newEmployee = {
@@ -117,94 +78,13 @@ describe('employees', async () => {
             expect(response.body).to.have.property('email');
         });
 
-        it('returns an error if email is blank', async () => {
+        it('returns an error when trying to add employee if some required field in this object is blank', async () => {
             const newEmployee = {
-                email: null
-            };
-
-            const response = await request
-                .post(`/employees`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(newEmployee);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
-                param: 'email',
-                message: 'Email is required and min length is 5 chars'
-            });
-        });
-        it('returns an error if name is blank', async () => {
-            const newEmployee = {
-                name: null
-            };
-
-            const response = await request
-                .post(`/employees`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(newEmployee);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
-                param: 'name',
-                message:
-                    'Invalid name format. Min length is 3 chars. Max length is 20 chars'
-            });
-        });
-
-        it('returns an error if surname is blank', async () => {
-            const newEmployee = {
-                surname: null
-            };
-
-            const response = await request
-                .post(`/employees`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(newEmployee);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
-                param: 'surname',
-                message:
-                    'Invalid surname format. Min length is 3 chars. Max length is 30 chars'
-            });
-        });
-
-        it('returns an error if password is blank', async () => {
-            const newEmployee = {
-                password: null
-            };
-
-            const response = await request
-                .post(`/employees`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(newEmployee);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
-                param: 'password',
-                message: 'Password is required and min length is 8 chars'
-            });
-        });
-
-        it('returns an error if birthdate is blank', async () => {
-            const newEmployee = {
-                birthdate: null
-            };
-
-            const response = await request
-                .post(`/employees`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(newEmployee);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
-                param: 'birthdate',
-                message: 'Invalid date format'
-            });
-        });
-
-        it('returns an error if days_left is blank', async () => {
-            const newEmployee = {
+                email: null,
+                name: null,
+                surname: null,
+                password: null,
+                birthdate: null,
                 days_left: null
             };
 
@@ -215,6 +95,18 @@ describe('employees', async () => {
 
             expect(response.body).to.have.property('errors');
             expect(response.body.errors).to.deep.include({
+                param: 'email',
+                message: 'Email is required and min length is 5 chars',
+                param: 'name',
+                message:
+                    'Invalid name format. Min length is 3 chars. Max length is 20 chars',
+                param: 'surname',
+                message:
+                    'Invalid surname format. Min length is 3 chars. Max length is 30 chars',
+                param: 'password',
+                message: 'Password is required and min length is 8 chars',
+                param: 'birthdate',
+                message: 'Invalid date format',
                 param: 'days_left',
                 message: 'Invalid days_left format'
             });
@@ -244,7 +136,7 @@ describe('employees', async () => {
             });
         });
 
-        it('returns 403 when trying to add employee somone else', async () => {
+        it('returns 403 when trying to add employee as normal user', async () => {
             const salt = await bcrypt.genSalt(saltRounds);
 
             const newEmployee = {
@@ -258,7 +150,7 @@ describe('employees', async () => {
 
             const response = await request
                 .post(`/employees`)
-                .set('Authorization', 'Bearer ' + badToken)
+                .set('Authorization', 'Bearer ' + loggedUserToken)
                 .send(newEmployee);
 
             expect(response.statusCode).to.equal(403);
@@ -266,7 +158,7 @@ describe('employees', async () => {
     });
 
     describe('PUT /employees', async () => {
-        it('updating employee', async () => {
+        it('returns 200 when trying to get all employees as admin', async () => {
             const updateEmployee = {
                 email: 'testEmployee@test.erp',
                 name: 'test123',
@@ -283,78 +175,12 @@ describe('employees', async () => {
             expect(response.body).to.have.property('email');
         });
 
-        it('returns an error if email is blank', async () => {
+        it('returns an error when trying to edit employee if some required field in this object is blank', async () => {
             const updateEmployee = {
-                email: null
-            };
-
-            const response = await request
-                .put(`/employees/${userId}`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(updateEmployee);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
-                param: 'email',
-                message: 'Email is required and min length is 5 chars'
-            });
-        });
-
-        it('returns an error if name is blank', async () => {
-            const updateEmployee = {
-                name: null
-            };
-
-            const response = await request
-                .put(`/employees/${userId}`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(updateEmployee);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
-                param: 'name',
-                message:
-                    'Invalid name format. Min length is 3 chars. Max length is 20 chars'
-            });
-        });
-
-        it('returns an error if surname is blank', async () => {
-            const updateEmployee = {
-                surname: null
-            };
-
-            const response = await request
-                .put(`/employees/${userId}`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(updateEmployee);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
-                param: 'surname',
-                message:
-                    'Invalid surname format. Min length is 3 chars. Max length is 30 chars'
-            });
-        });
-
-        it('returns an error if birthdate is blank', async () => {
-            const updateEmployee = {
-                birthdate: null
-            };
-
-            const response = await request
-                .put(`/employees/${userId}`)
-                .set('Authorization', 'Bearer ' + loggedAdminToken)
-                .send(updateEmployee);
-
-            expect(response.body).to.have.property('errors');
-            expect(response.body.errors).to.deep.include({
-                param: 'birthdate',
-                message: 'Invalid date format'
-            });
-        });
-
-        it('returns an error if days_left is blank', async () => {
-            const updateEmployee = {
+                email: null,
+                name: null,
+                surname: null,
+                birthdate: null,
                 days_left: null
             };
 
@@ -365,12 +191,22 @@ describe('employees', async () => {
 
             expect(response.body).to.have.property('errors');
             expect(response.body.errors).to.deep.include({
+                param: 'email',
+                message: 'Email is required and min length is 5 chars',
+                param: 'name',
+                message:
+                    'Invalid name format. Min length is 3 chars. Max length is 20 chars',
+                param: 'surname',
+                message:
+                    'Invalid surname format. Min length is 3 chars. Max length is 30 chars',
+                param: 'birthdate',
+                message: 'Invalid date format',
                 param: 'days_left',
                 message: 'Invalid days_left format'
             });
         });
 
-        it('returns 403 if trying to update employee somone else', async () => {
+        it('returns 403 if trying to update employee as normal user', async () => {
             const updateEmployee = {
                 email: 'testEmployee@test.erp',
                 name: 'test123',
@@ -381,7 +217,7 @@ describe('employees', async () => {
 
             const response = await request
                 .put(`/employees/${userId}`)
-                .set('Authorization', 'Bearer ' + badToken)
+                .set('Authorization', 'Bearer ' + loggedUserToken)
                 .send(updateEmployee);
 
             expect(response.statusCode).to.equal(403);
@@ -414,10 +250,10 @@ describe('employees', async () => {
             expect(response.statusCode).to.equal(204);
         });
 
-        it('returns 403 when trying to delete somone else', async () => {
+        it('returns 403 when trying to delete employee as normal user', async () => {
             const response = await request
                 .delete(`/employees/${userId}`)
-                .set('Authorization', 'Bearer ' + badToken);
+                .set('Authorization', 'Bearer ' + loggedUserToken);
 
             expect(response.statusCode).to.equal(403);
         });
