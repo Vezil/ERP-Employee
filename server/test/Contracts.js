@@ -105,7 +105,7 @@ describe('contracts', async () => {
             });
         });
 
-        it('returns 403 when trying to create new contract as user', async () => {
+        it('returns 403 when trying to create new contract as normal user', async () => {
             const newContract = {
                 contract_length: 12,
                 start_date: '2019-12-12',
