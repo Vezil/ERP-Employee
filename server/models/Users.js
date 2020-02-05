@@ -53,7 +53,7 @@ module.exports = (sequelize, DataTypes) => {
     Users.associate = function(models) {
         Users.hasMany(models.Holidays);
         Users.hasMany(models.Contracts);
-        Users.hasOne(models.Roles);
+        Users.hasOne(models.UserRoles);
     };
 
     Users.prototype.comparePassword = function(password) {

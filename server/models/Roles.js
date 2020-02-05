@@ -12,10 +12,14 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
 
-    Roles.associate = function(models) {
+    Roles.associate = models => {
         Roles.belongsTo(models.Users, {
             as: 'employee',
             foreignKey: 'user_id'
+        });
+        Roles.belongsToMany(models.UserRoles, {
+            as: 'roles',
+            foreignKey: 'role_id'
         });
     };
 
