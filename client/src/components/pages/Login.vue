@@ -80,7 +80,7 @@ export default {
                     name: 'dashboard'
                 });
             } catch (error) {
-                this.error = error.data.errors;
+                this.error = error;
                 console.error(error);
             }
         }
