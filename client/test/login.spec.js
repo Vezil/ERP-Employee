@@ -74,5 +74,33 @@ describe('Login.vue', () => {
         });
         const button = wrapper.find('.v-btn');
         button.trigger('click');
+        expect(wrapper.contains('div.error')).toBe(false);
+    });
+
+    it('Returns error when email and password are blank', () => {
+        moxios.stubOnce('POST', 'login', {
+            status: 422,
+            response: {
+                errors: [
+                    { message: 'Invalid value', param: 'email' },
+                    {
+                        message: 'Email is required and min length is 5 chars',
+                        param: 'email'
+                    },
+                    {
+                        message:
+                            'Password is required and min length is 8 chars',
+                        param: 'password'
+                    }
+                ]
+            }
+        });
+        wrapper.setData({
+            email: '',
+            password: ''
+        });
+        const button = wrapper.find('.v-btn');
+        button.trigger('click');
+        expect(wrapper.contains('div.error')).toBe(true); // why is false ?
     });
 });

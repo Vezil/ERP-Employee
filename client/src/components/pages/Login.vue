@@ -35,6 +35,13 @@
                     <br />
                     <br />
                     <div class="error" v-if="error">{{ this.error }}</div>
+                    <div
+                        class="error"
+                        v-for="(item, index) in errorsFromServer"
+                        :key="index"
+                    >
+                        <div>{{ item.message }}</div>
+                    </div>
                     <br />
                     <v-btn class="cyan" @click="login">Login</v-btn>
                 </div>
@@ -61,7 +68,8 @@ export default {
             passwordRules: [v => v.length > 7 || 'Minimum 8 characters'],
             email: '',
             password: '',
-            error: null
+            error: null,
+            errorsFromServer: null
         };
     },
     methods: {
@@ -80,8 +88,12 @@ export default {
                     name: 'dashboard'
                 });
             } catch (error) {
-                this.error = error;
-                console.error(error);
+                if (error.response.data) {
+                    this.errorsFromServer = error.response.data.errors;
+                } else {
+                    this.error = error;
+                    console.error(error);
+                }
             }
         }
     }
