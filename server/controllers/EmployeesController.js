@@ -1,4 +1,4 @@
-const { Users, Roles, Holidays, Contracts } = require('../models');
+const { Users, Roles, UserRoles, Holidays, Contracts } = require('../models');
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
 
@@ -10,8 +10,8 @@ module.exports = {
             const employees = await Users.findAll({
                 include: [
                     {
-                        model: Roles,
-                        where: { name: 'user' }
+                        model: UserRoles,
+                        where: { role_id: 2 }
                     }
                 ]
             });
@@ -53,9 +53,9 @@ module.exports = {
 
             const employee = await Users.create(req.body);
 
-            await Roles.create({
-                name: Roles.ROLE_USER,
-                user_id: employee.id
+            await UserRoles.create({
+                UserId: employee.id,
+                role_id: Roles.ROLE_USER
             });
 
             return res.send(employee.toJSON());
@@ -123,7 +123,7 @@ module.exports = {
                     .json({ error: 'This employee has not been found' });
             }
 
-            const role = await Roles.findOne({
+            const userRole = await UserRoles.findOne({
                 where: {
                     user_id: req.params.id
                 }
@@ -141,8 +141,8 @@ module.exports = {
                 }
             });
 
-            if (role) {
-                await Roles.destroy({
+            if (userRole) {
+                await UserRoles.destroy({
                     where: {
                         user_id: req.params.id
                     }

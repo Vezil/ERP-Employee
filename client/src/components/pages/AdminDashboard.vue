@@ -447,8 +447,6 @@ export default {
             this.errorsFromServer = null;
             employee.days_left = 0;
 
-            delete employee.Role;
-
             Object.keys(employee).forEach(value => {
                 if (employee[value] === '' || employee[value] === undefined) {
                     this.areAll = false;

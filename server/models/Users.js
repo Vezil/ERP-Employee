@@ -61,9 +61,9 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     Users.prototype.isUser = async function() {
-        const role = await this.getRole();
+        const role = await this.getUserRole();
 
-        if (role.name === 'user') {
+        if (role.role_id === 2) {
             return true;
         }
 
@@ -71,9 +71,9 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     Users.prototype.isAdmin = async function() {
-        const role = await this.getRole();
+        const role = await this.getUserRole();
 
-        if (role.name === 'admin') {
+        if (role.role_id === 1) {
             return true;
         }
 

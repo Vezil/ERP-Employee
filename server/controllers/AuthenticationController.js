@@ -1,6 +1,6 @@
 const bcrypt = require('bcrypt');
 
-const { Users, Roles } = require('../models');
+const { Users, UserRoles } = require('../models');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const { validationResult } = require('express-validator');
@@ -60,7 +60,7 @@ module.exports = {
                 where: {
                     email
                 },
-                include: [{ model: Roles, as: 'Role' }]
+                include: [{ model: UserRoles }]
             });
 
             const userJson = user.toJSON();
@@ -136,7 +136,6 @@ module.exports = {
                 });
             }
 
-            const salt = await bcrypt.genSalt(saltRounds);
             const thisPerson = await Users.findByPk(req.loggedUser.id);
 
             await thisPerson.update({

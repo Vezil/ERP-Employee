@@ -74,13 +74,13 @@ export default {
 
                 this.$store.dispatch('setUser', data.user);
                 this.$store.dispatch('setToken', data.token);
-                this.$store.dispatch('setRole', data.user.Role);
+                this.$store.dispatch('setRole', data.user.UserRole.role_id);
 
                 this.$router.push({
                     name: 'dashboard'
                 });
             } catch (error) {
-                this.error = error.response.data.error;
+                this.error = error.data.errors;
                 console.error(error);
             }
         }
