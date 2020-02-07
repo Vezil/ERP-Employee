@@ -1,7 +1,6 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import Login from '../src/components/pages/Login.vue';
 import Dashboard from '../src/components/pages/Dashboard.vue';
-import ChangePassword from '../src/components/pages/ChangePassword.vue';
 import expect from 'expect';
 import moxios from 'moxios';
 import Vue from 'vue';
@@ -41,11 +40,6 @@ describe('Login.vue', () => {
                 path: '/',
                 name: 'dashboard',
                 component: Dashboard
-            },
-            {
-                path: '/changePassword',
-                component: ChangePassword,
-                name: 'changePassword'
             }
         ];
 

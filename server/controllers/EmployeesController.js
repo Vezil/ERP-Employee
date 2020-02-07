@@ -55,7 +55,7 @@ module.exports = {
 
             await UserRoles.create({
                 UserId: employee.id,
-                role_id: Roles.ROLE_USER
+                RoleId: Roles.ROLE_USER
             });
 
             return res.send(employee.toJSON());

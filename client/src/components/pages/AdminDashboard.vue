@@ -11,7 +11,7 @@
                 dark
             >
                 <template v-slot:item.birthdate="{ item }"
-                    >{{ item.birthdate | formatDate }}
+                    >{{ item.birthdate }}
                 </template>
 
                 <template v-slot:top>
@@ -26,7 +26,7 @@
                                 <v-btn
                                     color="primary"
                                     dark
-                                    class="mb-2"
+                                    class="mb-2 newEmployeeButton"
                                     v-on="on"
                                 >
                                     New Employee
@@ -197,10 +197,7 @@
                                         >
                                         <div>
                                             Date of Birth:
-                                            {{
-                                                profileItem.birthdate
-                                                    | formatDate
-                                            }}
+                                            {{ profileItem.birthdate }}
                                         </div>
                                         <div
                                             >Days off (left):
@@ -219,17 +216,11 @@
                                         >
                                         <div
                                             >Start date of this contract:
-                                            {{
-                                                oneContract.start_date
-                                                    | formatDate
-                                            }}</div
+                                            {{ oneContract.start_date }}</div
                                         >
                                         <div
                                             >Finish date of this contract:
-                                            {{
-                                                oneContract.finish_date
-                                                    | formatDate
-                                            }}</div
+                                            {{ oneContract.finish_date }}</div
                                         >
                                     </div>
                                 </v-card-text>
@@ -353,12 +344,14 @@ export default {
 
         deleteItem(item) {
             const index = this.employees.indexOf(item);
+
+            this.editedIndex = 2;
+
             confirm('Are you sure you want to delete this employee?') &&
                 this.employees.splice(index, 1) &&
                 this.deleteEmployee(item);
 
             this.fetchEmployees();
-            this.editedIndex = 1;
         },
 
         close() {
@@ -383,7 +376,7 @@ export default {
         },
 
         async profile(user) {
-            if (this.editedIndex > -1) {
+            if (this.editedIndex > 1) {
                 this.isDialogProfileOpen = false;
             } else {
                 this.isDialogProfileOpen = true;
@@ -404,6 +397,13 @@ export default {
                 this.profileItem.contracts = this.contractsEmployee;
             } catch (err) {
                 console.error(err);
+            }
+
+            if (this.editedIndex === 2) {
+                setTimeout(() => {
+                    this.editedItem = Object.assign({}, this.defaultItem);
+                    this.editedIndex = -1;
+                }, 300);
             }
         },
 

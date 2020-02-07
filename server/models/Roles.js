@@ -16,5 +16,8 @@ module.exports = (sequelize, DataTypes) => {
         Roles.belongsToMany(models.Users, { through: models.UserRoles });
     };
 
+    Roles.ROLE_USER = 2;
+    Roles.ROLE_ADMIN = 1;
+
     return Roles;
 };
