@@ -3,7 +3,7 @@ const request = require('supertest')(app);
 const expect = require('chai').expect;
 
 describe('POST /login', () => {
-    it('login on admin when passing valid data', async () => {
+    it('returns 200 when trying to login as admin with valid data', async () => {
         const loginData = {
             email: 'admin@erp.test',
             password: 'password'
@@ -14,7 +14,7 @@ describe('POST /login', () => {
         expect(response.body).to.have.property('token');
     });
 
-    it('returns an error if email or password is blank', async () => {
+    it('returns 422 when trying login with invalid data', async () => {
         const adminData = {
             email: null,
             password: null

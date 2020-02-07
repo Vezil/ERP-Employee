@@ -20,21 +20,16 @@ async function loginOtherPerson() {
 
 loginOtherPerson();
 
+before(async () => {
+    const email = 'admin@erp.test';
+    const password = 'password';
+
+    const credentials = await helpers.login(email, password);
+
+    loggedAdminToken = credentials.token;
+});
+
 describe('adminHolidays', () => {
-    describe('POST /login', () => {
-        it('login when passing valid data', async () => {
-            const email = 'admin@erp.test';
-            const password = 'password';
-
-            const credentials = await helpers.login(email, password);
-
-            loggedAdminToken = credentials.token;
-            loggedUserId = credentials.user.id;
-
-            expect(credentials).to.have.property('token');
-        });
-    });
-
     describe('GET /holidays', () => {
         it('returns 200 when trying to get all holidays as admin', async () => {
             const response = await request

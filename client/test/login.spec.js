@@ -1,53 +1,68 @@
 import { mount, createLocalVue } from '@vue/test-utils';
 import Login from '../src/components/pages/Login.vue';
+import Dashboard from '../src/components/pages/Dashboard.vue';
+import ChangePassword from '../src/components/pages/ChangePassword.vue';
 import expect from 'expect';
 import moxios from 'moxios';
 import Vue from 'vue';
+import Vuex from 'vuex';
 import Vuetify from 'vuetify';
-
-Vue.use(Vuetify);
+import VueRouter from 'vue-router';
+import Router from 'vue-router';
 
 const localVue = createLocalVue();
 
+Vue.use(Vuetify);
+Vue.use(Vuex);
+Vue.use(VueRouter);
+
 let vuetify;
 let wrapper;
+let actions;
+let store;
 
 describe('Login.vue', () => {
-    beforeAll(() => {
-        moxios.stubOnce('POST', 'login', {
-            status: 200,
-            response: {
-                user: {
-                    id: 22,
-                    email: 'admin@erp.test',
-                    name: 'Lucio',
-                    surname: 'Dibbert',
-                    birthdate: '2019-02-15',
-                    days_left: 0,
-                    createdAt: '2020-02-05T16:20:10.000Z',
-                    updatedAt: '2020-02-05T16:20:10.000Z',
-                    UserRole: {
-                        id: 22,
-                        createdAt: '2020-02-05T16:20:10.000Z',
-                        updatedAt: '2020-02-05T16:20:10.000Z',
-                        role_id: 1,
-                        UserId: 22
-                    }
-                },
-                token:
-                    'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MjIsImVtYWlsIjoiYWRtaW5AZXJwLnRlc3QiLCJuYW1lIjoiTHVjaW8iLCJzdXJuYW1lIjoiRGliYmVydCIsImJpcnRoZGF0ZSI6IjIwMTktMDItMTUiLCJkYXlzX2xlZnQiOjAsImNyZWF0ZWRBdCI6IjIwMjAtMDItMDVUMTY6MjA6MTAuMDAwWiIsInVwZGF0ZWRBdCI6IjIwMjAtMDItMDVUMTY6MjA6MTAuMDAwWiIsIlVzZXJSb2xlIjp7ImlkIjoyMiwiY3JlYXRlZEF0IjoiMjAyMC0wMi0wNVQxNjoyMDoxMC4wMDBaIiwidXBkYXRlZEF0IjoiMjAyMC0wMi0wNVQxNjoyMDoxMC4wMDBaIiwicm9sZV9pZCI6MSwiVXNlcklkIjoyMn0sImlhdCI6MTU4MDkyMTc1NywiZXhwIjoxNTgxMDA4MTU3fQ.aXt-VzAPq6ek5Z2v4DzI3PuLcdxDCkGjhWfMTuRP8U0'
-            }
-        });
-    });
-
     beforeEach(done => {
+        actions = {
+            setUser: jest.fn(),
+            setToken: jest.fn(),
+            setRole: jest.fn()
+        };
+        store = new Vuex.Store({
+            actions
+        });
+
         moxios.install();
 
         vuetify = new Vuetify();
 
+        const routes = [
+            {
+                path: '/',
+                name: 'dashboard',
+                component: Dashboard
+            },
+            {
+                path: '/changePassword',
+                component: ChangePassword,
+                name: 'changePassword'
+            }
+        ];
+
+        const router = new VueRouter({
+            routes
+        });
+
+        const routerPush = Router.prototype.push;
+        Router.prototype.push = function push(location) {
+            return routerPush.call(this, location).catch(error => error);
+        };
+
         wrapper = mount(Login, {
             localVue,
-            vuetify
+            vuetify,
+            store,
+            router
         });
 
         moxios.wait(() => {
@@ -67,17 +82,32 @@ describe('Login.vue', () => {
         expect(wrapper.findAll('.v-text-field').length).toBe(2);
     });
 
-    it('Goes through login correctly', () => {
+    it('Goes through login correctly', done => {
+        moxios.stubOnce('POST', 'login', {
+            status: 200,
+            response: {
+                user: {
+                    Roles: []
+                },
+                token: ''
+            }
+        });
+
         wrapper.setData({
-            email: 'admin@erp.test',
+            email: 'user@erp.test',
             password: 'password'
         });
+
         const button = wrapper.find('.v-btn');
         button.trigger('click');
-        expect(wrapper.contains('div.error')).toBe(false);
+
+        moxios.wait(() => {
+            expect(wrapper.contains('div.error')).toBe(false);
+            done();
+        });
     });
 
-    it('Returns error when email and password are blank', () => {
+    it('Returns error when email and password are blank', done => {
         moxios.stubOnce('POST', 'login', {
             status: 422,
             response: {
@@ -95,12 +125,19 @@ describe('Login.vue', () => {
                 ]
             }
         });
+
         wrapper.setData({
-            email: '',
-            password: ''
+            email: 'as',
+            password: 'da'
         });
+
         const button = wrapper.find('.v-btn');
         button.trigger('click');
-        expect(wrapper.contains('div.error')).toBe(true); // why is false ?
+
+        moxios.wait(() => {
+            expect(wrapper.contains('div.error')).toBe(true);
+            expect(wrapper.contains('.v-text-field.login')).toBe(true);
+            done();
+        });
     });
 });

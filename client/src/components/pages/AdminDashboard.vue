@@ -340,8 +340,6 @@ export default {
     methods: {
         async fetchEmployees() {
             this.employees = (await EmployeesServices.getEmployees()).data;
-
-            console.log(this.employees);
         },
 
         editItem(item) {

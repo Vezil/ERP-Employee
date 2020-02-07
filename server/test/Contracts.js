@@ -22,21 +22,16 @@ async function loginOtherPerson() {
 
 loginOtherPerson();
 
+before(async () => {
+    const email = 'admin@erp.test';
+    const password = 'password';
+
+    const credentials = await helpers.login(email, password);
+
+    loggedAdminToken = credentials.token;
+});
+
 describe('contracts', async () => {
-    describe('POST /login', () => {
-        it('login when passing valid data', async () => {
-            const email = 'admin@erp.test';
-            const password = 'password';
-
-            const credentials = await helpers.login(email, password);
-
-            loggedAdminToken = credentials.token;
-            loggedUserId = credentials.user.id;
-
-            expect(credentials).to.have.property('token');
-        });
-    });
-
     describe('GET /contracts', () => {
         it('returns 200 when trying to get contracts as admin', async () => {
             const response = await request
@@ -46,7 +41,7 @@ describe('contracts', async () => {
             expect(response.body);
         });
 
-        it('returns 403 when trying to get all contracts by user', async () => {
+        it('returns 403 when trying to get all contracts as user', async () => {
             const response = await request
                 .get(`/contracts`)
                 .set('Authorization', 'Bearer ' + loggedUserToken);
@@ -56,7 +51,7 @@ describe('contracts', async () => {
     });
 
     describe('POST /contracts', async () => {
-        it('return 201 when trying to create new contract by admin', async () => {
+        it('return 201 when trying to create new contract as admin', async () => {
             const newContract = {
                 contract_length: 12,
                 start_date: '2019-12-12',

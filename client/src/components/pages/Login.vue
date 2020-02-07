@@ -52,7 +52,6 @@
 
 <script>
 import AuthenticationService from '../../services/AuthenticationService';
-import { store } from '../../store';
 
 export default {
     name: 'Login',
@@ -75,6 +74,10 @@ export default {
     methods: {
         async login() {
             try {
+                if (!this.password || !this.email) {
+                    return;
+                }
+
                 const { data } = await AuthenticationService.login({
                     email: this.email,
                     password: this.password
@@ -88,7 +91,7 @@ export default {
                     name: 'dashboard'
                 });
             } catch (error) {
-                if (error.response.data) {
+                if (error) {
                     this.errorsFromServer = error.response.data.errors;
                 } else {
                     this.error = error;

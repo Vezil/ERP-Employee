@@ -22,23 +22,19 @@ async function loginOtherPerson() {
 
 loginOtherPerson();
 
+before(async () => {
+    const email = 'admin@erp.test';
+    const password = 'password';
+
+    const credentials = await helpers.login(email, password);
+
+    loggedAdminToken = credentials.token;
+    loggedUserId = credentials.user.id;
+});
+
 describe('employees', async () => {
-    describe('POST /login', () => {
-        it('login when passing valid data', async () => {
-            const email = 'admin@erp.test';
-            const password = 'password';
-
-            const credentials = await helpers.login(email, password);
-
-            loggedAdminToken = credentials.token;
-            loggedUserId = credentials.user.id;
-
-            expect(credentials).to.have.property('token');
-        });
-    });
-
     describe('GET /employees', () => {
-        it('returns 200 when trying to get all employees by admin', async () => {
+        it('returns 200 when trying to get all employees as admin', async () => {
             const response = await request
                 .get(`/employees`)
                 .set('Authorization', 'Bearer ' + loggedAdminToken);
@@ -56,7 +52,7 @@ describe('employees', async () => {
     });
 
     describe('POST /employees', async () => {
-        it('returns 201 when trying to create new employee by admin', async () => {
+        it('returns 201 when trying to create new employee as admin', async () => {
             const salt = await bcrypt.genSalt(saltRounds);
 
             const newEmployee = {

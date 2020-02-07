@@ -21,21 +21,17 @@ async function loginOtherPerson() {
 
 loginOtherPerson();
 
+before(async () => {
+    const email = 'user@erp.test';
+    const password = 'password';
+
+    const credentials = await helpers.login(email, password);
+
+    loggedUserToken = credentials.token;
+    loggedUserId = credentials.user.id;
+});
+
 describe('userHolidays', () => {
-    describe('POST /login', () => {
-        it('login when passing valid data', async () => {
-            const email = 'user@erp.test';
-            const password = 'password';
-
-            const credentials = await helpers.login(email, password);
-
-            loggedUserToken = credentials.token;
-            loggedUserId = credentials.user.id;
-
-            expect(credentials).to.have.property('token');
-        });
-    });
-
     describe('GET /userHolidays', () => {
         it('getting data of this user', async () => {
             const response = await request

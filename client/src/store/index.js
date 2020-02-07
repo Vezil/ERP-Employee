@@ -4,6 +4,8 @@ import Axios from 'axios';
 
 Vue.use(Vuex);
 
+const ROLE_ADMIN = 'admin';
+
 export default new Vuex.Store({
     state: {
         token: localStorage.getItem('token') || null,
@@ -43,7 +45,7 @@ export default new Vuex.Store({
                 return;
             }
 
-            const isAdmin = roles.some(r => r.id === 1);
+            const isAdmin = roles.some(r => r.name === ROLE_ADMIN);
 
             if (isAdmin) {
                 localStorage.setItem('isLoggedInAsAdmin', true);

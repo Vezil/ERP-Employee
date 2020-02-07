@@ -2,6 +2,9 @@ const bcrypt = require('bcrypt');
 
 const saltRounds = 10;
 
+const ROLE_USER = 'user';
+const ROLE_ADMIN = 'admin';
+
 async function hashPassword(user, options) {
     if (!user.changed('password')) {
         return;
@@ -63,7 +66,7 @@ module.exports = (sequelize, DataTypes) => {
     Users.prototype.isUser = async function() {
         const role = await this.getRoles();
 
-        if (role[0].name === 'user') {
+        if (role[0].name === ROLE_USER) {
             return true;
         }
 
@@ -73,7 +76,7 @@ module.exports = (sequelize, DataTypes) => {
     Users.prototype.isAdmin = async function() {
         const role = await this.getRoles();
 
-        if (role[0].name === 'admin') {
+        if (role[0].name === ROLE_ADMIN) {
             return true;
         }
 
