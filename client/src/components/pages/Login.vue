@@ -82,7 +82,7 @@ export default {
 
                 this.$store.dispatch('setUser', data.user);
                 this.$store.dispatch('setToken', data.token);
-                this.$store.dispatch('setRole', data.user.UserRole.role_id);
+                this.$store.dispatch('setRole', data.user.Roles);
 
                 this.$router.push({
                     name: 'dashboard'

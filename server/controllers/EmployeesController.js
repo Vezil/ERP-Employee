@@ -10,8 +10,8 @@ module.exports = {
             const employees = await Users.findAll({
                 include: [
                     {
-                        model: UserRoles,
-                        where: { role_id: 2 }
+                        model: Roles,
+                        where: { name: 'user' }
                     }
                 ]
             });

@@ -36,17 +36,23 @@ export default new Vuex.Store({
             Axios.defaults.headers.common['Authorization'] =
                 'Bearer ' + this.state.token;
         },
-        setRole(state, role) {
-            if (role === 1) {
+        setRole(state, roles) {
+            if (!roles.length) {
+                console.error('Error with rolse');
+
+                return;
+            }
+
+            const isAdmin = roles.some(r => r.id === 1);
+
+            if (isAdmin) {
                 localStorage.setItem('isLoggedInAsAdmin', true);
 
                 this.state.isLoggedInAsAdmin = true;
-            } else if (role === 2) {
+            } else {
                 localStorage.setItem('isLoggedInAsUser', true);
 
                 this.state.isLoggedInAsUser = true;
-            } else {
-                console.error('error with role');
             }
         },
 

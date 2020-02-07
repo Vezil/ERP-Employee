@@ -7,6 +7,8 @@ module.exports = {
                 return res.status(401).json({ error: 'Unauthorized' });
             }
 
+            console.log('isAdmin middleware');
+
             const adminLogged = await Users.findByPk(req.loggedUser.id);
 
             if (!(await adminLogged.isAdmin())) {

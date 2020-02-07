@@ -12,8 +12,9 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
 
-    Roles.ROLE_USER = 2;
-    Roles.ROLE_ADMIN = 1;
+    Roles.associate = models => {
+        Roles.belongsToMany(models.Users, { through: models.UserRoles });
+    };
 
     return Roles;
 };

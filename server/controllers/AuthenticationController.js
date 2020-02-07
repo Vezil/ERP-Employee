@@ -1,14 +1,12 @@
 const bcrypt = require('bcrypt');
 
-const { Users, UserRoles } = require('../models');
+const { Users, Roles } = require('../models');
 const jwt = require('jsonwebtoken');
 const config = require('../config');
 const { validationResult } = require('express-validator');
 
 const Mail = require('../services/Mail');
 const changePasswordMail = require('../emails/ChangePassword');
-
-const saltRounds = 10;
 
 function jwtSignEmployee(employee) {
     const ONE_DAY = 60 * 60 * 24;
@@ -60,10 +58,12 @@ module.exports = {
                 where: {
                     email
                 },
-                include: [{ model: UserRoles }]
+                include: [{ model: Roles }]
             });
 
             const userJson = user.toJSON();
+
+            console.log('login');
 
             return res.send({
                 user: userJson,

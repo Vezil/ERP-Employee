@@ -50,10 +50,10 @@ module.exports = (sequelize, DataTypes) => {
         }
     );
 
-    Users.associate = function(models) {
+    Users.associate = models => {
         Users.hasMany(models.Holidays);
         Users.hasMany(models.Contracts);
-        Users.hasOne(models.UserRoles);
+        Users.belongsToMany(models.Roles, { through: models.UserRoles });
     };
 
     Users.prototype.comparePassword = function(password) {
@@ -61,9 +61,9 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     Users.prototype.isUser = async function() {
-        const role = await this.getUserRole();
+        const role = await this.getRoles();
 
-        if (role.role_id === 2) {
+        if (role[0].name === 'user') {
             return true;
         }
 
@@ -71,9 +71,9 @@ module.exports = (sequelize, DataTypes) => {
     };
 
     Users.prototype.isAdmin = async function() {
-        const role = await this.getUserRole();
+        const role = await this.getRoles();
 
-        if (role.role_id === 1) {
+        if (role[0].name === 'admin') {
             return true;
         }
 
