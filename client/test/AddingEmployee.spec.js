@@ -108,4 +108,39 @@ describe('AdminDashboard.vue', () => {
             done();
         });
     });
+
+    it('Returns error when some field is null', async done => {
+        expect(wrapper.html()).toContain('No data available');
+
+        const button = wrapper.find('.v-btn.newEmployeeButton');
+
+        button.trigger('click');
+
+        wrapper.setData({
+            error: null,
+            isDialogOpen: true,
+            editedItem: {
+                name: null,
+                surname: null,
+                birthdate: null,
+                email: null,
+                days_left: null
+            }
+        });
+
+        await wrapper.vm.$nextTick();
+
+        const save = wrapper.find('button.save');
+        save.trigger('click');
+
+        wrapper.setData({
+            error: 'All fields are required !'
+        });
+
+        await wrapper.vm.$nextTick();
+
+        expect(wrapper.html()).toContain('All fields are required !');
+
+        done();
+    });
 });
