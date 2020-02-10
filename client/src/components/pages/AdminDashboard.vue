@@ -172,6 +172,7 @@
                                         color="blue darken-1"
                                         text
                                         @click="save"
+                                        class="save"
                                         >Save</v-btn
                                     >
                                 </v-card-actions>

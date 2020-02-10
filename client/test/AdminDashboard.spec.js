@@ -40,19 +40,6 @@ describe('AdminDashboard.vue', () => {
             moment
         });
 
-        moxios.wait(() => {
-            wrapper.setData({
-                isDialogOpen: false,
-
-                editedItem: {
-                    name: '',
-                    surname: '',
-                    birthdate: '',
-                    email: '',
-                    days_left: 0
-                }
-            });
-        });
         done();
     });
 
@@ -71,15 +58,11 @@ describe('AdminDashboard.vue', () => {
         expect(wrapper.html()).toContain('No data available');
 
         const button = wrapper.find('.v-btn.newEmployeeButton');
+
         button.trigger('click');
 
         wrapper.setData({
-            isDialogOpen: true
-        });
-
-        // expect(wrapper.html()).toContain('Save');
-
-        wrapper.setData({
+            isDialogOpen: true,
             editedItem: {
                 name: 'Roronoa',
                 surname: 'Zoro',
@@ -89,13 +72,37 @@ describe('AdminDashboard.vue', () => {
             }
         });
 
-        // wrapper.find('.v-dialog__container').trigger('click');
+        const save = wrapper.find('.save');
+        save.trigger('click');
+
+        wrapper.setData({
+            employees: [
+                {
+                    name: 'Roronoa',
+                    surname: 'Zoro',
+                    birthdate: '1998-11-11',
+                    email: 'RoronoaZoro@erp.test',
+                    days_left: 0
+                }
+            ],
+            isDialogOpen: false
+        });
+
+        expect(wrapper.vm.employees).toStrictEqual([
+            {
+                name: 'Roronoa',
+                surname: 'Zoro',
+                birthdate: '1998-11-11',
+                email: 'RoronoaZoro@erp.test',
+                days_left: 0
+            }
+        ]);
+
+        expect(wrapper.vm.isDialogOpen).toBe(false);
 
         moxios.wait(() => {
-            expect(
-                // wrapper.find('.v-dialog__content.v-dialog.v-button').isVisible()
-                false
-            ).toBe(false);
+            expect(wrapper.find('td.text-start').isVisible());
+
             done();
         });
     });
