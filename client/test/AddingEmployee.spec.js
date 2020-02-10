@@ -47,7 +47,7 @@ describe('AdminDashboard.vue', () => {
         moxios.uninstall();
     });
 
-    it('Add new employee correctly', done => {
+    it('Add new employee correctly', async done => {
         moxios.stubOnce('POST', 'users', {
             status: 201,
             resposne: {
@@ -72,7 +72,9 @@ describe('AdminDashboard.vue', () => {
             }
         });
 
-        const save = wrapper.find('.save');
+        await wrapper.vm.$nextTick();
+
+        const save = wrapper.find('button.save');
         save.trigger('click');
 
         wrapper.setData({
@@ -101,7 +103,7 @@ describe('AdminDashboard.vue', () => {
         expect(wrapper.vm.isDialogOpen).toBe(false);
 
         moxios.wait(() => {
-            expect(wrapper.find('td.text-start').isVisible());
+            expect(wrapper.html('Roronoa'));
 
             done();
         });
