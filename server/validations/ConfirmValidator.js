@@ -4,5 +4,5 @@ module.exports = [
     body(['confirmed'])
         .exists()
         .isBoolean()
-        .withMessage('Something wrong with "confirmed" field')
+        .withMessage('Something wrong with confirm')
 ];

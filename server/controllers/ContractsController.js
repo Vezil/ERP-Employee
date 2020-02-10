@@ -78,6 +78,14 @@ module.exports = {
         }
 
         try {
+            const contract = await Contracts.findByPk(req.params.id);
+
+            if (!contract) {
+                return res
+                    .status(404)
+                    .json({ error: 'This contract has not been found' });
+            }
+
             await Contracts.update(req.body, {
                 where: {
                     id: req.params.id
@@ -92,17 +100,19 @@ module.exports = {
                     .json({ error: 'This employee has not been found' });
             }
 
-            const contract = await employee.update({
+            const user = await employee.update({
                 days_left: holidaysToChange
             });
 
-            if (!contract) {
+            if (!user) {
                 return res
                     .status(404)
                     .json({ error: 'This contract has not been found' });
             }
 
-            return res.send(contract);
+            const contractUpdated = await Contracts.findByPk(req.params.id);
+
+            return res.send(contractUpdated);
         } catch (err) {
             return next(err);
         }

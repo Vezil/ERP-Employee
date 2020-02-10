@@ -1,4 +1,4 @@
-const { Users, Roles, Holidays, Contracts } = require('../models');
+const { Users, Roles, UserRoles, Holidays, Contracts } = require('../models');
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcrypt');
 
@@ -34,11 +34,28 @@ module.exports = {
         }
 
         try {
+            const user = await Users.findOne({
+                where: {
+                    email: req.body.email
+                }
+            });
+
+            if (user) {
+                const errors = [
+                    {
+                        param: 'email',
+                        message: 'This email is already in use'
+                    }
+                ];
+
+                return res.status(422).json({ errors });
+            }
+
             const employee = await Users.create(req.body);
 
-            await Roles.create({
-                name: Roles.ROLE_USER,
-                user_id: employee.id
+            await UserRoles.create({
+                UserId: employee.id,
+                RoleId: Roles.ROLE_USER
             });
 
             return res.send(employee.toJSON());
@@ -98,24 +115,59 @@ module.exports = {
 
     async delete(req, res, next) {
         try {
+            const user = await Users.findByPk(req.params.id);
+
+            if (!user) {
+                return res
+                    .status(404)
+                    .json({ error: 'This employee has not been found' });
+            }
+
+            const userRole = await UserRoles.findOne({
+                where: {
+                    user_id: req.params.id
+                }
+            });
+
+            const contracts = await Contracts.findAll({
+                where: {
+                    user_id: req.params.id
+                }
+            });
+
+            const holidays = await Holidays.findAll({
+                where: {
+                    user_id: req.params.id
+                }
+            });
+
+            if (userRole) {
+                await UserRoles.destroy({
+                    where: {
+                        user_id: req.params.id
+                    }
+                });
+            }
+
+            if (contracts) {
+                await Contracts.destroy({
+                    where: {
+                        user_id: req.params.id
+                    }
+                });
+            }
+
+            if (holidays) {
+                await Holidays.destroy({
+                    where: {
+                        user_id: req.params.id
+                    }
+                });
+            }
+
             await Users.destroy({
                 where: {
                     id: req.params.id
-                }
-            });
-            await Roles.destroy({
-                where: {
-                    user_id: req.params.id
-                }
-            });
-            await Holidays.destroy({
-                where: {
-                    user_id: req.params.id
-                }
-            });
-            await Contracts.destroy({
-                where: {
-                    user_id: req.params.id
                 }
             });
 

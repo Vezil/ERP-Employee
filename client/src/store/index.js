@@ -4,6 +4,8 @@ import Axios from 'axios';
 
 Vue.use(Vuex);
 
+const ROLE_ADMIN = 'admin';
+
 export default new Vuex.Store({
     state: {
         token: localStorage.getItem('token') || null,
@@ -36,17 +38,23 @@ export default new Vuex.Store({
             Axios.defaults.headers.common['Authorization'] =
                 'Bearer ' + this.state.token;
         },
-        setRole(state, role) {
-            if (role.name === 'admin') {
+        setRole(state, roles) {
+            if (!roles.length) {
+                console.error('Error with rolse');
+
+                return;
+            }
+
+            const isAdmin = roles.some(r => r.name === ROLE_ADMIN);
+
+            if (isAdmin) {
                 localStorage.setItem('isLoggedInAsAdmin', true);
 
                 this.state.isLoggedInAsAdmin = true;
-            } else if (role.name === 'user') {
+            } else {
                 localStorage.setItem('isLoggedInAsUser', true);
 
                 this.state.isLoggedInAsUser = true;
-            } else {
-                console.error('error with role');
             }
         },
 

@@ -8,8 +8,6 @@ const { validationResult } = require('express-validator');
 const Mail = require('../services/Mail');
 const changePasswordMail = require('../emails/ChangePassword');
 
-const saltRounds = 10;
-
 function jwtSignEmployee(employee) {
     const ONE_DAY = 60 * 60 * 24;
 
@@ -60,10 +58,12 @@ module.exports = {
                 where: {
                     email
                 },
-                include: [{ model: Roles, as: 'Role' }]
+                include: [{ model: Roles }]
             });
 
             const userJson = user.toJSON();
+
+            console.log('login');
 
             return res.send({
                 user: userJson,
@@ -136,7 +136,6 @@ module.exports = {
                 });
             }
 
-            const salt = await bcrypt.genSalt(saltRounds);
             const thisPerson = await Users.findByPk(req.loggedUser.id);
 
             await thisPerson.update({

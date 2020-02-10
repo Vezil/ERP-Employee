@@ -13,7 +13,6 @@ for (let i = 0; i <= 20; i++) {
         surname: faker.name.lastName(),
         email: faker.internet.email(),
         birthdate: faker.date.past(),
-
         password: bcrypt.hashSync('password', saltRounds),
         days_left: 26,
         created_at: new Date(),
@@ -28,7 +27,6 @@ const admin = {
     surname: faker.name.lastName(),
     email: 'admin@erp.test',
     birthdate: faker.date.past(),
-
     password: bcrypt.hashSync('password', saltRounds),
     days_left: 0,
     created_at: new Date(),
@@ -42,7 +40,6 @@ const user = {
     surname: faker.name.lastName(),
     email: 'user@erp.test',
     birthdate: faker.date.past(),
-
     password: bcrypt.hashSync('password', saltRounds),
     days_left: 26,
     created_at: new Date(),
@@ -50,6 +47,19 @@ const user = {
 };
 
 users.push(user);
+
+const user2 = {
+    name: faker.name.firstName(),
+    surname: faker.name.lastName(),
+    email: 'user2@erp.test',
+    birthdate: faker.date.past(),
+    password: bcrypt.hashSync('password', saltRounds),
+    days_left: 26,
+    created_at: new Date(),
+    updated_at: new Date()
+};
+
+users.push(user2);
 
 module.exports = {
     up: (queryInterface, Sequelize) => {

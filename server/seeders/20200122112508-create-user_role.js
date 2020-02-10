@@ -1,44 +1,51 @@
 'use strict';
 
-const faker = require('faker');
-
-const roles = [];
+const userRoles = [];
 
 for (let i = 0; i <= 20; i++) {
     const role = {
-        name: 'user',
         user_id: i + 1,
+        role_id: 2,
         created_at: new Date(),
         updated_at: new Date()
     };
 
-    roles.push(role);
+    userRoles.push(role);
 }
 
 const adminRole = {
-    name: 'admin',
     user_id: 22,
+    role_id: 1,
     created_at: new Date(),
     updated_at: new Date()
 };
 
-roles.push(adminRole);
+userRoles.push(adminRole);
 
 const userRole = {
-    name: 'user',
     user_id: 23,
+    role_id: 2,
     created_at: new Date(),
     updated_at: new Date()
 };
 
-roles.push(userRole);
+userRoles.push(userRole);
+
+const user2Role = {
+    user_id: 24,
+    role_id: 2,
+    created_at: new Date(),
+    updated_at: new Date()
+};
+
+userRoles.push(user2Role);
 
 module.exports = {
     up: (queryInterface, Sequelize) => {
-        return queryInterface.bulkInsert('roles', roles);
+        return queryInterface.bulkInsert('user_roles', userRoles);
     },
 
     down: (queryInterface, Sequelize) => {
-        return queryInterface.bulkDelete('roles');
+        return queryInterface.bulkDelete('user_roles');
     }
 };

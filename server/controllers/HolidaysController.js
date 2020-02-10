@@ -176,7 +176,7 @@ module.exports = {
 
                 const oldDaysTaken = holidayToDelete.days_taken;
 
-                const newDaysLeft = old_days_taken + oldDaysLeft;
+                const newDaysLeft = oldDaysTaken + oldDaysLeft;
 
                 await employee.update({ days_left: newDaysLeft });
             }

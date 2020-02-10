@@ -1,0 +1,102 @@
+import { mount, createLocalVue } from '@vue/test-utils';
+import AdminDashboard from '../src/components/pages/AdminDashboard.vue';
+import expect from 'expect';
+import moxios from 'moxios';
+import Vue from 'vue';
+import Vuetify from 'vuetify';
+import Vuex from 'vuex';
+import moment from 'moment';
+
+const localVue = createLocalVue();
+
+Vue.use(Vuetify);
+Vue.use(require('vue-moment'));
+Vue.use(Vuex);
+
+let vuetify;
+let wrapper;
+let actions;
+let store;
+
+describe('AdminDashboard.vue', () => {
+    beforeEach(done => {
+        actions = {
+            setUser: jest.fn(),
+            setToken: jest.fn(),
+            setRole: jest.fn()
+        };
+        store = new Vuex.Store({
+            actions
+        });
+
+        moxios.install();
+
+        vuetify = new Vuetify();
+
+        wrapper = mount(AdminDashboard, {
+            localVue,
+            vuetify,
+            store,
+            moment
+        });
+
+        moxios.wait(() => {
+            wrapper.setData({
+                isDialogOpen: false,
+
+                editedItem: {
+                    name: '',
+                    surname: '',
+                    birthdate: '',
+                    email: '',
+                    days_left: 0
+                }
+            });
+        });
+        done();
+    });
+
+    afterEach(() => {
+        moxios.uninstall();
+    });
+
+    it('Add new employee correctly', done => {
+        moxios.stubOnce('POST', 'users', {
+            status: 201,
+            resposne: {
+                id: ''
+            }
+        });
+
+        expect(wrapper.html()).toContain('No data available');
+
+        const button = wrapper.find('.v-btn.newEmployeeButton');
+        button.trigger('click');
+
+        wrapper.setData({
+            isDialogOpen: true
+        });
+
+        // expect(wrapper.html()).toContain('Save');
+
+        wrapper.setData({
+            editedItem: {
+                name: 'Roronoa',
+                surname: 'Zoro',
+                birthdate: '1998-11-11',
+                email: 'RoronoaZoro@erp.test',
+                days_left: 0
+            }
+        });
+
+        // wrapper.find('.v-dialog__container').trigger('click');
+
+        moxios.wait(() => {
+            expect(
+                // wrapper.find('.v-dialog__content.v-dialog.v-button').isVisible()
+                false
+            ).toBe(false);
+            done();
+        });
+    });
+});

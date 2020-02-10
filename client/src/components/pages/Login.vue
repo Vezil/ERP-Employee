@@ -19,7 +19,7 @@
                         outlined
                         solo-inverted
                         :rules="emailRules"
-                    ></v-text-field>
+                    />
                     <br />
                     <v-text-field
                         class="login"
@@ -30,10 +30,18 @@
                         outlined
                         solo-inverted
                         :rules="passwordRules"
-                    ></v-text-field>
+                    />
+
                     <br />
                     <br />
                     <div class="error" v-if="error">{{ this.error }}</div>
+                    <div
+                        class="error"
+                        v-for="(item, index) in errorsFromServer"
+                        :key="index"
+                    >
+                        <div>{{ item.message }}</div>
+                    </div>
                     <br />
                     <v-btn class="cyan" @click="login">Login</v-btn>
                 </div>
@@ -44,7 +52,6 @@
 
 <script>
 import AuthenticationService from '../../services/AuthenticationService';
-import { store } from '../../store';
 
 export default {
     name: 'Login',
@@ -60,12 +67,17 @@ export default {
             passwordRules: [v => v.length > 7 || 'Minimum 8 characters'],
             email: '',
             password: '',
-            error: null
+            error: null,
+            errorsFromServer: null
         };
     },
     methods: {
         async login() {
             try {
+                if (!this.password || !this.email) {
+                    return;
+                }
+
                 const { data } = await AuthenticationService.login({
                     email: this.email,
                     password: this.password
@@ -73,14 +85,18 @@ export default {
 
                 this.$store.dispatch('setUser', data.user);
                 this.$store.dispatch('setToken', data.token);
-                this.$store.dispatch('setRole', data.user.Role);
+                this.$store.dispatch('setRole', data.user.Roles);
 
                 this.$router.push({
                     name: 'dashboard'
                 });
             } catch (error) {
-                this.error = error.response.data.error;
-                console.error(error);
+                if (error) {
+                    this.errorsFromServer = error.response.data.errors;
+                } else {
+                    this.error = error;
+                    console.error(error);
+                }
             }
         }
     }
