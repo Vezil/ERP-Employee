@@ -50,7 +50,12 @@ module.exports = {
 
             if (!isPasswordValid) {
                 return res.status(422).send({
-                    error: 'The login or pass information was incorrect'
+                    errors: [
+                        {
+                            message:
+                                'The login or pass information was incorrect'
+                        }
+                    ]
                 });
             }
 

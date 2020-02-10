@@ -5,11 +5,9 @@ const moment = require('moment');
 module.exports = {
     async showHolidays(req, res, next) {
         try {
-            const { id } = req.params;
-
             const holidays = await Holidays.findAll({
                 where: {
-                    user_id: id,
+                    user_Id: req.params.id,
                     confirmed: 1
                 }
             });
