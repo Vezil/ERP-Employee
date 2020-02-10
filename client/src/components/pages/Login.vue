@@ -91,7 +91,10 @@ export default {
                     name: 'dashboard'
                 });
             } catch (error) {
-                if (error) {
+                this.error = 'The server not responding please try again.';
+
+                if (error.response.data.errors) {
+                    this.error = '';
                     this.errorsFromServer = error.response.data.errors;
                 } else {
                     this.error = error;

@@ -3,7 +3,7 @@
         <div class="container">
             <v-data-table
                 :headers="headers"
-                :items="holidays_user"
+                :items="holidaysUser"
                 :sort-by="['id']"
                 :sort-desc="['id']"
                 class="elevation-1 table"
@@ -38,7 +38,7 @@ export default {
     name: 'HolidaysConfirmed',
     data() {
         return {
-            holidays_user: [],
+            holidaysUser: [],
             headers: [
                 {
                     text: 'Start date of the Holidays',
@@ -63,6 +63,7 @@ export default {
         this.holidaysUser = await HolidaysForUserServices.getHolidaysByEmployeeId(
             this.$store.state.id
         );
+
         this.holidaysUser = this.holidaysUser.data;
     }
 };

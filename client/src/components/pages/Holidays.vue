@@ -399,6 +399,7 @@ export default {
 
             if (this.areAll) {
                 this.error = null;
+                this.editedItem.confirmed = 1;
             }
 
             try {
