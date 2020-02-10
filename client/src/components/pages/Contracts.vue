@@ -309,7 +309,6 @@ export default {
         },
         startDateMenuPicker(val) {
             val && setTimeout(() => (this.$refs.picker.activePicker = 'DATE'));
-            console.log(this.$refs);
         },
         finishDateMenuPicker(val) {
             val && setTimeout(() => (this.$refs.picker.activePicker = 'DATE'));

@@ -56,7 +56,9 @@ module.exports = (sequelize, DataTypes) => {
     Users.associate = models => {
         Users.hasMany(models.Holidays);
         Users.hasMany(models.Contracts);
-        Users.belongsToMany(models.Roles, { through: models.UserRoles });
+        Users.belongsToMany(models.Roles, {
+            through: models.UserRoles
+        });
     };
 
     Users.prototype.comparePassword = function(password) {
