@@ -4,11 +4,10 @@ services:
     mysql-development:
         image: mysql:5.7.22
         environment:
-            MYSQL_ROOT_PASSWORD: apptest123
-            MYSQL_DATABASE: ERP
+            MYSQL_ROOT_PASSWORD: ' '
+            MYSQL_DATABASE: erp
         ports:
-            - '127.0.0.1:4312:3306'
-
+            - '127.0.0.1:4307:3306'
     mailcatcher:
         image: schickling/mailcatcher
         container_name: mailcatcher.nodejs-express-api.docker
