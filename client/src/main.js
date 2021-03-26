@@ -13,7 +13,8 @@ if (localStorage.getItem('token')) {
     Axios.defaults.headers.common['Authorization'] =
         'Bearer ' + localStorage.getItem('token');
 }
-Axios.defaults.baseURL = 'http://localhost:9001';
+
+Axios.defaults.baseURL = process.env.VUE_APP_SERVER_URL;
 
 Vue.use(require('vue-moment'));
 
