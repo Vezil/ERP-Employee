@@ -8,7 +8,6 @@ services:
             MYSQL_DATABASE: erp
         ports:
             - '127.0.0.1:4307:3306'
-
     mailcatcher:
         image: schickling/mailcatcher
         container_name: mailcatcher.nodejs-express-api.docker

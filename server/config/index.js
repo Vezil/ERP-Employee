@@ -30,7 +30,6 @@ module.exports = {
             address: process.env.EMAIL_FROM_ADDRESS
         }
     },
-
     authentication: {
         jwtSecret: process.env.JWT_SECRET
     }
