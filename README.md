@@ -7,3 +7,8 @@ The user can add a request for his days off and then Admin can accept it or refu
 Technology stack:
 Frontend(Vue,Vuex)
 Backend(Node.js with express.js, Sequelize, MySQL, Docker)
+
+You can run tests with commands:
+
+backend - mocha
+frontend - npm run test
